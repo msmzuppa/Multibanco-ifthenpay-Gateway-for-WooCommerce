@@ -1,0 +1,13 @@
+4.0.0:
+
+
+
+FUTURO:
+- Icones em SVG com filtro para optar por PNG
+
+MBWAY e MULTIBANCO:
+- Verificar funcionamento na inserção de encomendas manuais
+
+
+MULTIBANCO:
+Opção para cancelar encomendas cuja expiração da referência já passou
