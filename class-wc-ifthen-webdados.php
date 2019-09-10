@@ -1107,7 +1107,7 @@ wc_price( $order_total )
 					}
 					break;
 
-					//PayShop
+					//Payshop
 					case $this->payshop_id:
 						if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
 							$order_status = $order->mb_get_status();
@@ -1221,21 +1221,21 @@ wc_price( $order_total )
 				'value' => esc_attr( $query_vars['_'.$this->mbway_id.'_id_pedido'] ),
 			);
 		}
-		//PayShop - Request ID
+		//Payshop - Request ID
 		if ( ! empty( $query_vars['_'.$this->payshop_id.'_request_id'] ) ) {
 			$query['meta_query'][] = array(
 				'key' => '_'.$this->payshop_id.'_request_id',
 				'value' => esc_attr( $query_vars['_'.$this->payshop_id.'_request_id'] ),
 			);
 		}
-		//PayShop - Reference
+		//Payshop - Reference
 		if ( ! empty( $query_vars['_'.$this->payshop_id.'_ref'] ) ) {
 			$query['meta_query'][] = array(
 				'key' => '_'.$this->payshop_id.'_ref',
 				'value' => esc_attr( $query_vars['_'.$this->payshop_id.'_ref'] ),
 			);
 		}
-		//PayShop - ID
+		//Payshop - ID
 		if ( ! empty( $query_vars['_'.$this->payshop_id.'_id'] ) ) {
 			$query['meta_query'][] = array(
 				'key' => '_'.$this->payshop_id.'_id',
