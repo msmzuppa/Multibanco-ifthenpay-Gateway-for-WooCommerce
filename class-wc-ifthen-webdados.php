@@ -1640,30 +1640,6 @@ wc_price( $order_total )
 		wp_die();
 	}
 
-	/* Generate barcode */
-	public function get_barcode_image( $code, $format = 'svg' ) {
-		require_once( 'includes/tcpdf_barcodes_1d.php' );
-		$code = intval( filter_var( trim( $code ), FILTER_SANITIZE_NUMBER_INT ) );
-		$css  = "margin: auto; height: 40px; width: auto;";
-		switch( $format ) {
-			case 'svg':
-				$tcpdfBarcode = new \TCPDFBarcode( $code, 'C39' );
-				$svgContent = $tcpdfBarcode->getBarcodeSVGcode( 1, 40, 'black' );
-				return "<img src='data:image/svg+xml;utf8,".$svgContent."' style='".$css."'/>";
-				break;
-			case 'png':
-				$tcpdfBarcode = new \TCPDFBarcode( $code, 'C39' );
-				$pngContent = $tcpdfBarcode->getBarcodePngData( 1, 40, array( 0, 0, 0 ) );
-				return "<img src='data:image/png;base64,".base64_encode( $pngContent )."' style='".$css."'/>";
-				break;
-			case 'png_url':
-				return '<img src="'.plugins_url( 'images/barcode.php?code='.$code, __FILE__ ).'" alt="'.esc_attr( $code ).'" title="'.esc_attr( $code ).'" style="'.$css.'"/>';
-				break;
-		}
-		
-		return $code;
-	}
-
 	/**
 	 * Load admin scripts.
 	 *

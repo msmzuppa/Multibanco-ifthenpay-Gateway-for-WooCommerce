@@ -31,9 +31,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 			// Logs
 			$this->debug = ( $this->get_option( 'debug' )=='yes' ? true : false );
 			$this->debug_email = $this->get_option( 'debug_email' );
-
-			//Show barcode
-			$this->show_barcode = false;
 			
 			//Check version and upgrade
 			$this->version = WC_IfthenPay_Webdados()->version;
@@ -598,13 +595,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 					<td><?php _e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td class="mb_value"><?php echo WC_IfthenPay_Webdados()->format_payshop_ref( $payshop_order_details['ref'] ); ?></td>
 				</tr>
-				<?php if ( $this->show_barcode ) { ?>
-					<tr>
-						<td colspan="2" class="barcode_img">
-							<?php echo WC_IfthenPay_Webdados()->get_barcode_image( $payshop_order_details['ref'], 'png_url' ); ?>
-						</td>
-					</tr>
-				<?php } ?>
 				<tr>
 					<td><?php _e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td class="mb_value"><?php echo wc_price( $payshop_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
@@ -746,11 +736,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 					<td style="border-top: 1px solid #E60000; color: #000000;"><?php _e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td style="border-top: 1px solid #E60000; color: #000000; white-space: nowrap; text-align: right;"><?php echo WC_IfthenPay_Webdados()->format_payshop_ref( $payshop_order_details['ref'] ); ?></td>
 				</tr>
-				<?php if ( $this->show_barcode ) { ?>
-					<tr>
-						<td colspan="2" style="text-align: center;"><?php echo WC_IfthenPay_Webdados()->get_barcode_image( $payshop_order_details['ref'], 'png_url' ); ?></td>
-					</tr>
-				<?php } ?>
 				<tr>
 					<td style="border-top: 1px solid #E60000; color: #000000;"><?php _e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td style="border-top: 1px solid #E60000; color: #000000; white-space: nowrap; text-align: right;"><?php echo wc_price( $payshop_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
