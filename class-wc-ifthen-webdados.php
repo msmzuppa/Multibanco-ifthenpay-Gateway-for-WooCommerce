@@ -121,9 +121,6 @@ final class WC_IfthenPay_Webdados {
 		add_action( 'add_meta_boxes', array( $this, 'multibanco_order_metabox' ) );
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'multibanco_shop_order_search' ) );
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'payshop_shop_order_search' ) );
-		add_action( 'wp_ajax_multibanco_ifthen_dismiss_callback_notice', array( $this, 'multibanco_dismiss_callback_notice' ) );
-		add_action( 'wp_ajax_mbway_ifthen_dismiss_callback_notice', array( $this, 'mbway_dismiss_callback_notice' ) );
-		add_action( 'wp_ajax_payshop_ifthen_dismiss_callback_notice', array( $this, 'payshop_dismiss_callback_notice' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'multibanco_woocommerce_checkout_update_order_meta' ) ); 	//Frontend
 		add_action( 'plugins_loaded', array( $this, 'multibanco_woocommerce_process_shop_order_meta_backend' ) );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', array( $this, 'multibanco_woocommerce_order_data_store_cpt_get_orders_query' ), 10, 2 );
@@ -637,20 +634,6 @@ final class WC_IfthenPay_Webdados {
 	public function payshop_shop_order_search( $search_fields ) {
 		$search_fields[] = '_'.$this->payshop_id.'_ref';
 		return $search_fields;
-	}
-
-	/* Dismiss callback notice */
-	public function multibanco_dismiss_callback_notice() {
-		update_option( $this->multibanco_id.'_callback_notice_dismiss', 'yes' );
-		die( '1' );
-	}
-	public function mbway_dismiss_callback_notice() {
-		update_option( $this->mbway_id.'_callback_notice_dismiss', 'yes' );
-		die( '1' );
-	}
-	public function payshop_dismiss_callback_notice() {
-		update_option( $this->payshop_id.'_callback_notice_dismiss', 'yes' );
-		die( '1' );
 	}
 
 	/* Set new order Multibanco Entity/Reference/Value on meta */

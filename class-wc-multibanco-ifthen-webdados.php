@@ -1154,7 +1154,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 						if ( !isset( $_GET['callback_warning'] ) ) {
 							if ( apply_filters( 'multibanco_ifthen_show_callback_notice', true ) ) {
 								?>
-								<div id="multibanco_ifthen_callback_notice" class="error notice" style="padding-right: 38px; position: relative;">
+								<div id="multibanco_ifthen_callback_notice" class="notice notice-error" style="padding-right: 38px; position: relative;">
 									<p>
 										<strong>Multibanco (IfthenPay)</strong>
 										<br/>

@@ -1112,6 +1112,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 
 		/* Global admin notices - For example if callback email activation is still not sent */
 		function admin_notices() {
+			//Callback email
 			if (
 				trim( $this->enabled ) == 'yes'
 				&&
@@ -1124,7 +1125,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 						if ( !isset( $_GET['callback_warning'] ) ) {
 							if ( apply_filters( 'payshop_ifthen_show_callback_notice', true ) ) {
 								?>
-								<div id="payshop_ifthen_callback_notice" class="error notice" style="padding-right: 38px; position: relative;">
+								<div id="payshop_ifthen_callback_notice" class="notice notice-error" style="padding-right: 38px; position: relative;">
 									<p>
 										<strong>Payshop (IfthenPay)</strong>
 										<br/>
@@ -1138,6 +1139,44 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 						}
 					}
 				}
+			}
+			//New method
+			if (
+				strlen( trim( $this->payshopkey ) ) != 10
+				||
+				trim( $this->enabled ) != 'yes'
+			) {
+				?>
+				<div id="payshop_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
+					<img src="<?php echo plugins_url( 'images/banner_payshop.png', __FILE__ ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em;"/>
+					<p>
+						<?php
+							echo sprintf(
+								__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								'<strong>Payshop (IfthenPay)</strong>'
+							); ?>
+						<br/>
+						<?php
+						echo sprintf(
+							__( 'Ask IfthenPay to activate it on your account and then %sconfigure it here%s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=payshop_ifthen_for_woocommerce">',
+							'</a></strong>'
+						); ?>
+					</p>
+				</div>
+				<script type="text/javascript">
+				(function () {
+					notice    = jQuery( '#payshop_ifthen_newmethod_notice');
+					dismissed = localStorage.getItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss' );
+					if ( !dismissed ) {
+						jQuery(notice).show();
+						jQuery( notice ).on( 'click', 'button.notice-dismiss', function() {
+							localStorage.setItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss', 1 );
+						});
+					}
+				}());
+				</script>
+				<?php
 			}
 		}
 
