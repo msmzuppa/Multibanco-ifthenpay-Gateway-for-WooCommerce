@@ -431,7 +431,7 @@ final class WC_IfthenPay_Webdados {
 						echo '<p><img src="'.plugins_url( 'images/banner_mbway.png', __FILE__ ).'" style="display: block; margin: auto; max-width: 100%; height: auto;" alt="MB WAY" title="MB WAY"/></p>';
 						if ( $order->mb_has_status( 'on-hold' ) || $order->mb_has_status( 'pending' ) ) {
 							if ( trim( $order_mbway_details['exp'] ) != '' ) {
-								echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->mbway_format_expiration( $order_mb_details['exp'], $order->mb_get_id() ).'</p>';
+								echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->mbway_format_expiration( $order_mbway_details['exp'], $order->mb_get_id() ).'</p>';
 							}
 							$show_debug = true;
 							if ( $this->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
