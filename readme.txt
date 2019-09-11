@@ -170,8 +170,11 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 4.0.0 =
+= 4.0.1 =
 * **You can safely update this plugin even if you’re running WooCommece all the way back to version 2.2**
+* Fix small bug on Payshop that allowed the anti-phishing key to be changed
+
+= 4.0.0 =
 * Payshop support (WooCommerce >= 3.0)
 * Plugin name change
 * Enforce payment gateways minimum and maximum default values
