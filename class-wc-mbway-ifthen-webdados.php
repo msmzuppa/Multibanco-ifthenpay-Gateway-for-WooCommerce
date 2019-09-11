@@ -518,7 +518,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							<input type="hidden" id="mbway-order-id" value="<?php echo intval( $order_id ); ?>"/>
 							<input type="hidden" id="mbway-order-key" value="<?php echo esc_attr( $order->mb_get_order_key() ); ?>"/>
 							<?php
-							wp_enqueue_script( 'mbway-ifthenpay', plugins_url( 'js/mbway.js', __FILE__ ) , array( 'jquery' ), WP_DEBUG ? rand(0,99999) : $this->version, true );
+							wp_enqueue_script( 'mbway-ifthenpay', plugins_url( 'assets/mbway.js', __FILE__ ) , array( 'jquery' ), WP_DEBUG ? rand(0,99999) : $this->version, true );
 							wp_localize_script( 'mbway-ifthenpay', 'mbway_ifthenpay', array(
 								'interval' => apply_filters( 'mbway_ifthen_check_order_status_thankyou_interval', 10 ),
 								'mbway_minutes' => WC_IfthenPay_Webdados()->mbway_minutes,
