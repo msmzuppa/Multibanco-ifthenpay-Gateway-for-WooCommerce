@@ -498,11 +498,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 					if ( date_i18n( 'Y-m-d H:i:s', strtotime( '-'.intval( WC_IfthenPay_Webdados()->mbway_minutes * WC_IfthenPay_Webdados()->mbway_multiplier_new_payment * 60 ).' SECONDS', current_time( 'timestamp' ) ) ) > $order->mb_get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_time' ) ) {
 						//Expired
 						$expired = true;
-						echo $this->thankyou_instructions_table_html_expired( $order_id, round( $order->mb_get_total(), 2 ) ); //Missing MB WAY email or phone number?
+						echo $this->thankyou_instructions_table_html_expired( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
 					} else {
 						//Not expired
 						$expired = false;
-						echo $this->thankyou_instructions_table_html( $order_id, round( $order->mb_get_total(), 2 ) ); //Missing MB WAY email or phone number?
+						echo $this->thankyou_instructions_table_html( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
 					}
 					//Another payment option
 					if ( $expired || apply_filters( 'mbway_ifthen_enable_pay_another_method_thankyou', true, $order_id ) ) {
@@ -722,7 +722,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 								//WooCommerce deposits - No instructions
 							} else {
 								if ( apply_filters( 'mbway_ifthen_email_instructions_pending_send', true, $order_id ) ) {
-									echo $this->email_instructions_table_html( $order_id, round( $order->mb_get_total(), 2 ) ); //Missing MB WAY email or phone number?
+									echo $this->email_instructions_table_html( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
 								}
 							}
 						} else {
@@ -828,7 +828,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 					'MbWayKey'   => $mbwaykey,
 					'canal'      => '03', //Online
 					'referencia' => (string) $order_id,
-					'valor'      => (string) round( floatval( $order->mb_get_total() ), 2 ),
+					'valor'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
 					'nrtlm'      => $phone,
 					'email'      => '', //Não usamos
 					'descricao'  => $this->webservice_filter_descricao( apply_filters( 'mbway_ifthen_webservice_desc', $desc, $order_id ) ),
@@ -850,7 +850,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							if ( trim( $xmlData->IdPedido ) != '' && floatval( $xmlData->Valor ) > 0 ) {
 								$id_pedido = trim( $xmlData->IdPedido );
 								$valor = floatval( $xmlData->Valor );
-								if ( $valor == round( floatval( $order->mb_get_total() ), 2 ) ) {
+								if ( $valor == round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ) ) {
 									WC_IfthenPay_Webdados()->multibanco_set_order_mbway_details( $order_id, array(
 										'mbwaykey'  => $mbwaykey,
 										'id_pedido' => $id_pedido,
@@ -1134,7 +1134,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 						}
 						if ( $orders_exist ) {
 							if ( $orders_count == 1 ) {
-								if ( floatval( $val ) == floatval( $order->mb_get_total() ) ) {
+								if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 
 									if ( version_compare( WC_VERSION, '2.6', '<' ) ) {
 										//We must first change the order status to "pending" and then to "processing" or no email will be sent to the client

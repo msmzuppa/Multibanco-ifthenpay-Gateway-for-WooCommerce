@@ -173,9 +173,8 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 = 4.0.3 =
 * **You can safely update this plugin even if you’re running WooCommece all the way back to version 2.2**
 * Deactivate the payment methods if the required settings are not filled in
-
-= 4.0.2.1 =
 * Fix bug when showing the MB WAY expiration date on the order admin page
+* Fix bug on the Payshop intructions on the thank you page when the reference has no expiration date
 * readme.txt adjustments
 
 = 4.0.2 =

@@ -1068,8 +1068,6 @@ final class WC_IfthenPay_Webdados {
 								||
 								( floatval( $order_total_to_pay ) != floatval( $order_mb_details['val'] ) )
 							) {
-echo '<h1>CHANGED</h1>';
-/*
 								//WPML?
 								if ( $this->wpml_active ) {
 									$this->woocommerce_new_customer_note_fix_wpml_do_it( $order_id );
@@ -1135,7 +1133,6 @@ wc_price( $order_total_to_pay )
 									</script>
 									<?php
 								}
-*/
 							}
 						}
 					}
