@@ -175,6 +175,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Deactivate the payment methods if the required settings are not filled in
 * Fix bug when showing the MB WAY expiration date on the order admin page
 * Fix bug on the Payshop intructions on the thank you page when the reference has no expiration date
+* Correctly disable payment gateways if value is not on the allowed interval when payment inside the My account page
 * readme.txt adjustments
 
 = 4.0.2 =
