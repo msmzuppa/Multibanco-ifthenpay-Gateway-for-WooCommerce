@@ -41,7 +41,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 			$this->method_title = __( 'Pagamento na rede de agentes Payshop (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			$this->method_description = __( 'Easy and simple payment on the “Payshop” agents network, CTT stores or post offices. (Payment service provided by IfthenPay.)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 //			if ( $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
-//				$this->supports = array( 'products', 'subscriptions', 'subscription_suspension', 'subscription_reactivation', 'subscription_date_changes' ); //products is by default
+//				$this->supports = array( 'products', 'subscriptions', 'subscription_suspension', 'subscription_reactivation', 'subscription_date_changes', 'subscription_payment_method_change_admin' ); //products is by default
 //			}
 			$this->secret_key = $this->get_option( 'secret_key' );
 			if ( trim( $this->secret_key )=='' ) {
@@ -508,7 +508,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 		}
 		public function get_icon() {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id.'_title', $this->title ) : $this->title );
-			$icon_html = ( $this->get_option( 'small_icon' ) == 'yes' ? '<img src="'.esc_attr( $this->get_icon_url() ).'" alt="'.esc_attr( $alt ).'" width="18" height="48"/>' : '<img src="'.esc_attr( $this->get_icon_url() ).'" alt="'.esc_attr( $alt ).'" width="91" height="24"/>' );
+			$icon_html = ( $this->get_option( 'small_icon' ) == 'yes' ? '<img src="'.esc_attr( $this->get_icon_url() ).'" alt="'.esc_attr( $alt ).'" width="18" height="24"/>' : '<img src="'.esc_attr( $this->get_icon_url() ).'" alt="'.esc_attr( $alt ).'" width="91" height="24"/>' );
 			return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
 		}
 

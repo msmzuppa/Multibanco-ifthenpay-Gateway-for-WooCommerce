@@ -43,7 +43,14 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			$this->method_title = __( 'Pagamento MB WAY no telemóvel (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			$this->method_description = __( 'Easy and simple payment using “MB WAY” on your mobile phone. (Only available for customers of Portuguese banks with MB WAY app installed. Payment service provided by IfthenPay.)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			if ( $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
-				$this->supports = array( 'products', 'subscriptions', 'subscription_suspension', 'subscription_reactivation', 'subscription_date_changes' ); //products is by default
+				$this->supports = array(
+					'products',
+					'subscriptions',
+					'subscription_suspension',
+					'subscription_reactivation',
+					'subscription_date_changes',
+					'subscription_payment_method_change_admin'
+				); //products is by default
 			}
 			$this->secret_key = $this->get_option( 'secret_key' );
 			if ( trim( $this->secret_key )=='' ) {
@@ -1122,12 +1129,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 									$order = new WC_Order_MB_Ifthen( $order->get_id() );
 								}
 							} else {
-								$err = 'Error: No orders found awaiting payment with these details - We are going to try by reference only';
+								$err = 'Error: No orders found awaiting payment with these details - We are going to try by reference (order id) only';
 								$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No orders found awaiting payment with these details - We are going to try by reference only (if, immediately after, you get the “MB WAY payment received” log entry, you can ignore this error)' );
 								//Maybe the webservice timed-out and we are getting the payment anyway?
 								try {
 									$order = new WC_Order_MB_Ifthen( intval( $referencia ) );
-									if ( in_array( $order->get_status(), array( 'on-hold', 'pending', 'partially-paid' ) ) ) {
+									//Maybe we should check for failed?
+									if ( in_array( $order->get_status(), apply_filters( 'mbway_ifthen_valid_callback_pending_status', array( 'on-hold', 'pending', 'partially-paid' ) ) ) ) {
 										$orders_exist = true;
 										$orders_count = 1;
 									}

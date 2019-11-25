@@ -4,8 +4,8 @@ Tags: woocommerce, multibanco, mbway, payshop, payment, pagamentos, gateway, mb 
 Author URI: https://www.webdados.pt
 Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
 Requires at least: 3.8
-Tested up to: 5.2.5
-Stable tag: 4.0.6
+Tested up to: 5.3.1
+Stable tag: 4.0.7
 
 This plugin allows customers with a Portuguese bank account to pay WooCommerce orders using Multibanco (Pag. Serviços), MB WAY and Payshop through IfthenPay’s payment gateway.
 
@@ -169,6 +169,11 @@ IfthenPay’s privacy policy can be found at [https://ifthenpay.com/termos-polit
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
+= 4.0.7 =
+* Fix Payshop small icon size
+* Small fix on MB WAY WooCommerce Subscriptions support
+* Tested with WordPress 5.3.1-alpha-46771
 
 = 4.0.6 =
 * Tested with WordPress 5.2.5-alpha and WooCommerce 3.8.0
