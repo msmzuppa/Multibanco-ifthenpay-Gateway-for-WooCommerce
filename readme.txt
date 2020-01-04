@@ -185,7 +185,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Requires WordPress 4.0 or above
 * Requires WooCommerce 2.4 or above
 * Requires PHP 5.5 or above
-* **For WordPress 3.8 and WooCommerce 2.2 support you need to use [https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.0.8.zip](version 4.0.8)**
+* **For WordPress 3.8 and WooCommerce 2.2 support you need to use [version 4.0.8](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.0.8.zip)**
 * Use SVG icons and banners (except on emails where we still use PNG because SVG is not fully supported)
 * Deprecate big icons on the checkout
 * Tested with WordPress 5.3.3-alpha-46995 and WooCommerce 3.9.0-rc.2
