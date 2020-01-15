@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WC_IfthenPay_Webdados {
 	
 	/* Version */
-	public $version = '4.1.1.1';
+	public $version = '4.1.1.2';
 
 	/* IDs */
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
@@ -1664,8 +1664,6 @@ wc_price( $order_total_to_pay )
 			<a href="https://wordpress.org/support/view/plugin-reviews/multibanco-ifthen-software-gateway-for-woocommerce?filter=5#postform" target="_blank" style="text-align: center;">
 				<div class="star-rating"><div class="star star-full"></div><div class="star star-full"></div><div class="star star-full"></div><div class="star star-full"></div><div class="star star-full"></div></div>
 			</a>
-			<hr/>
-			<iframe src="https://www.webdados.pt/multibancoiframe" scrolling="no"></iframe>
 			<div class="clear"></div>
 		</div>
 		<?php
