@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WC_IfthenPay_Webdados {
 	
 	/* Version */
-	public $version = '4.1.2';
+	public $version = '4.1.3';
 
 	/* IDs */
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
@@ -1078,13 +1078,29 @@ final class WC_IfthenPay_Webdados {
 		return $order_total_to_pay;
 	}
 
+	/* Check if order type is valid for payments */
+	public function is_valid_order_type( $order_object ) {
+		if ( in_array(
+			get_class( $order_object ),
+			apply_filters( 'multibanco_ifthen_valid_order_classes',
+				array( 'WC_Order' )
+			)
+		) ) return true;
+		return false;
+	}
+
 	/* Change Ref if order total is changed on wp-admin */
 	public function multibanco_maybe_value_changed( $order ) {
 
 		if ( is_admin() ) {
+			
+			//We only do it for regular orders, not subscriptions or other special types of orders
+			if ( ! $this->is_valid_order_type( $order ) ) return;
+
 			$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
 			//Our order object
 			$order = new WC_Order_MB_Ifthen( $order_id );
+
 
 			switch( $order->mb_get_payment_method() ) {
 
