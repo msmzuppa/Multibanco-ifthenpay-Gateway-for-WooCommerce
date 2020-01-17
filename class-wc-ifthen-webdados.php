@@ -1101,7 +1101,6 @@ final class WC_IfthenPay_Webdados {
 			//Our order object
 			$order = new WC_Order_MB_Ifthen( $order_id );
 
-
 			switch( $order->mb_get_payment_method() ) {
 
 				//Multibanco
