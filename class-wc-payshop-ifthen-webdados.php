@@ -361,7 +361,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 		
 		}
 		public function admin_options() {
-			$title = esc_html( version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_title() : $this->method_title );
+			$title = esc_html( $this->get_method_title() );
 			?>
 			<div id="wc_ifthen">
 				<?php if ( ! apply_filters( 'multibanco_ifthen_hide_settings_right_bar', false ) ) WC_IfthenPay_Webdados()->admin_right_bar(); ?>
@@ -369,7 +369,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 					<h2>
 						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner ); ?>" alt="<?php echo esc_attr( $title ); ?>" width="182" height="48"/>
 						<br/>
-						<?php echo esc_html( version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_title() : $this->method_title ); ?>
+						<?php echo $title; ?>
 						<small>v.<?php echo $this->version; ?></small>
 						<?php if ( function_exists('wc_back_link') ) echo wc_back_link( __( 'Return to payments', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ); ?>
 					</h2>
@@ -1169,7 +1169,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 			) {
 				?>
 				<div id="payshop_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
-					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px;"/>
+					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 182px;"/>
 					<p>
 						<?php
 							echo sprintf(

@@ -73,17 +73,17 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			$this->init_settings();
 	
 			//User settings
-			$this->title = $this->get_option( 'title' );
-			$this->description = $this->get_option( 'description' );
+			$this->title              = $this->get_option( 'title' );
+			$this->description        = $this->get_option( 'description' );
 			$this->extra_instructions = $this->get_option( 'extra_instructions' );
-			$this->ent = $this->get_option( 'ent' );
-			$this->subent = $this->get_option( 'subent' );
-			$this->settings_saved = $this->get_option( 'settings_saved' );
-			$this->send_to_admin = ( $this->get_option( 'send_to_admin' )=='yes' ? true : false );
-			$this->only_portugal = ( $this->get_option( 'only_portugal' )=='yes' ? true : false );
-			$this->only_above = $this->get_option( 'only_above' );
-			$this->only_bellow = $this->get_option( 'only_bellow' );
-			$this->stock_when = $this->get_option( 'stock_when' );
+			$this->ent                = $this->get_option( 'ent' );
+			$this->subent             = $this->get_option( 'subent' );
+			$this->settings_saved     = $this->get_option( 'settings_saved' );
+			$this->send_to_admin      = ( $this->get_option( 'send_to_admin' )=='yes' ? true : false );
+			$this->only_portugal      = ( $this->get_option( 'only_portugal' )=='yes' ? true : false );
+			$this->only_above         = $this->get_option( 'only_above' );
+			$this->only_bellow        = $this->get_option( 'only_bellow' );
+			$this->stock_when         = $this->get_option( 'stock_when' );
 	 	
 			// Actions and filters
 			if ( self::$instances == 1 ) { //Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
@@ -276,7 +276,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 									'type' => 'textarea',
 									'description' => __( 'This controls the description which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 													.( WC_IfthenPay_Webdados()->wpml_active ? ' '.__( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ), 
-									'default' => version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_description() : $this->method_description
+									'default' => $this->get_method_description()
 								),
 					'small_icon' => array(
 									'title' => __( 'Use small icon?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
@@ -329,7 +329,19 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 										'order'	=> __( 'when order is placed (before payment, WooCommerce default)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 										''		=> __( 'when order is paid (requires active callback)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									),
-								),
+								)
+				) );
+				if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) {
+					$this->form_fields = array_merge( $this->form_fields, array(
+						'cancel_expired' => array(
+							'title'   => __( 'Cancel unpaid orders after expire?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+							'type'    => 'checkbox', 
+							'label'   => __( 'Automatically cancel unpaid orders after the Multibanco reference expires', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' '.__( '(experimental)', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+							'default' => 'no'
+						),
+					) );
+				}
+				$this->form_fields = array_merge( $this->form_fields, array(
 					'resend_new_order_when_paid' => array(
 									'title' => __( 'Notify store owner of payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'checkbox', 
@@ -401,7 +413,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 		
 		}
 		public function admin_options() {
-			$title = esc_html( version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_title() : $this->method_title );
+			$title = esc_html( $this->get_method_title() );
 			?>
 			<div id="wc_ifthen">
 				<?php if ( ! apply_filters( 'multibanco_ifthen_hide_settings_right_bar', false ) ) WC_IfthenPay_Webdados()->admin_right_bar(); ?>
@@ -413,7 +425,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						<small>v.<?php echo $this->version; ?></small>
 						<?php if ( function_exists('wc_back_link') ) echo wc_back_link( __( 'Return to payments', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ); ?>
 					</h2>
-					<?php echo wp_kses_post( wpautop( version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_description() : $this->method_description ) ); ?>
+					<?php echo wp_kses_post( wpautop( $this->get_method_description() ) ); ?>
 					<p><strong><?php _e( 'In order to use this plugin you <u>must</u>:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 					<ul class="wc_ifthen_list">
 						<li><?php printf( __( 'Set WooCommerce currency to <strong>Euros (&euro;)</strong> %1$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<a href="admin.php?page=wc-settings&amp;tab=general">&gt;&gt;</a>.' ); ?></li>
@@ -509,7 +521,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						?>
 						<table class="form-table">
 							<?php if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) { ?>
-								<tr valign="top">
+								<tr valign="top" id="wc_ifthen_mb_mode">
 									<th>
 										<label><?php _e( 'Mode', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></label>
 									</th>
@@ -1079,13 +1091,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							$value_ok = ( $val == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) );
 							if ( $value_ok ) {
 								
-								if ( version_compare( WC_VERSION, '2.6', '<' ) ) {
-									//We must first change the order status to "pending" and then to "processing" or no email will be sent to the client (and store owner)
-									include_once( ABSPATH.'wp-admin/includes/plugin.php' );
-									if ( !is_plugin_active( 'order-status-emails-for-woocommerce/order-status-emails-for-woocommerce.php' ) ) //Only if this plugin is not active
-										if ( $order->mb_get_status() != 'pending' ) $order->update_status( 'pending', __( 'Temporary status. Used to force an email on the next order status change.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-								}
-								
 								$note=__( 'Multibanco payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 								if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] )!='' ) {
 									$note.=' '.trim( $_GET['datahorapag'] );
@@ -1110,11 +1115,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 								}
 								$this->payment_complete( $order, '', $note );
 								//Force resending "New Order" email to the store owner (before 3.4.2 we had a "bug" that made this email duplicate - and people are used to it)
-								if ( version_compare( WC_VERSION, '2.6', '>=' ) ) {
-									if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->mb_get_id() ) ) { //Only if we set it on hold in the first place
-										if ( $this->get_option( 'resend_new_order_when_paid' ) == 'yes' ) { //And the option is activated
-											WC()->mailer()->emails['WC_Email_New_Order']->trigger( $order->mb_get_id(), $order );
-										}
+								if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->mb_get_id() ) ) { //Only if we set it on hold in the first place
+									if ( $this->get_option( 'resend_new_order_when_paid' ) == 'yes' ) { //And the option is activated
+										WC()->mailer()->emails['WC_Email_New_Order']->trigger( $order->mb_get_id(), $order );
 									}
 								}
 								do_action( 'multibanco_ifthen_callback_payment_complete', $order->mb_get_id() );

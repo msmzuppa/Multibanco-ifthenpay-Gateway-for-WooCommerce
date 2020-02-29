@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WC_IfthenPay_Webdados {
 	
 	/* Version */
-	public $version = '4.1.3';
+	public $version = '4.2.0';
 
 	/* IDs */
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
@@ -131,7 +131,6 @@ final class WC_IfthenPay_Webdados {
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'multibanco_shop_order_search' ) );
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'payshop_shop_order_search' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'multibanco_woocommerce_checkout_update_order_meta' ) ); 	//Frontend
-		add_action( 'plugins_loaded', array( $this, 'multibanco_woocommerce_process_shop_order_meta_backend' ) );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', array( $this, 'multibanco_woocommerce_order_data_store_cpt_get_orders_query' ), 10, 2 );
 		add_action( 'woocommerce_cancel_unpaid_orders', array( $this, 'multibanco_woocommerce_cancel_unpaid_orders' ), 99 );
 		add_filter( 'apg_sms_message', array( $this, 'multibanco_apg_sms_message' ), 10, 2 );
@@ -148,10 +147,21 @@ final class WC_IfthenPay_Webdados {
 		add_action( 'wp_ajax_wc_mbway_ifthen_order_status', array( $this, 'mbway_ajax_order_status' ) );
 		// Request MB WAY payment again
 		add_action( 'wp_ajax_mbway_ifthen_request_payment_again', array( $this, 'wp_ajax_mbway_ifthen_request_payment_again' ) );
-		//Order value changed?
+		// Order value changed?
 		add_action( 'woocommerce_order_item_add_action_buttons', array( $this, 'multibanco_maybe_value_changed' ) );
-		//Admin notices to warn about old technology
+		// Admin notices to warn about old technology
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		// Our crons - Only if WooCommerce >= 3
+		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
+			// Create cron
+			if( ! wp_next_scheduled ( 'wc_ifthen_hourly_cron' ) ) {
+				wp_schedule_event( time(), 'hourly', 'wc_ifthen_hourly_cron' );
+			}
+			// Cancel orders with expired references - Multibanco
+			if ( $this->get_multibanco_ref_mode() == 'incremental_expire' && $this->multibanco_settings['cancel_expired'] == 'yes' ) {
+				add_action( 'wc_ifthen_hourly_cron', array( $this, 'multibanco_cancel_expired_orders' ) );
+			}
+		}
 	}
 
 	/* Set images */
@@ -1044,12 +1054,6 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/* Force Reference creation on New Order (not the British Synthpop band) */
-	public function multibanco_woocommerce_process_shop_order_meta_backend() {
-		//Workaround for https://wordpress.org/support/topic/referencia-nao-criada-em-encomendas-feitas-manualmente/
-		//Backend - This should not be needed when this commit is applied to production https://github.com/woothemes/woocommerce/commit/7dadae7bc80a842e10e78a972334937ed5c4416a
-		if ( version_compare( WC_VERSION, '2.6', '<' ) )
-			add_action( 'woocommerce_process_shop_order_meta', array( $this, 'multibanco_woocommerce_checkout_update_order_meta' ), 999 );
-	}
 	public function multibanco_woocommerce_checkout_update_order_meta( $order_id ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		//Avoid duplicate instructions on the email...
@@ -1294,6 +1298,14 @@ wc_price( $order_total_to_pay )
 				'value' => esc_attr( $query_vars['_'.$this->multibanco_id.'_ref'] ),
 			);
 		}
+		//Multibanco - Already expired
+		if ( ! empty( $query_vars['_'.$this->multibanco_id.'_expired'] ) ) {
+			$query['meta_query'][] = array(
+				'key'     => '_'.$this->multibanco_id.'_exp',
+				'value'   => esc_attr( $query_vars['_'.$this->multibanco_id.'_expired'] ),
+				'compare' => '<',
+			);
+		}
 		//MB WAY - Key
 		if ( ! empty( $query_vars['_'.$this->mbway_id.'_mbwaykey'] ) ) {
 			$query['meta_query'][] = array(
@@ -1385,6 +1397,7 @@ wc_price( $order_total_to_pay )
 		if ( apply_filters( 'mbway_ifthen_cancel_unpaid_orders', false ) ) {
 			$methods[] = $this->mbway_id;
 		}
+		var_dump($methods);
 		if ( count( $methods ) > 0 ) {
 			if ( version_compare( WC_VERSION, '3.0', '<' ) ) return;
 			$held_duration = get_option( 'woocommerce_hold_stock_minutes' );
@@ -1425,6 +1438,27 @@ wc_price( $order_total_to_pay )
 							do_action( $action, $unpaid_order->get_id() );
 						}
 					}
+				}
+			}
+		}
+	}
+
+	/* Multibanco cancel expired orders if incremental_expire mode is active */
+	public function multibanco_cancel_expired_orders() {
+		// We are not doing this on the gateway itself because the cron doesn't always load the gateways
+		if ( $this->get_multibanco_ref_mode() == 'incremental_expire' && $this->multibanco_settings['cancel_expired'] == 'yes' ) {
+
+			$expired_orders = wc_get_orders( array( // https://github.com/woocommerce/woocommerce/wiki/wc_get_orders-and-WC_Order_Query
+				'status'                            => array( 'on-hold', 'pending' ),
+				'type'                              => array( 'shop_order' ),
+				'limit'                             => -1,
+				'payment_method'                    => $this->multibanco_id,
+				'_'.$this->multibanco_id.'_expired' => date_i18n( 'Y-m-d H:i:s' )
+			) );
+			if ( $expired_orders ) {
+				foreach ( $expired_orders as $expired_order ) {
+					$expired_order->update_status( 'cancelled', __( 'Unpaid order cancelled - Multibanco reference expired.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					//The stocks are automatically restored by wc_maybe_increase_stock_levels via the 'woocommerce_order_status_cancelled' action
 				}
 			}
 		}

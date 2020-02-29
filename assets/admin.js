@@ -47,7 +47,11 @@
 		if ( hide_extra_fields ) {
 			switch( ifthenpay.gateway ) {
 				case 'multibanco':
-					$( '#wc_ifthen_settings table.form-table tr:nth-child(n+4)' ).hide();
+					var number_fields = 4;
+					if ( $( '#wc_ifthen_mb_mode' ).length ) {
+						number_fields++;
+					}
+					$( '#wc_ifthen_settings table.form-table tr:nth-child(n+'+number_fields+')' ).hide();
 					$( '#wc_ifthen_settings .mb_hide_extra_fields' ).hide();
 					break;
 				case 'mbway':

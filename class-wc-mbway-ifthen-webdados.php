@@ -223,7 +223,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									'type' => 'textarea',
 									'description' => __( 'This controls the description which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 													.( WC_IfthenPay_Webdados()->wpml_active ? ' '.__( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ), 
-									'default' => version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_description() : $this->method_description
+									'default' => $this->get_method_description()
 								),
 					'small_icon' => array(
 									'title' => __( 'Use small icon?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
@@ -343,7 +343,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 		
 		}
 		public function admin_options() {
-			$title = esc_html( version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_title() : $this->method_title );
+			$title = esc_html( $this->get_method_title() );
 			?>
 			<div id="wc_ifthen">
 				<?php if ( ! apply_filters( 'multibanco_ifthen_hide_settings_right_bar', false ) ) WC_IfthenPay_Webdados()->admin_right_bar(); ?>
@@ -351,11 +351,11 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 					<h2>
 						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->mbway_banner ); ?>" alt="<?php echo esc_attr( $title ); ?>" width="114" height="48"/>
 						<br/>
-						<?php echo esc_html( version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_title() : $this->method_title ); ?>
+						<?php echo $title; ?>
 						<small>v.<?php echo $this->version; ?></small>
 						<?php if ( function_exists('wc_back_link') ) echo wc_back_link( __( 'Return to payments', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ); ?>
 					</h2>
-					<?php echo wp_kses_post( wpautop( version_compare( WC_VERSION, '2.6', '>=' ) ? $this->get_method_description() : $this->method_description ) ); ?>
+					<?php echo wp_kses_post( wpautop( $this->get_method_description() ) ); ?>
 					<p><strong><?php _e( 'In order to use this plugin you <u>must</u>:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 					<ul class="wc_ifthen_list">
 						<li><?php printf( __( 'Set WooCommerce currency to <strong>Euros (&euro;)</strong> %1$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<a href="admin.php?page=wc-settings&amp;tab=general">&gt;&gt;</a>.' ); ?></li>
@@ -1156,13 +1156,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 						if ( $orders_exist ) {
 							if ( $orders_count == 1 ) {
 								if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
-
-									if ( version_compare( WC_VERSION, '2.6', '<' ) ) {
-										//We must first change the order status to "pending" and then to "processing" or no email will be sent to the client
-										include_once( ABSPATH.'wp-admin/includes/plugin.php' );
-										if ( !is_plugin_active( 'order-status-emails-for-woocommerce/order-status-emails-for-woocommerce.php' ) ) //Only if this plugin is not active
-											if ( $order->mb_get_status() != 'pending' ) $order->update_status( 'pending', __( 'Temporary status. Used to force an email on the next order status change.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-									}
 									
 									/*if ( $this->stock_when=='' || $this->order_initial_status_pending ) $order->mb_reduce_order_stock();
 									$order->update_status( 'processing', __( 'MB WAY payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); //Paid */
@@ -1281,7 +1274,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 			) {
 				?>
 				<div id="mbway_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
-					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->mbway_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px;"/>
+					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->mbway_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 114px;"/>
 					<p>
 						<?php
 							echo sprintf(
