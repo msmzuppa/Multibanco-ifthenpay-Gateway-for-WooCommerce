@@ -1056,9 +1056,15 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 
 						if ( $orders_exist ) {
 							if ( $orders_count == 1 ) {
-								if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
-									/*if ( $this->stock_when=='' || $this->order_initial_status_pending ) $order->mb_reduce_order_stock();
-									$order->update_status( 'processing', __( 'Payshop payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); //Paid */
+								if (
+									floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) )
+									// TEMPORARY - https://github.com/woocommerce/woocommerce/issues/26582
+									||
+									version_compare( WC_VERSION, '4.2.0', '=' )
+								) {
+									if ( version_compare( WC_VERSION, '4.2.0', '=' ) && floatval( $val ) != floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
+										$this->debug_log( '-- Payshop payment received but value does not match - Order '.$order->mb_get_id().' - Callbak value '.floatval( $val ).' - Order value '.floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 'warning' );
+									}
 									$note=__( 'Payshop payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 									if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] )!='' ) {
 										$note.=' '.trim( $_GET['datahorapag'] );
