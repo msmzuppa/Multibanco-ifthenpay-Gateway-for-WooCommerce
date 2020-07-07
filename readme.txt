@@ -176,6 +176,10 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= 4.4.0 =
+* New `ifthen_unpaid_statuses` filter to allow developers to set additional valid "unpaid" statuses for Multibanco, MBWAY and Payshop orders, besides the default ones ("on-hold", "pending" and "partially-paid"). The statuses are used for callback validation, SMS message template, show order as unpaid on the backoffice, show "Pay" button on My Account orders list, issue new references if order value changes on the backoffice, reduce order stock rules, thank you page and email payment instructions.
+* 
+
 = 4.3.0 =
 * You can safely update this plugin if you’re running WooCommece 2.6.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.0 (which was launched in April 2017)**
 * New instant callback activation method via webservice instead of email

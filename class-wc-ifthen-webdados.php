@@ -29,6 +29,7 @@ final class WC_IfthenPay_Webdados {
 	public $is_pay_form         = false;
 	public $callback_email      = 'callback@ifthenpay.com';
 	public $callback_webservice = 'https://www.ifthenpay.com/api/endpoint/callback/activation';
+	public $unpaid_statuses     = array( 'on-hold', 'pending', 'partially-paid' );
 
 	/* Internal variables - For Multibanco */
 	public $multibanco_settings            = null;
@@ -168,6 +169,10 @@ final class WC_IfthenPay_Webdados {
 		add_action( 'woocommerce_before_pay_action', function() {
 			$this->is_pay_form = true;
 		} );
+		//Init unpaid statuses
+		add_action( 'init', function() {
+			$this->unpaid_statuses = apply_filters( 'ifthen_unpaid_statuses', $this->unpaid_statuses );
+		} );
 	}
 
 	/* Set images */
@@ -176,20 +181,20 @@ final class WC_IfthenPay_Webdados {
 		$this->multibanco_banner       = plugins_url( 'images/multibanco_banner.svg', __FILE__ );
 		$this->multibanco_icon         = plugins_url( 'images/multibanco_icon.svg', __FILE__ );
 
-		$this->mbway_banner_email = plugins_url( 'images/banner_mbway.png', __FILE__ );
-		$this->mbway_banner       = plugins_url( 'images/mbway_banner.svg', __FILE__ );
-		$this->mbway_icon         = plugins_url( 'images/mbway_icon.svg', __FILE__ );
+		$this->mbway_banner_email      = plugins_url( 'images/banner_mbway.png', __FILE__ );
+		$this->mbway_banner            = plugins_url( 'images/mbway_banner.svg', __FILE__ );
+		$this->mbway_icon              = plugins_url( 'images/mbway_icon.svg', __FILE__ );
 
-		$this->payshop_banner_email = plugins_url( 'images/banner_payshop.png', __FILE__ );
-		$this->payshop_banner       = plugins_url( 'images/payshop_banner.svg', __FILE__ );
-		$this->payshop_icon         = plugins_url( 'images/payshop_icon.svg', __FILE__ );
+		$this->payshop_banner_email    = plugins_url( 'images/banner_payshop.png', __FILE__ );
+		$this->payshop_banner          = plugins_url( 'images/payshop_banner.svg', __FILE__ );
+		$this->payshop_icon            = plugins_url( 'images/payshop_icon.svg', __FILE__ );
 	}
 
 	/* Add settings link to plugin actions */
 	public function add_settings_link( $links ) {
 		$action_links = array(
-			'mb_settings'		=> '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->multibanco_id.'">' . __( 'Multibanco settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>',
-			'mbway_settings'	=> '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->mbway_id.'">' . __( 'MB WAY settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>',
+			'mb_settings'    => '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->multibanco_id.'">' . __( 'Multibanco settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>',
+			'mbway_settings' => '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->mbway_id.'">' . __( 'MB WAY settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>',
 		);
 		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
 			$action_links['payshop_settings'] = '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->payshop_id.'">' . __( 'Payshop settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>';
@@ -438,7 +443,7 @@ final class WC_IfthenPay_Webdados {
 					echo '<p>'.__( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mb_details['ent'] ).'<br/>';
 					echo __( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->format_multibanco_ref( $order_mb_details['ref'] ).'<br/>';
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mb_details['val'] ).'</p>';
-					if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+					if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
 						if ( trim( $order_mb_details['exp'] ) != '' ) {
 							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->multibanco_format_expiration( $order_mb_details['exp'], $order->mb_get_id() ).'</p>';
 						}
@@ -509,7 +514,7 @@ final class WC_IfthenPay_Webdados {
 						echo __( 'Request ID', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mbway_details['id_pedido'] ).'<br/>';
 						echo __( 'Phone', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order->mb_get_meta( '_'.$this->mbway_id.'_phone' ) ).'<br/>';
 						echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mbway_details['val'] ).'</p>';
-						if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+						if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
 							if ( trim( $order_mbway_details['exp'] ) != '' ) {
 								echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->mbway_format_expiration( $order_mbway_details['exp'], $order->mb_get_id() ).'</p>';
 							}
@@ -619,7 +624,7 @@ final class WC_IfthenPay_Webdados {
 					echo '<p><img src="'.esc_url( $this->payshop_banner ).'" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Payshop" title="Payshop"/></p>';
 					echo '<p>'.__( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->format_payshop_ref( $order_mb_details['ref'] ).'<br/>';
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mb_details['val'] ).'</p>';
-					if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+					if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
 						if ( trim( $order_mb_details['exp'] ) != '' ) {
 							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->payshop_format_expiration( $order_mb_details['exp'], $order->mb_get_id() ).'</p>';
 						}
@@ -1162,11 +1167,11 @@ final class WC_IfthenPay_Webdados {
 					if ( $this->version >= '1.7.9.2' ) {
 						//Details already existed - Let's check the order status
 						$order_status = $order->mb_get_status();
-						if ( in_array( $order_status , array( 'on-hold', 'pending', 'partially-paid' ) ) ) {
+						if ( in_array( $order_status, $this->unpaid_statuses ) ) {
 	
 							$order_total_to_pay = $this->get_order_total_to_pay( $order );
 							if (
-								( !$order_mb_details = $this->get_multibanco_order_details( $order_id ) )
+								( ! $order_mb_details = $this->get_multibanco_order_details( $order_id ) )
 								||
 								(
 									floatval( $order_total_to_pay ) != floatval( $order_mb_details['val'] )
@@ -1248,7 +1253,7 @@ wc_price( $order_total_to_pay )
 					case $this->payshop_id:
 						if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
 							$order_status = $order->mb_get_status();
-							if ( in_array( $order_status, array( 'on-hold', 'pending', 'partially-paid' ) ) ) {
+							if ( in_array( $order_status, $this->unpaid_statuses ) ) {
 
 								$order_total_to_pay = $this->get_order_total_to_pay( $order );
 								if (
@@ -1401,7 +1406,7 @@ wc_price( $order_total_to_pay )
 			if ( $order->mb_get_payment_method() == $payment_method ) {
 				if ( version_compare( WC_VERSION, '3.4.0', '>=' ) ) { //https://github.com/woocommerce/woocommerce/commit/70c9cff608761fcd48b57f709059e00b1ffeee38#diff-27a48ce67fa604181c90b4bb464164ac
 					//After 3.4.0
-					if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+					if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
 						//Pending payment
 						if ( $stock_when == 'order' ) {
 							//Yes, because we want to reduce on the order
@@ -1441,6 +1446,7 @@ wc_price( $order_total_to_pay )
 	/* Cancel unpaid orders - See WooCommerce wc_cancel_unpaid_orders() */
 	public function multibanco_woocommerce_cancel_unpaid_orders() {
 		$methods = array();
+		//Falta Payshop?
 		if ( apply_filters( 'multibanco_ifthen_cancel_unpaid_orders', false ) ) {
 			$methods[] = $this->multibanco_id;
 		}
@@ -1454,7 +1460,7 @@ wc_price( $order_total_to_pay )
 			$date_before = '-' . absint( $held_duration ) . ' MINUTES';
 			foreach ( $methods as $method ) {
 				$unpaid_orders = wc_get_orders( array( // https://github.com/woocommerce/woocommerce/wiki/wc_get_orders-and-WC_Order_Query
-					'status'			=> array( 'on-hold', 'pending' ),
+					'status'			=> array( 'on-hold', 'pending' ), //Aqui não usamos os unpaid statuses porque podemos entrar num loop se alguém adicionar o estado cancelada e também porque não faz sentido para parcialmente pagas
 					'type'				=> array( 'shop_order' ),
 					'limit'				=> -1,
 					'date_modified'		=> '<' . strtotime( $date_before ),
@@ -1498,7 +1504,7 @@ wc_price( $order_total_to_pay )
 		if ( $this->get_multibanco_ref_mode() == 'incremental_expire' && $this->multibanco_settings['cancel_expired'] == 'yes' ) {
 
 			$expired_orders = wc_get_orders( array( // https://github.com/woocommerce/woocommerce/wiki/wc_get_orders-and-WC_Order_Query
-				'status'                            => array( 'on-hold', 'pending' ),
+				'status'                            => array( 'on-hold', 'pending' ), //Aqui não usamos os unpaid statuses porque podemos entrar num loop se alguém adicionar o estado cancelada e também porque não faz sentido para parcialmente pagas
 				'type'                              => array( 'shop_order' ),
 				'limit'                             => -1,
 				'payment_method'                    => $this->multibanco_id,
@@ -1518,9 +1524,7 @@ wc_price( $order_total_to_pay )
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
 		if ( $order->mb_get_payment_method() == $this->multibanco_id ) {
-			switch ( $order->mb_get_status() ) {
-			case 'on-hold':
-			case 'pending':
+			if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) {
 				$ref = $this->multibanco_get_ref( $order_id );
 				if ( is_array( $ref) ) {
 					$instructions =  
@@ -1541,13 +1545,8 @@ wc_price( $order_total_to_pay )
 				} else {
 					//error getting ref
 				}
-				break;
-			case 'processing':
+			} else {
 				//No instructions
-				break;
-			default:
-				return;
-				break;
 			}
 		}
 		//Clean
@@ -1567,9 +1566,7 @@ wc_price( $order_total_to_pay )
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
 		if ( $order->mb_get_payment_method() == $this->payshop_id ) {
-			switch ( $order->mb_get_status() ) {
-			case 'on-hold':
-			case 'pending':
+			if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) {
 				$ref = $this->payshop_get_ref( $order_id );
 				if ( is_array( $ref) ) {
 					$instructions = 
@@ -1589,13 +1586,8 @@ wc_price( $order_total_to_pay )
 				} else {
 					//error getting ref
 				}
-				break;
-			case 'processing':
+			} else {
 				//No instructions
-				break;
-			default:
-				return;
-				break;
 			}
 		}
 		//Clean
@@ -1868,23 +1860,32 @@ wc_price( $order_total_to_pay )
 	public function woocommerce_order_needs_payment( $needs_payment, $order ) {
 		$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
 		$order = new WC_Order_MB_Ifthen( intval( $order_id ) );
-		if (
-			in_array(
-				$order->mb_get_payment_method(),
-				array(
-					$this->multibanco_id,
-					$this->mbway_id,
-					$this->payshop_id
-				)
-			)
-			&&
-			in_array(
-				$order->mb_get_status(),
-				array( 'on-hold', 'pending', 'partially-paid' )
-			)
-		) {
-			return true;
+
+		switch( $order->mb_get_payment_method() ) {
+			//Multibanco - Deve ser uma opção do plugin porque há casos em que o dono de loja pode não querer ter o botão de "pagar" no my account
+			case $this->multibanco_id:
+				return in_array(
+					$order->mb_get_status(),
+					$this->unpaid_statuses
+				);
+				break;
+			//MBWAY - Basta estar num dos estados, pois por omissão já é assim por ser "pending"
+			case $this->mbway_id:
+				return in_array(
+					$order->mb_get_status(),
+					$this->unpaid_statuses
+				);
+				break;
+			//Payshop - Deve ser uma opção do plugin porque há casos em que o dono de loja pode não querer ter o botão de "pagar" no my account
+			case $this->payshop_id:
+				return in_array(
+					$order->mb_get_status(),
+					$this->unpaid_statuses
+				);
+				break;
+
 		}
+
 		return $needs_payment;
 	}
 

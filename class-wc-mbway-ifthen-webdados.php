@@ -535,7 +535,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 			}
 			$order = new WC_Order_MB_Ifthen( $order_id );
 			if ( $this->id === $order->mb_get_payment_method() ) {
-				if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+				if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
 					if ( date_i18n( 'Y-m-d H:i:s', strtotime( '-'.intval( WC_IfthenPay_Webdados()->mbway_minutes * WC_IfthenPay_Webdados()->mbway_multiplier_new_payment * 60 ).' SECONDS', current_time( 'timestamp' ) ) ) > $order->mb_get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_time' ) ) {
 						//Expired
 						$expired = true;
@@ -759,7 +759,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						}
 						//On Hold or pending
-						if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+						if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {
@@ -1141,7 +1141,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 								endwhile;
 							}
 						} else {
-							$pending_status = apply_filters( 'mbway_ifthen_valid_callback_pending_status', array( 'on-hold', 'pending', 'partially-paid' ) );
+							$pending_status = apply_filters( 'mbway_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
 							$args = array(
 								'type'                     => array( 'shop_order' ),
 								'status'                   => $pending_status,
@@ -1162,7 +1162,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 								try {
 									$order = new WC_Order_MB_Ifthen( intval( $referencia ) );
 									//Maybe we should check for failed?
-									if ( in_array( $order->get_status(), apply_filters( 'mbway_ifthen_valid_callback_pending_status', array( 'on-hold', 'pending', 'partially-paid' ) ) ) ) {
+									if ( in_array( $order->get_status(), apply_filters( 'mbway_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ) ) ) {
 										$orders_exist = true;
 										$orders_count = 1;
 									}

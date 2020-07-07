@@ -627,7 +627,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 			}
 			$order = new WC_Order_MB_Ifthen( $order_id );
 			if ( $this->id === $order->mb_get_payment_method() ) {
-				if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+				if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
 					$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order_id );
 					if ( is_array( $ref ) ) {
 						echo $this->thankyou_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order_id );
@@ -790,7 +790,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						}
 						//On Hold or pending
-						if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) || $order->has_status( 'partially-paid' ) ) {
+						if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {
@@ -1089,7 +1089,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							endwhile;
 						}
 					} else {
-						$pending_status = apply_filters( 'multibanco_ifthen_valid_callback_pending_status', array( 'on-hold', 'pending', 'partially-paid' ) );
+						$pending_status = apply_filters( 'multibanco_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
 						$args = array(
 							'type'               => array( 'shop_order' ),
 							'status'             => $pending_status,

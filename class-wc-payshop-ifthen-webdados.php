@@ -554,7 +554,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 			}
 			$order = wc_get_order( $order_id );
 			if ( $this->id === $order->get_payment_method() ) {
-				if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+				if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
 					if ( $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) != '' && date_i18n( 'Y-m-d' ) > $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) ) {
 						//Expired
 						$expired = true;
@@ -739,7 +739,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						}
 						//On Hold or pending
-						if ( $order->has_status( 'on-hold' ) || $order->has_status( 'pending' ) ) {
+						if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {
@@ -1051,7 +1051,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 						$orders_exist = false;
 						
 						/* Aguardamos resposta do significado dos parâmetros para sabermos o que temos de guardar e como pesquisar depois */
-						$pending_status = apply_filters( 'payshop_ifthen_valid_callback_pending_status', array( 'on-hold', 'pending', 'partially-paid' ) );
+						$pending_status = apply_filters( 'payshop_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
 						$args = array(
 							'type'                      => array( 'shop_order' ),
 							'status'                    => $pending_status,
