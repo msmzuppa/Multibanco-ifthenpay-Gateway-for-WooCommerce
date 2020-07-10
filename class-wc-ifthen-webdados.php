@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WC_IfthenPay_Webdados {
 	
 	/* Version */
-	public $version = '4.3.0';
+	public $version = '4.3.1';
 
 	/* IDs */
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
@@ -40,39 +40,39 @@ final class WC_IfthenPay_Webdados {
 	public $multibanco_ents_no_repeat = array( //Special entities with no repetition allowed in "x" days, no matter the order status - Only WooCommerce 3.0 and above
 		'11687' => 180,
 	);
-	public $multibanco_action_deposits_set = false;
-	public $multibanco_deposits_already_forced = false;
-	public $multibanco_ref_mode = 'random';
+	public $multibanco_action_deposits_set         = false;
+	public $multibanco_deposits_already_forced     = false;
+	public $multibanco_ref_mode                    = 'random';
 	public $multibanco_last_incremental_expire_ref = null;
-	public $multibanco_min_value = 1;
-	public $multibanco_max_value = 999999;
-	public $multibanco_banner_email = '';
-	public $multibanco_banner = '';
-	public $multibanco_icon = '';
+	public $multibanco_min_value                   = 1;
+	public $multibanco_max_value                   = 999999;
+	public $multibanco_banner_email                = '';
+	public $multibanco_banner                      = '';
+	public $multibanco_icon                        = '';
 
 
 	/* Internal variables - For MB WAY */
-	public $mbway_settings = null;
-	public $mbway_notify_url = '';
-	public $mbway_minutes = 5;
+	public $mbway_settings               = null;
+	public $mbway_notify_url             = '';
+	public $mbway_minutes                = 5;
 	public $mbway_multiplier_new_payment = 1.2;
-	public $mbway_min_value = 1;
-	public $mbway_max_value = 999999;
-	public $mbway_banner_email = '';
-	public $mbway_banner = '';
-	public $mbway_icon = '';
+	public $mbway_min_value              = 1;
+	public $mbway_max_value              = 999999;
+	public $mbway_banner_email           = '';
+	public $mbway_banner                 = '';
+	public $mbway_icon                   = '';
 
 
 	/* Internal variables - For Payshop */
-	public $payshop_settings = null;
-	public $payshop_notify_url = '';
-	public $payshop_action_deposits_set = false;
+	public $payshop_settings                = null;
+	public $payshop_notify_url              = '';
+	public $payshop_action_deposits_set     = false;
 	public $payshop_deposits_already_forced = false;
-	public $payshop_min_value = 1.2;
-	public $payshop_max_value = 4000;
-	public $payshop_banner_email = '';
-	public $payshop_banner = '';
-	public $payshop_icon = '';
+	public $payshop_min_value               = 1.2;
+	public $payshop_max_value               = 4000;
+	public $payshop_banner_email            = '';
+	public $payshop_banner                  = '';
+	public $payshop_icon                    = '';
 
 	/* Internal variables - This is here because on the main class duplication still happens - Fixed by checking class instances */
 	//public $instructions_sent_to_client = false;
@@ -226,6 +226,11 @@ final class WC_IfthenPay_Webdados {
 				$gateway_id.' - '.$message,
 				$email_message
 			);
+		}
+	}
+	public function debug_log_extra( $gateway_id, $message, $level = 'debug', $debug_email = '', $email_message = '' ) {
+		if ( apply_filters( 'ifthen_debug_log_extra', false ) ) {
+			$this->debug_log( $gateway_id, 'EXTRA ('.$_SERVER['REQUEST_URI'].') - '.$message, $level, $debug_email, $email_message );
 		}
 	}
 
@@ -740,6 +745,7 @@ final class WC_IfthenPay_Webdados {
 			//Update order reference expiration
 			$order->mb_update_meta_data( '_'.$this->multibanco_id.'_exp', $this->get_reference_expiration_days( intval( apply_filters( 'multibanco_ifthen_incremental_expire_days', 0 ) ) ) );
 		}
+		$this->debug_log_extra( $this->multibanco_id, 'multibanco_set_order_mb_details - Details updated on the database: '.serialize( $order_mb_details ).' - Order: '.$order_id );
 	}
 
 	/* Clear Multibanco Entity/Reference/Value on meta */
@@ -826,6 +832,7 @@ final class WC_IfthenPay_Webdados {
 	/* Get/Create Multibanco Reference */
 	public function multibanco_get_ref( $order_id, $force_change = false ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
+		$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Force change: '.( $force_change ? 'true' : 'false' ).' - Order '.$order->mb_get_id() );
 		if ( $this->wc_deposits_active ) {
 			if ( ! $this->multibanco_deposits_already_forced ) {
 				if ( $order->mb_get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' && is_checkout() && has_action( 'woocommerce_thankyou' ) ) {
@@ -833,6 +840,7 @@ final class WC_IfthenPay_Webdados {
 						if ( $order->mb_get_meta( '_wc_deposits_second_payment_paid' ) == 'no' ) {
 							$force_change = true;
 							$this->multibanco_deposits_already_forced = true;
+							$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Force change: true, because of WC Deposits - Order '.$order->mb_get_id() );
 						}
 					}
 				}
@@ -845,6 +853,7 @@ final class WC_IfthenPay_Webdados {
 				&&
 				$order_mb_details = $this->get_multibanco_order_details( $order_id )
 			) {
+				$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Got reference from database '.serialize( $order_mb_details ).' - Order '.$order->mb_get_id() );
 				//Already created, return it!
 				return array(
 					'ent' => $order_mb_details['ent'],
@@ -884,12 +893,15 @@ final class WC_IfthenPay_Webdados {
 						) {
 							if ( version_compare( WC_VERSION, '3.0', '>=' ) && isset( $this->multibanco_ents_no_repeat[ $base['ent'] ] ) && intval( $this->multibanco_ents_no_repeat[ $base['ent'] ] ) > 0 ) {
 								//No repeat in x days
+								$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - will create reference (No repeat in x days) - Order '.$order->mb_get_id() );
 								$ref = $this->multibanco_create_ref( $base['ent'], $base['subent'], $this->get_multibanco_ref_seed(), $this->get_order_total_to_pay( $order ), intval( $this->multibanco_ents_no_repeat[ $base['ent'] ] ) );
 							} else {
 								if ( in_array( intval( $base['ent'] ), $this->multibanco_ents_no_check_digit ) && ( $this->multibanco_settings['use_order_id'] =='yes' ) ) {
 									//Special entities with no check digit and (eventually) expiration date - We can use the order ID
+									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Special entities with no check digit and (eventually) expiration date) - Order '.$order->mb_get_id() );
 									$ref = $this->multibanco_create_ref_no_check_digit( $base['ent'], $base['subent'], $order_id, $this->get_order_total_to_pay( $order ) );
 								} else {
+									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Default mode) - Order '.$order->mb_get_id() );
 									$ref = $this->multibanco_create_ref( $base['ent'], $base['subent'], $this->get_multibanco_ref_seed(), $this->get_order_total_to_pay( $order ) ); //For random mode - Less loop possibility
 								}
 							}
@@ -1013,6 +1025,7 @@ final class WC_IfthenPay_Webdados {
 		} else {
 			//No checking - for tests only
 		}
+		$this->debug_log_extra( $this->multibanco_id, 'multibanco_create_ref - Reference generated: '. $ent.' '.$ref.' '.$total );
 		return $ref;
 	}
 	public function multibanco_create_ref_no_check_digit( $ent, $subent, $id, $total ) {
@@ -1074,8 +1087,10 @@ final class WC_IfthenPay_Webdados {
 		//Avoid duplicate instructions on the email...
 		//remove_action( 'woocommerce_email_before_order_table', array( 'WC_Multibanco_IfThen_Webdados', 'email_instructions_1' ), 10, 3 ); //Not needed since v3 fixes
 		if ( $order->mb_get_payment_method() == $this->multibanco_id ) {
+			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Force ref generation before anything - Order '.$order_id );
 			$ref = $this->multibanco_get_ref( $order_id );
 			//That should do it...
+			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Ref: '.serialize( $ref ).' - Order '.$order_id );
 		}
 	}
 
@@ -1630,7 +1645,7 @@ wc_price( $order_total_to_pay )
 		global $sitepress;
 		//Unload
 		unload_textdomain( 'multibanco-ifthen-software-gateway-for-woocommerce' );
-		if ( $lang=='en' ) {
+		if ( $lang == 'en' ) {
 			//English? Just use plugin default strings
 		} else {
 			$this->locale = $sitepress->get_locale( $lang );
