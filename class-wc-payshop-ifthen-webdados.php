@@ -554,7 +554,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 			}
 			$order = wc_get_order( $order_id );
 			if ( $this->id === $order->get_payment_method() ) {
-				if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
+				if ( $order->needs_payment() ) {
 					if ( $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) != '' && date_i18n( 'Y-m-d' ) > $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) ) {
 						//Expired
 						$expired = true;
@@ -739,7 +739,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						}
 						//On Hold or pending
-						if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
+						if ( $order->needs_payment() ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {

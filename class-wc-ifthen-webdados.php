@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WC_IfthenPay_Webdados {
 	
 	/* Version */
-	public $version = '4.3.1';
+	public $version = '4.4.0';
 
 	/* IDs */
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
@@ -128,6 +128,7 @@ final class WC_IfthenPay_Webdados {
 	/* Hooks */
 	private function init_hooks() {
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'woocommerce_add_payment_gateways' ) );
+		add_filter( 'woocommerce_blocks_payment_method_type_registration', array( $this, 'woocommerce_add_payment_gateways_woocommerce_blocks' ) ); // WooCommerce Blocks - https://github.com/woocommerce/woocommerce-gutenberg-products-block/issues/2858
 		add_action( 'add_meta_boxes', array( $this, 'multibanco_order_metabox' ) );
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'multibanco_shop_order_search' ) );
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'payshop_shop_order_search' ) );
@@ -153,7 +154,10 @@ final class WC_IfthenPay_Webdados {
 		// Admin notices to warn about old technology
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		// Order needs payment for all our methods
-		add_action( 'woocommerce_order_needs_payment', array( $this, 'woocommerce_order_needs_payment' ), 10, 2 );
+		add_action( 'init', function() {
+			$this->unpaid_statuses = apply_filters( 'ifthen_unpaid_statuses', $this->unpaid_statuses );
+		} );
+		add_filter( 'woocommerce_valid_order_statuses_for_payment', array( $this, 'woocommerce_valid_order_statuses_for_payment' ), 10, 2 );
 		// Our crons - Only if WooCommerce >= 3
 		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
 			// Create cron
@@ -169,10 +173,8 @@ final class WC_IfthenPay_Webdados {
 		add_action( 'woocommerce_before_pay_action', function() {
 			$this->is_pay_form = true;
 		} );
-		//Init unpaid statuses
-		add_action( 'init', function() {
-			$this->unpaid_statuses = apply_filters( 'ifthen_unpaid_statuses', $this->unpaid_statuses );
-		} );
+		//Remove pay button for Multibanco, MB WAY or Payshop
+		add_filter( 'woocommerce_my_account_my_orders_actions', array( $this, 'woocommerce_my_account_my_orders_actions' ), 10, 2 );
 	}
 
 	/* Set images */
@@ -210,6 +212,13 @@ final class WC_IfthenPay_Webdados {
 			$methods[] = 'WC_Payshop_IfThen_Webdados';
 		}
 		return $methods;
+	}
+
+	/* Add to WooCommerce Blocks */
+	public function woocommerce_add_payment_gateways_woocommerce_blocks( \Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+		require_once( 'woocommerce-blocks/multibanco/MultibancoIfthenPay.php' );
+		$payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\MultibancoIfthenPay;
+  		$payment_method_registry->register( $payment_method_instance );
 	}
 
 	/* Debug / Log */
@@ -448,7 +457,7 @@ final class WC_IfthenPay_Webdados {
 					echo '<p>'.__( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mb_details['ent'] ).'<br/>';
 					echo __( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->format_multibanco_ref( $order_mb_details['ref'] ).'<br/>';
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mb_details['val'] ).'</p>';
-					if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
+					if ( $order->needs_payment() ) {
 						if ( trim( $order_mb_details['exp'] ) != '' ) {
 							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->multibanco_format_expiration( $order_mb_details['exp'], $order->mb_get_id() ).'</p>';
 						}
@@ -519,7 +528,7 @@ final class WC_IfthenPay_Webdados {
 						echo __( 'Request ID', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mbway_details['id_pedido'] ).'<br/>';
 						echo __( 'Phone', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order->mb_get_meta( '_'.$this->mbway_id.'_phone' ) ).'<br/>';
 						echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mbway_details['val'] ).'</p>';
-						if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
+						if ( $order->needs_payment() ) {
 							if ( trim( $order_mbway_details['exp'] ) != '' ) {
 								echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->mbway_format_expiration( $order_mbway_details['exp'], $order->mb_get_id() ).'</p>';
 							}
@@ -629,7 +638,7 @@ final class WC_IfthenPay_Webdados {
 					echo '<p><img src="'.esc_url( $this->payshop_banner ).'" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Payshop" title="Payshop"/></p>';
 					echo '<p>'.__( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->format_payshop_ref( $order_mb_details['ref'] ).'<br/>';
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mb_details['val'] ).'</p>';
-					if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
+					if ( $order->needs_payment() ) {
 						if ( trim( $order_mb_details['exp'] ) != '' ) {
 							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->payshop_format_expiration( $order_mb_details['exp'], $order->mb_get_id() ).'</p>';
 						}
@@ -1152,7 +1161,7 @@ final class WC_IfthenPay_Webdados {
 					if ( $this->version >= '1.7.9.2' ) {
 						//Details already existed - Let's check the order status
 						$order_status = $order->mb_get_status();
-						if ( in_array( $order_status, $this->unpaid_statuses ) ) {
+						if ( $order->needs_payment() ) {
 	
 							$order_total_to_pay = $this->get_order_total_to_pay( $order );
 							if (
@@ -1238,7 +1247,7 @@ wc_price( $order_total_to_pay )
 					case $this->payshop_id:
 						if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
 							$order_status = $order->mb_get_status();
-							if ( in_array( $order_status, $this->unpaid_statuses ) ) {
+							if ( $order->needs_payment() ) {
 
 								$order_total_to_pay = $this->get_order_total_to_pay( $order );
 								if (
@@ -1391,7 +1400,7 @@ wc_price( $order_total_to_pay )
 			if ( $order->mb_get_payment_method() == $payment_method ) {
 				if ( version_compare( WC_VERSION, '3.4.0', '>=' ) ) { //https://github.com/woocommerce/woocommerce/commit/70c9cff608761fcd48b57f709059e00b1ffeee38#diff-27a48ce67fa604181c90b4bb464164ac
 					//After 3.4.0
-					if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) { //$order->has_status( 'on-hold' ) || $order->has_status( 'pending' )
+					if ( $order->needs_payment() ) {
 						//Pending payment
 						if ( $stock_when == 'order' ) {
 							//Yes, because we want to reduce on the order
@@ -1509,7 +1518,7 @@ wc_price( $order_total_to_pay )
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
 		if ( $order->mb_get_payment_method() == $this->multibanco_id ) {
-			if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) {
+			if ( $order->needs_payment() ) {
 				$ref = $this->multibanco_get_ref( $order_id );
 				if ( is_array( $ref) ) {
 					$instructions =  
@@ -1551,7 +1560,7 @@ wc_price( $order_total_to_pay )
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
 		if ( $order->mb_get_payment_method() == $this->payshop_id ) {
-			if ( in_array( $order->mb_get_status(), $this->unpaid_statuses ) ) {
+			if ( $order->needs_payment() ) {
 				$ref = $this->payshop_get_ref( $order_id );
 				if ( is_array( $ref) ) {
 					$instructions = 
@@ -1837,41 +1846,53 @@ wc_price( $order_total_to_pay )
 		wp_die();
 	}
 
+
 	/**
-	* Order needs payment
+	* Order needs payment - valid statuses
 	*
-	* @since 4.2.2
+	* @since 4.4.0
 	*/
-	public function woocommerce_order_needs_payment( $needs_payment, $order ) {
+	public function woocommerce_valid_order_statuses_for_payment( $statuses, $order ) {
+
 		$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
 		$order = new WC_Order_MB_Ifthen( intval( $order_id ) );
 
-		switch( $order->mb_get_payment_method() ) {
-			//Multibanco - Deve ser uma opção do plugin porque há casos em que o dono de loja pode não querer ter o botão de "pagar" no my account
-			case $this->multibanco_id:
-				return in_array(
-					$order->mb_get_status(),
-					$this->unpaid_statuses
-				);
-				break;
-			//MBWAY - Basta estar num dos estados, pois por omissão já é assim por ser "pending"
-			case $this->mbway_id:
-				return in_array(
-					$order->mb_get_status(),
-					$this->unpaid_statuses
-				);
-				break;
-			//Payshop - Deve ser uma opção do plugin porque há casos em que o dono de loja pode não querer ter o botão de "pagar" no my account
-			case $this->payshop_id:
-				return in_array(
-					$order->mb_get_status(),
-					$this->unpaid_statuses
-				);
-				break;
+		if ( in_array( $order->mb_get_payment_method() , array( $this->multibanco_id, $this->mbway_id, $this->payshop_id ) ) ) {
+			$statuses = array_unique( array_merge( $statuses, $this->unpaid_statuses ) );
+		}
+
+		return $statuses;
+	}
+
+
+	/**
+	* Hide Pay button on orders list
+	*
+	* @since 4.4.0
+	*/
+	public function woocommerce_my_account_my_orders_actions( $actions, $order ) {
+
+		if ( isset( $actions['pay'] ) ) {
+
+			$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
+			$order = new WC_Order_MB_Ifthen( intval( $order_id ) );
+
+			switch( $order->mb_get_payment_method() ) {
+				case $this->multibanco_id:
+					if ( apply_filters( 'multibanco_ifthen_hide_my_account_pay_button', false ) ) unset( $actions['pay'] );
+					break;
+				case $this->mbway_id:
+					if ( apply_filters( 'mbway_ifthen_hide_my_account_pay_button', false ) ) unset( $actions['pay'] );
+					break;
+				case $this->payshop_id:
+					if ( apply_filters( 'payshop_ifthen_hide_my_account_pay_button', false ) ) unset( $actions['pay'] );
+					break;
+			}
 
 		}
 
-		return $needs_payment;
+		return $actions;
+
 	}
 
 	/**

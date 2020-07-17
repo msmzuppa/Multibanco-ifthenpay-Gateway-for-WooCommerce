@@ -627,7 +627,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 			}
 			$order = new WC_Order_MB_Ifthen( $order_id );
 			if ( $this->id === $order->mb_get_payment_method() ) {
-				if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
+				if ( $order->needs_payment() ) {
 					$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order_id );
 					if ( is_array( $ref ) ) {
 						echo $this->thankyou_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order_id );
@@ -791,7 +791,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 						}
 						//On Hold or pending
 						$this->debug_log_extra( 'Email ('.$email->id.') instructions show: '.( $show ? 'true' : 'false' ).' - Status '.$order->mb_get_status().' - Order '.$order->mb_get_id() );
-						if ( in_array( $order->mb_get_status(), WC_IfthenPay_Webdados()->unpaid_statuses ) ) {
+						if ( $order->needs_payment() ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {
@@ -905,26 +905,62 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 		 * Process it
 		 */
 		function process_payment( $order_id ) {
+			
 			$order = new WC_Order_MB_Ifthen( $order_id );
 			$this->debug_log_extra( 'process_payment - Order '.$order->mb_get_id() );
+			
 			//WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
 			if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
 				add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
 				add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 			}
+			
 			// Mark as on-hold
 			if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order_id ) ) $order->update_status( 'on-hold', __( 'Awaiting Multibanco payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+			
 			// Reduce stock levels
 			if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) $order->mb_reduce_order_stock();
+			
 			// Remove cart
 			WC()->cart->empty_cart();
+			
 			// Empty awaiting payment session
 			if ( isset( $_SESSION['order_awaiting_payment'] ) ) unset($_SESSION['order_awaiting_payment'] );
-			// Paying again? Force new payment details
+			
+			// Paying again? Force new payment details?
 			if ( WC_IfthenPay_Webdados()->is_pay_form ) {
-				$this->debug_log_extra( 'process_payment - Is pay form, clear details form database to force new ref - Order '.$order->mb_get_id() );
-				WC_IfthenPay_Webdados()->multibanco_clear_order_mb_details( $order_id );
+				//We only force new payment details for incremental_expire mode and entities with no repetition of references 
+				$clear_details = false;
+				if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) {
+					$clear_details = true;
+					$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because mode is incremental_expire - Order '.$order->mb_get_id() );
+				} else {
+					$base = apply_filters( 'multibanco_ifthen_base_ent_subent', array( 'ent' => WC_IfthenPay_Webdados()->multibanco_settings['ent'], 'subent' => WC_IfthenPay_Webdados()->multibanco_settings['subent'] ), $order );
+					if ( version_compare( WC_VERSION, '3.0', '>=' ) && isset( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) && intval( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) > 0 ) {
+						$clear_details = true;
+						$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because its a special entity with no repetition of references - Order '.$order->mb_get_id() );
+					} else {
+						//Check if value changed - not very likely
+						if ( $order_mb_details = WC_IfthenPay_Webdados()->get_multibanco_order_details( $order->mb_get_id() ) ) {
+							if ( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) != floatval( $order_mb_details['val'] ) ) {
+								$clear_details = true;
+								$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because the value has changed - Order '.$order->mb_get_id() );
+							} else {
+								//NO CHANGE
+							}
+						} else {
+							$clear_details = true; // Unecessary
+							$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because there were no details before - Order '.$order->mb_get_id() );
+						}
+					}
+				}				
+				if ( $clear_details ) {
+					WC_IfthenPay_Webdados()->multibanco_clear_order_mb_details( $order_id );
+				} else {
+					$this->debug_log_extra( 'process_payment - Is pay form, details from database NOT cleared - Order '.$order->mb_get_id() );
+				}
 			}
+
 			// Return thankyou redirect
 			$url = $this->get_return_url( $order );
 			$this->debug_log_extra( 'process_payment - Redirect to thank you page: '.$url.' - Order '.$order->mb_get_id() );
@@ -932,6 +968,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 				'result'   => 'success',
 				'redirect' => $url
 			);
+
 		}
 
 
