@@ -80,6 +80,9 @@
 				//This is not reloading when the user changes country
 				canMakePayment: function ( canPayArgument ) {
 
+					//console.log( 'Multibanco canMakePayment' );
+					//console.log( canPayArgument );
+
 					//Euro?
 					if ( canPayArgument.cartTotals.currency_code != 'EUR' ) {
 						return false;
