@@ -42,7 +42,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 
 			$this->method_title = __( 'Pagamento MB WAY no telemóvel (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			$this->method_description = __( 'Easy and simple payment using “MB WAY” on your mobile phone. (Only available for customers of Portuguese banks with MB WAY app installed. Payment service provided by IfthenPay.)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			if ( $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
+			if ( WC_IfthenPay_Webdados()->wc_subscriptions_active && $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
 				$this->supports = array(
 					'products',
 					'subscription_suspension',
@@ -282,14 +282,18 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									),
 					) );
 				}
+				if ( WC_IfthenPay_Webdados()->wc_subscriptions_active ) {
+					$this->form_fields = array_merge( $this->form_fields, array(
+						'support_woocommerce_subscriptions' => array(
+										'title' => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+										'type' => 'checkbox', 
+										'label' => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'description' => __( 'Shows “MB WAY” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with MB WAY if the original subscription used this payment method. If this option is not activated, MB WAY will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'default' => 'no'
+									),
+						) );
+				}
 				$this->form_fields = array_merge( $this->form_fields, array(
-					'support_woocommerce_subscriptions' => array(
-									'title' => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'type' => 'checkbox', 
-									'label' => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									'description' => __( 'Shows “MB WAY” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with MB WAY if the original subscription used this payment method. If this option is not activated, MB WAY will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									'default' => 'no'
-								),
 					'send_to_admin' => array(
 									'title' => __( 'Send instructions to admin?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'checkbox', 
@@ -769,7 +773,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						} else {
 							//Processing
-							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
+							if ( $order->has_status( 'processing' ) ) {
 								if ( apply_filters( 'mbway_ifthen_email_instructions_payment_received_send', true, $order_id ) ) {
 									echo $this->email_instructions_payment_received( $order_id );
 								}

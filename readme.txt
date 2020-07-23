@@ -177,8 +177,13 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 4.4.2 =
+= 4.4.3 - 2020-07-23 =
 * You can safely update this plugin if you’re running WooCommece 2.6.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.0 (which was launched in April 2017)**
+* Revert showing the Multibanco "payment received" message on order completed emails (introduced on 4.4.0)
+* Only show WooCommerce Subscriptions options if the plugin is active
+* Only enable Multibanco support for the WooCommerce Blocks checkout if WooCommerce Blocks version is 3.0.0. or above and the support is enabled via the payment method options
+
+= 4.4.2 =
 * Bugfix when WooCommerce Blocks 3.0.0 or above is active
 * Try to fix a fatal error when themes override the WooCommerce email templates with old (pre WooCommerce 2.6.0) versions
 * Tested with WordPress 5.5-beta3-48556, WooCommerce 4.3.1 and WooCommerce Blocks 3.0.0

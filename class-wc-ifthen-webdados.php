@@ -22,14 +22,16 @@ final class WC_IfthenPay_Webdados {
 	public $log = null;
 
 	/* Internal variables */
-	public $wpml_active         = false;
-	public $wc_deposits_active  = false;
-	public $mb_ifthen_locale    = null;
-	public $out_link_utm        = '';
-	public $is_pay_form         = false;
-	public $callback_email      = 'callback@ifthenpay.com';
-	public $callback_webservice = 'https://www.ifthenpay.com/api/endpoint/callback/activation';
-	public $unpaid_statuses     = array( 'on-hold', 'pending', 'partially-paid' );
+	public $wpml_active             = false;
+	public $wc_deposits_active      = false;
+	public $wc_subscriptions_active = false;
+	public $wc_blocks_active        = false;
+	public $mb_ifthen_locale        = null;
+	public $out_link_utm            = '';
+	public $is_pay_form             = false;
+	public $callback_email          = 'callback@ifthenpay.com';
+	public $callback_webservice     = 'https://www.ifthenpay.com/api/endpoint/callback/activation';
+	public $unpaid_statuses         = array( 'on-hold', 'pending', 'partially-paid' );
 
 	/* Internal variables - For Multibanco */
 	public $multibanco_settings            = null;
@@ -85,6 +87,8 @@ final class WC_IfthenPay_Webdados {
 	public function __construct() {
 		$this->wpml_active = function_exists( 'icl_object_id' ) && function_exists( 'icl_register_string' );
 		$this->wc_deposits_active = function_exists( 'wc_deposits_woocommerce_is_active' );
+		$this->wc_subscriptions_active = function_exists( 'wcs_get_subscription' );
+		$this->wc_blocks_active = class_exists( '\Automattic\WooCommerce\Blocks\Package' ) && version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '3.0.0', '>=' );
 		$this->out_link_utm = '?utm_source='.rawurlencode( esc_url( home_url( '/' ) ) ).'&amp;utm_medium=link&amp;utm_campaign=mb_ifthen_plugin';
 		//Multibanco
 		$this->multibanco_settings = get_option( 'woocommerce_multibanco_ifthen_for_woocommerce_settings', '' );
@@ -206,8 +210,11 @@ final class WC_IfthenPay_Webdados {
 
 	/* Add to WooCommerce */
 	public function woocommerce_add_payment_gateways( $methods ) {
+		//Multibanco
 		$methods[] = 'WC_Multibanco_IfThen_Webdados';
+		//MB WAY
 		$methods[] = 'WC_MBWAY_IfThen_Webdados';
+		//Payshop
 		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) { //Payshop only for WooCommerce 3.0 and above
 			$methods[] = 'WC_Payshop_IfThen_Webdados';
 		}
@@ -216,9 +223,14 @@ final class WC_IfthenPay_Webdados {
 
 	/* Add to WooCommerce Blocks */
 	public function woocommerce_add_payment_gateways_woocommerce_blocks( \Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
-		require_once( 'woocommerce-blocks/multibanco/MultibancoIfthenPay.php' );
-		$payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\MultibancoIfthenPay;
-  		$payment_method_registry->register( $payment_method_instance );
+		//Multibanco
+		if ( WC_IfthenPay_Webdados()->wc_blocks_active && $this->multibanco_settings['support_woocommerce_blocks'] == 'yes' ) {
+			require_once( 'woocommerce-blocks/multibanco/MultibancoIfthenPay.php' );
+			$payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\MultibancoIfthenPay;
+  			$payment_method_registry->register( $payment_method_instance );
+  		}
+  		//MB WAY - soon
+  		//Payshop - soon
 	}
 
 	/* Debug / Log */

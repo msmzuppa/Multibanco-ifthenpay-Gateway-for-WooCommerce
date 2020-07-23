@@ -301,14 +301,19 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 									'options'	=> apply_filters( 'payshop_ifthen_validity_options', $validity_options ),
 								),
 				) );
+				//Not implemented yet
+				/*if ( WC_IfthenPay_Webdados()->wc_subscriptions_active ) {
+					$this->form_fields = array_merge( $this->form_fields, array(
+						'support_woocommerce_subscriptions' => array(
+										'title' => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+										'type' => 'checkbox', 
+										'label' => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'description' => __( 'Shows “Payshop” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with Payshop if the original subscription used this payment method. If this option is not activated, Payshop will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'default' => 'no'
+									),
+					) );
+				}*/
 				$this->form_fields = array_merge( $this->form_fields, array(
-					/*'support_woocommerce_subscriptions' => array(
-									'title' => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'type' => 'checkbox', 
-									'label' => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									'description' => __( 'Shows “Payshop” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with Payshop if the original subscription used this payment method. If this option is not activated, Payshop will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									'default' => 'no'
-								),*/
 					'send_to_admin' => array(
 									'title' => __( 'Send instructions to admin?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'checkbox', 
@@ -749,7 +754,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						} else {
 							//Processing
-							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
+							if ( $order->has_status( 'processing' ) ) {
 								if ( apply_filters( 'payshop_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
 									echo $this->email_instructions_payment_received( $order->get_id() );
 								}
