@@ -1096,6 +1096,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 					$arguments_error .= ' - Estado';
 				}*/
 				if ( $arguments_ok ) { //Isto deve ser separado em vários IFs para melhor se identificar o erro
+					//Payments
 					if ( trim( $estado ) == 'PAGO' ) {
 						$orders_exist = false;
 						if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
@@ -1213,6 +1214,50 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							echo $err;
 							do_action( 'mbway_ifthen_callback_payment_failed', 0, $err, $_GET );
 						}
+					//Refunds
+					} elseif ( trim( $estado ) == 'DEVOLVIDO' ) {
+						$refunds_exist = false;
+						//Only for WC 3.0 and up, come on....
+						if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
+							//Find the exact refund
+							$args = array(
+								'type'    => array( 'shop_order_refund' ), //Refund
+								//'status'  => 'completed',                //Not nedded?
+								'limit'   => -1,
+								'parent'  => intval( $referencia ),        //Child of original order
+								'orderby' => 'modified',
+								'order'   => 'ASC',                        //Oldest recent refunds first, so we process them in order if there are several
+							);
+							$refunds = wc_get_orders( $args );
+							foreach ( $refunds as $refund ) {
+								if ( $refund->get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received' ) == '' ) {
+									if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $refund ) ) ) {
+										//Get parent order and add a note
+										if ( $order = wc_get_order( intval( $referencia ) ) ) {
+											$note = sprintf(
+												__( 'MB WAY callback received for refund #%s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+												$refund->get_id()
+											);
+											$order->add_order_note( $note );
+											//Set as callback received so we do not process it again
+											$refund->update_meta_data( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received', date_i18n( 'Y-m-d H:i:s' ) );
+											$refund->save();
+											$refunds_exist = true;
+										}
+									}
+								}
+							}
+						}
+						if ( $refunds_exist ) {
+							//We're done!
+						} else {
+							header( 'HTTP/1.1 200 OK' );
+							$err = 'Error: No unprocessed refunds found with these details';
+							$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No refunds found with these details' );
+							echo $err;
+							do_action( 'mbway_ifthen_callback_refund_failed', 0, $err, $_GET );
+						}
+					//???
 					} else {
 						header( 'HTTP/1.1 200 OK' );
 						$err = 'Error: Cannot process '.trim( $estado ).' status';

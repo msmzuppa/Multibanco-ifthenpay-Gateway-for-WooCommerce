@@ -3,11 +3,16 @@
 
 
 FUTURO:
-- 
+- Ter campos em cada método para o cliente inserir o que tem contratado com a IfthenPay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!
+	- Na encomenda, fazer como no Stripe e mostrar o valor pago em comissões
+	- Ter opção de ordenar os métodos de pagamento pela ordem do que fica mais barato
 
 MBWAY e MULTIBANCO:
 - Verificar funcionamento na inserção de encomendas manuais
 
-
 MULTIBANCO:
-Opção para cancelar encomendas cuja expiração da referência já passou
+- Opção para cancelar encomendas cuja expiração da referência já passou
+
+MBWAY:
+- Processar refunds e pedir pelo webservice (callback já está)
+	- Verificar condições e para quem pode ou não ser activado
