@@ -180,6 +180,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 = 4.4.6 - 2020-11-04 =
 * You can safely update this plugin if you’re running WooCommece 2.6.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.0 (which was launched in April 2017)**
 * Bugfix setting the Multibanco order cancelation when using references with expiration (Thanks @josefreitas2)
+* Lay ground for a (yet to be confirmed) MBWAY refund functionality - Callback processing
 * Tested with WordPress 5.6-beta1-49314 and WooCommerce 4.7.0-rc.1
 
 = 4.4.5 - 2020-08-11 =
