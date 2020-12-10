@@ -169,7 +169,8 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					/* THIS SHOULD BE ABSTRACTED FROM POST / POST META - END - Not really because on these versions orders will always be posts */
 					foreach ( $orders as $orderpost ) {
 						$order = new WC_Order_MB_Ifthen( $orderpost->ID );
-						$order->mb_update_meta_data( '_'.$this->id.'_val', $order->mb_get_total() );
+						$order->update_meta_data( '_'.$this->id.'_val', $order->get_total() );
+						$order->save();
 					}
 				}
 				if ( $this->version >= '3.4.3' ) {
@@ -631,7 +632,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				$order_id = $order_id->get_id();
 			}
 			$order = new WC_Order_MB_Ifthen( $order_id );
-			if ( $this->id === $order->mb_get_payment_method() ) {
+			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 					//We might have to deal with deposits...
 					$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order_id );
@@ -776,7 +777,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				$order_id = $order->get_id();
 				$order = new WC_Order_MB_Ifthen( $order_id );
 				//Go
-				if ( $this->id === $order->mb_get_payment_method() ) {
+				if ( $this->id === $order->get_payment_method() ) {
 					$show = false;
 					if ( !$sent_to_admin ) {
 						$show = true;
@@ -790,20 +791,20 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 						if ( WC_IfthenPay_Webdados()->wpml_active ) {
 							global $sitepress;
 							if ( $sitepress ) {
-								$lang = $order->mb_get_meta( 'wpml_language' );
+								$lang = $order->get_meta( 'wpml_language' );
 								if( !empty( $lang ) ){
 									WC_IfthenPay_Webdados()->change_email_language( $lang );
 								}
 							}
 						}
 						//On Hold or pending
-						$this->debug_log_extra( 'Email ('.$email_id.') instructions show: '.( $show ? 'true' : 'false' ).' - Status '.$order->mb_get_status().' - Order '.$order->mb_get_id() );
+						$this->debug_log_extra( 'Email ('.$email_id.') instructions show: '.( $show ? 'true' : 'false' ).' - Status '.$order->get_status().' - Order '.$order->get_id() );
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
-							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
+							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {
 								$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order_id );
-								$this->debug_log_extra( 'Email ('.$email_id.') instructions - Got reference '.serialize( $ref ).' - Order '.$order->mb_get_id() );
+								$this->debug_log_extra( 'Email ('.$email_id.') instructions - Got reference '.serialize( $ref ).' - Order '.$order->get_id() );
 								if ( is_array( $ref ) ) {
 									if ( apply_filters( 'multibanco_ifthen_email_instructions_pending_send', true, $order_id ) ) {
 										echo $this->email_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order_id );
@@ -914,10 +915,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		function process_payment( $order_id ) {
 			
 			$order = new WC_Order_MB_Ifthen( $order_id );
-			$this->debug_log_extra( 'process_payment - Order '.$order->mb_get_id() );
+			$this->debug_log_extra( 'process_payment - Order '.$order->get_id() );
 			
 			//WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
-			if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
+			if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 				add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
 				add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 			}
@@ -926,7 +927,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order_id ) ) $order->update_status( 'on-hold', __( 'Awaiting Multibanco payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 			
 			// Reduce stock levels
-			if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) $order->mb_reduce_order_stock();
+			if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
 			
 			// Remove cart
 			if ( isset( WC()->cart ) ) {
@@ -942,37 +943,37 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				$clear_details = false;
 				if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) {
 					$clear_details = true;
-					$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because mode is incremental_expire - Order '.$order->mb_get_id() );
+					$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because mode is incremental_expire - Order '.$order->get_id() );
 				} else {
 					$base = apply_filters( 'multibanco_ifthen_base_ent_subent', array( 'ent' => WC_IfthenPay_Webdados()->multibanco_settings['ent'], 'subent' => WC_IfthenPay_Webdados()->multibanco_settings['subent'] ), $order );
 					if ( isset( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) && intval( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) > 0 ) {
 						$clear_details = true;
-						$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because its a special entity with no repetition of references - Order '.$order->mb_get_id() );
+						$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because its a special entity with no repetition of references - Order '.$order->get_id() );
 					} else {
 						//Check if value changed - not very likely
-						if ( $order_mb_details = WC_IfthenPay_Webdados()->get_multibanco_order_details( $order->mb_get_id() ) ) {
+						if ( $order_mb_details = WC_IfthenPay_Webdados()->get_multibanco_order_details( $order->get_id() ) ) {
 							if ( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) != floatval( $order_mb_details['val'] ) ) {
 								$clear_details = true;
-								$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because the value has changed - Order '.$order->mb_get_id() );
+								$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because the value has changed - Order '.$order->get_id() );
 							} else {
 								//NO CHANGE
 							}
 						} else {
 							$clear_details = true; // Unecessary
-							$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because there were no details before - Order '.$order->mb_get_id() );
+							$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because there were no details before - Order '.$order->get_id() );
 						}
 					}
 				}				
 				if ( $clear_details ) {
 					WC_IfthenPay_Webdados()->multibanco_clear_order_mb_details( $order_id );
 				} else {
-					$this->debug_log_extra( 'process_payment - Is pay form, details from database NOT cleared - Order '.$order->mb_get_id() );
+					$this->debug_log_extra( 'process_payment - Is pay form, details from database NOT cleared - Order '.$order->get_id() );
 				}
 			}
 
 			// Return thankyou redirect
 			$url = $this->get_return_url( $order );
-			$this->debug_log_extra( 'process_payment - Redirect to thank you page: '.$url.' - Order '.$order->mb_get_id() );
+			$this->debug_log_extra( 'process_payment - Redirect to thank you page: '.$url.' - Order '.$order->get_id() );
 			return array(
 				'result'   => 'success',
 				'redirect' => $url
@@ -1027,7 +1028,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		/* Reduce stock on 'wc_maybe_reduce_stock_levels'? */
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = new WC_Order_MB_Ifthen( $order_id );
-			if ( $order->mb_get_payment_method() == $this->id ) {
+			if ( $order->get_payment_method() == $this->id ) {
 				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order_id, $this->id, $this->stock_when ) );
 			} else {
 				return $bool;
@@ -1108,7 +1109,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 								WC_IfthenPay_Webdados()->should_fix_woocommerce_420()
 							) {
 								if ( WC_IfthenPay_Webdados()->should_fix_woocommerce_420() && ( floatval( $val ) != floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) ) {
-									$this->debug_log( '-- Multibanco payment received but value does not match - Order '.$order->mb_get_id().' - Callbak value '.floatval( $val ).' - Order value '.floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 'warning' );
+									$this->debug_log( '-- Multibanco payment received but value does not match - Order '.$order->get_id().' - Callbak value '.floatval( $val ).' - Order value '.floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 'warning' );
 								}
 								$note = __( 'Multibanco payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 								if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] )!='' ) {
@@ -1119,10 +1120,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 								}
 								//WooCommerce Deposits second payment?
 								if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
-									if ( $order->mb_get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { //Has deposit
-										if ( $order->mb_get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) { //First payment - OK!
-											if ( $order->mb_get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { //Second payment - not ok
-												if ( floatval( $order->mb_get_meta( '_wc_deposits_second_payment' ) ) == floatval( $val ) ) { //This really seems like the second payment
+									if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { //Has deposit
+										if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) { //First payment - OK!
+											if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { //Second payment - not ok
+												if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $val ) ) { //This really seems like the second payment
 													//Set the current order status temporarly back to partially-paid, but first stop the emails
 													add_filter( 'woocommerce_email_enabled_customer_partially_paid', '__return_false' );
 													add_filter( 'woocommerce_email_enabled_partial_payment', '__return_false' );
@@ -1134,22 +1135,22 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 								}
 								$this->payment_complete( $order, '', $note );
 								//Force resending "New Order" email to the store owner (before 3.4.2 we had a "bug" that made this email duplicate - and people are used to it)
-								if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->mb_get_id() ) ) { //Only if we set it on hold in the first place
+								if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->get_id() ) ) { //Only if we set it on hold in the first place
 									if ( $this->get_option( 'resend_new_order_when_paid' ) == 'yes' ) { //And the option is activated
-										WC()->mailer()->emails['WC_Email_New_Order']->trigger( $order->mb_get_id(), $order );
+										WC()->mailer()->emails['WC_Email_New_Order']->trigger( $order->get_id(), $order );
 									}
 								}
-								do_action( 'multibanco_ifthen_callback_payment_complete', $order->mb_get_id() );
+								do_action( 'multibanco_ifthen_callback_payment_complete', $order->get_id() );
 								
 								header( 'HTTP/1.1 200 OK' );
-								$this->debug_log( '-- Multibanco payment received - Order '.$order->mb_get_id(), 'notice', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - Multibanco payment received' );
+								$this->debug_log( '-- Multibanco payment received - Order '.$order->get_id(), 'notice', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - Multibanco payment received' );
 								echo 'OK - Multibanco payment received';
 							} else {
 								header( 'HTTP/1.1 200 OK' );
 								$err = 'Error: The value does not match';
-								$this->debug_log( '-- '.$err.' - Order '.$order->mb_get_id(), 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - The value does not match' );
+								$this->debug_log( '-- '.$err.' - Order '.$order->get_id(), 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - The value does not match' );
 								echo $err;
-								do_action( 'multibanco_ifthen_callback_payment_failed', $order->mb_get_id(), $err, $_GET );
+								do_action( 'multibanco_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET );
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );

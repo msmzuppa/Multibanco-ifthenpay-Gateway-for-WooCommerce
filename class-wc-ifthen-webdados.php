@@ -405,10 +405,10 @@ final class WC_IfthenPay_Webdados {
 	/* Get Multibanco order details */
 	public function get_multibanco_order_details( $order_id ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$ent   = $order->mb_get_meta( '_'.$this->multibanco_id.'_ent' );
-		$ref   = $order->mb_get_meta( '_'.$this->multibanco_id.'_ref' );
-		$val   = $order->mb_get_meta( '_'.$this->multibanco_id.'_val' );
-		$exp   = $order->mb_get_meta( '_'.$this->multibanco_id.'_exp' );
+		$ent   = $order->get_meta( '_'.$this->multibanco_id.'_ent' );
+		$ref   = $order->get_meta( '_'.$this->multibanco_id.'_ref' );
+		$val   = $order->get_meta( '_'.$this->multibanco_id.'_val' );
+		$exp   = $order->get_meta( '_'.$this->multibanco_id.'_exp' );
 		if ( !empty( $ent ) &&  !empty( $ref ) &&  !empty( $val ) ) {
 			return array(
 				'ent' => $ent,
@@ -423,12 +423,12 @@ final class WC_IfthenPay_Webdados {
 	/* Get MB WAY order details */
 	public function get_mbway_order_details( $order_id ) {
 		$order     = new WC_Order_MB_Ifthen( $order_id );
-		$mbwaykey  = $order->mb_get_meta( '_'.$this->mbway_id.'_mbwaykey' );
-		$id_pedido = $order->mb_get_meta( '_'.$this->mbway_id.'_id_pedido' );
-		//$phone   = $order->mb_get_meta( '_'.$this->mbway_id.'_phone' ); //GDPR 2018-06-18
-		$val       = $order->mb_get_meta( '_'.$this->mbway_id.'_val' );
-		$time      = $order->mb_get_meta( '_'.$this->mbway_id.'_time' );
-		$exp       = $order->mb_get_meta( '_'.$this->mbway_id.'_exp' );
+		$mbwaykey  = $order->get_meta( '_'.$this->mbway_id.'_mbwaykey' );
+		$id_pedido = $order->get_meta( '_'.$this->mbway_id.'_id_pedido' );
+		//$phone   = $order->get_meta( '_'.$this->mbway_id.'_phone' ); //GDPR 2018-06-18
+		$val       = $order->get_meta( '_'.$this->mbway_id.'_val' );
+		$time      = $order->get_meta( '_'.$this->mbway_id.'_time' );
+		$exp       = $order->get_meta( '_'.$this->mbway_id.'_exp' );
 		if ( !empty( $mbwaykey ) && !empty( $id_pedido )  && !empty( $val ) ) {
 			return array(
 				'mbwaykey'  => $mbwaykey,
@@ -445,13 +445,13 @@ final class WC_IfthenPay_Webdados {
 	/* Get Payshop order details */
 	public function get_payshop_order_details( $order_id ) {
 		$order      = new WC_Order_MB_Ifthen( $order_id );
-		$payshopkey = $order->mb_get_meta( '_'.$this->payshop_id.'_payshopkey' );
-		$ref        = $order->mb_get_meta( '_'.$this->payshop_id.'_ref' );
-		$request_id = $order->mb_get_meta( '_'.$this->payshop_id.'_request_id' );
-		$id         = $order->mb_get_meta( '_'.$this->payshop_id.'_id' );
-		$val        = $order->mb_get_meta( '_'.$this->payshop_id.'_val' );
-		$time       = $order->mb_get_meta( '_'.$this->payshop_id.'_time' );
-		$exp        = $order->mb_get_meta( '_'.$this->payshop_id.'_exp' );
+		$payshopkey = $order->get_meta( '_'.$this->payshop_id.'_payshopkey' );
+		$ref        = $order->get_meta( '_'.$this->payshop_id.'_ref' );
+		$request_id = $order->get_meta( '_'.$this->payshop_id.'_request_id' );
+		$id         = $order->get_meta( '_'.$this->payshop_id.'_id' );
+		$val        = $order->get_meta( '_'.$this->payshop_id.'_val' );
+		$time       = $order->get_meta( '_'.$this->payshop_id.'_time' );
+		$exp        = $order->get_meta( '_'.$this->payshop_id.'_exp' );
 		if ( !empty( $payshopkey ) && !empty( $ref ) && !empty( $request_id )  && !empty( $val ) ) {
 			return array(
 				'payshopkey' => $payshopkey,
@@ -502,7 +502,7 @@ final class WC_IfthenPay_Webdados {
 	public function multibanco_order_metabox_html( $post ) {
 		$order = new WC_Order_MB_Ifthen( $post->ID );
 
-		if ( $date_paid = $order->mb_get_date_paid() ) {
+		if ( $date_paid = $order->get_date_paid() ) {
 			$date_paid = sprintf(
 				'%1$s %2$s',
 				wc_format_datetime( $date_paid, 'Y-m-d' ),
@@ -510,11 +510,11 @@ final class WC_IfthenPay_Webdados {
 			);
 		}
 
-		switch( $order->mb_get_payment_method() ) {
+		switch( $order->get_payment_method() ) {
 			//Multibanco
 			case $this->multibanco_id:
 				if (
-					$order_mb_details = $this->get_multibanco_order_details( $order->mb_get_id() )
+					$order_mb_details = $this->get_multibanco_order_details( $order->get_id() )
 				) {
 					echo '<p><img src="'.esc_url( $this->multibanco_banner ).'" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Multibanco" title="Multibanco"/></p>';
 					echo '<p>'.__( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mb_details['ent'] ).'<br/>';
@@ -522,12 +522,12 @@ final class WC_IfthenPay_Webdados {
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mb_details['val'] ).'</p>';
 					if ( $this->order_needs_payment( $order ) ) {
 						if ( trim( $order_mb_details['exp'] ) != '' ) {
-							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->multibanco_format_expiration( $order_mb_details['exp'], $order->mb_get_id() ).'</p>';
+							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->multibanco_format_expiration( $order_mb_details['exp'], $order->get_id() ).'</p>';
 						}
 						$show_debug = true;
-						if ( $this->wc_deposits_active && ( $order->mb_get_status() == 'partially-paid' || ( $order->mb_get_status() == 'on-hold' && $order->mb_get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) ) ) {
+						if ( $this->wc_deposits_active && ( $order->get_status() == 'partially-paid' || ( $order->get_status() == 'on-hold' && $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) ) ) {
 							echo '<p>'.__( 'Partially paid.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
-							if ( $order->mb_get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->mb_get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mb_details['val'] )  ) {
+							if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mb_details['val'] )  ) {
 								echo '<p>'.__( 'Awaiting second Multibanco payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
 							} else {
 								$show_debug = false;
@@ -584,21 +584,21 @@ final class WC_IfthenPay_Webdados {
 			//MB WAY
 			case $this->mbway_id:
 					if (
-						$order_mbway_details = $this->get_mbway_order_details( $order->mb_get_id() )
+						$order_mbway_details = $this->get_mbway_order_details( $order->get_id() )
 					) {
 						echo '<p><img src="'.esc_url( $this->mbway_banner ).'" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="MB WAY" title="MB WAY"/></p>';
 						echo '<p>'.__( 'MB WAY Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mbway_details['mbwaykey'] ).'<br/>';
 						echo __( 'Request ID', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mbway_details['id_pedido'] ).'<br/>';
-						echo __( 'Phone', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order->mb_get_meta( '_'.$this->mbway_id.'_phone' ) ).'<br/>';
+						echo __( 'Phone', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order->get_meta( '_'.$this->mbway_id.'_phone' ) ).'<br/>';
 						echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mbway_details['val'] ).'</p>';
 						if ( $this->order_needs_payment( $order ) ) {
 							if ( trim( $order_mbway_details['exp'] ) != '' ) {
-								echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->mbway_format_expiration( $order_mbway_details['exp'], $order->mb_get_id() ).'</p>';
+								echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->mbway_format_expiration( $order_mbway_details['exp'], $order->get_id() ).'</p>';
 							}
 							$show_debug = true;
-							if ( $this->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
+							if ( $this->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 								echo '<p>'.__( 'Partially paid.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
-								if ( $order->mb_get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->mb_get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mbway_details['val'] )  ) {
+								if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mbway_details['val'] )  ) {
 									echo '<p>'.__( 'Awaiting second MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
 								} else {
 									$show_debug = false;
@@ -615,12 +615,12 @@ final class WC_IfthenPay_Webdados {
 										jQuery( '#mbway_ifthen_request_payment_again' ).click( function() {
 											if ( confirm( '<?php echo __( "Are you sure you want to request the payment again? Don’t do it unless your client asks you to.", 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' ) ) {
 												jQuery( '#mbway_ifthen_request_payment_again' ).val( '<?php _e( 'Wait...', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' );
-												var phone = '<?php echo $order->mb_get_meta( '_'.$this->mbway_id.'_phone' ); ?>';
+												var phone = '<?php echo $order->get_meta( '_'.$this->mbway_id.'_phone' ); ?>';
 												phone = prompt( '<?php echo __( 'MB WAY phone number', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>', phone );
 												if ( phone.length == 9 ) {
 													var data = {
 														'action'  : 'mbway_ifthen_request_payment_again',
-														'order_id': <?php echo $order->mb_get_id(); ?>,
+														'order_id': <?php echo $order->get_id(); ?>,
 														'nonce'   : '<?php echo wp_create_nonce( 'mbway_ifthen_request_payment_again' ); ?>',
 														'phone'   : phone
 													};
@@ -650,7 +650,7 @@ final class WC_IfthenPay_Webdados {
 							if ( $show_debug && WP_DEBUG ) {
 								$callback_url = $this->mbway_notify_url;
 								$callback_url = str_replace( '[CHAVE_ANTI_PHISHING]', $this->mbway_settings['secret_key'], $callback_url );
-								$callback_url = str_replace( '[REFERENCIA]', $order->mb_get_id(), $callback_url );
+								$callback_url = str_replace( '[REFERENCIA]', $order->get_id(), $callback_url );
 								$callback_url = str_replace( '[ID_TRANSACAO]', trim( $order_mbway_details['id_pedido'] ), $callback_url );
 								$callback_url = str_replace( '[VALOR]', $order_mbway_details['val'], $callback_url );
 								$callback_url = str_replace( '[DATA_HORA_PAGAMENTO]', '', $callback_url );
@@ -696,19 +696,19 @@ final class WC_IfthenPay_Webdados {
 			//Payshop
 			case $this->payshop_id:
 				if (
-					$order_mb_details = $this->get_payshop_order_details( $order->mb_get_id() )
+					$order_mb_details = $this->get_payshop_order_details( $order->get_id() )
 				) {
 					echo '<p><img src="'.esc_url( $this->payshop_banner ).'" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Payshop" title="Payshop"/></p>';
 					echo '<p>'.__( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->format_payshop_ref( $order_mb_details['ref'] ).'<br/>';
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mb_details['val'] ).'</p>';
 					if ( $this->order_needs_payment( $order ) ) {
 						if ( trim( $order_mb_details['exp'] ) != '' ) {
-							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->payshop_format_expiration( $order_mb_details['exp'], $order->mb_get_id() ).'</p>';
+							echo '<p>'.__( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.$this->payshop_format_expiration( $order_mb_details['exp'], $order->get_id() ).'</p>';
 						}
 						$show_debug = true;
-						if ( $this->wc_deposits_active && ( $order->mb_get_status() == 'partially-paid' || ( $order->mb_get_status() == 'on-hold' && $order->mb_get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) ) ) {
+						if ( $this->wc_deposits_active && ( $order->get_status() == 'partially-paid' || ( $order->get_status() == 'on-hold' && $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) ) ) {
 							echo '<p>'.__( 'Partially paid.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
-							if ( $order->mb_get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->mb_get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mb_details['val'] )  ) {
+							if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mb_details['val'] )  ) {
 								echo '<p>'.__( 'Awaiting second Payshop payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
 							} else {
 								$show_debug = false;
@@ -766,7 +766,7 @@ final class WC_IfthenPay_Webdados {
 			//Credit Card
 			case $this->creditcard_id:
 				if (
-					$order_mb_details = $this->get_creditcard_order_details( $order->mb_get_id() )
+					$order_mb_details = $this->get_creditcard_order_details( $order->get_id() )
 				) {
 					echo '<p><img src="'.esc_url( $this->creditcard_banner ).'" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Credit or Debit Card" title="Credit or Debit Card"/></p>';
 					echo '<p>'.__( 'Credit Card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.trim( $order_mb_details['creditcardkey'] ).'<br/>';
@@ -774,9 +774,9 @@ final class WC_IfthenPay_Webdados {
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ).': '.wc_price( $order_mb_details['val'] ).'</p>';
 					if ( $this->order_needs_payment( $order ) ) {
 						$show_debug = true;
-						if ( $this->wc_deposits_active && $order->mb_get_status() == 'partially-paid' ) {
+						if ( $this->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 							echo '<p>'.__( 'Partially paid.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
-							if ( $order->mb_get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->mb_get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mb_details['val'] )  ) {
+							if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' &&  floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mb_details['val'] )  ) {
 								echo '<p>'.__( 'Awaiting second Credit or Debit Card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</p>';
 							} else {
 								$show_debug = false;
@@ -842,29 +842,30 @@ final class WC_IfthenPay_Webdados {
 				echo '<p>'.__( 'No details available', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'.</p><p>'.__( 'The payment method of this order is not Multibanco, MB WAY, Credit Card or Payshop', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'.</p>';
 				echo '<style type="text/css">#'.$this->multibanco_id.' { display: none; }</style>';
 				//If we have Multibanco data, we should delete it
-				if ( $order_mb_details = $this->get_multibanco_order_details( $order->mb_get_id() ) ) {
+				if ( $order_mb_details = $this->get_multibanco_order_details( $order->get_id() ) ) {
 					foreach ( $order_mb_details as $key => $value ) {
-						$order->mb_delete_meta_data( '_'.$this->multibanco_id.'_'.$key );
+						$order->delete_meta_data( '_'.$this->multibanco_id.'_'.$key );
 					}
 				}
 				//If we have MB WAY data, we should delete it
-				if ( $order_mb_details = $this->get_mbway_order_details( $order->mb_get_id() ) ) {
+				if ( $order_mb_details = $this->get_mbway_order_details( $order->get_id() ) ) {
 					foreach ( $order_mb_details as $key => $value ) {
-						$order->mb_delete_meta_data( '_'.$this->mbway_id.'_'.$key );
+						$order->delete_meta_data( '_'.$this->mbway_id.'_'.$key );
 					}
 				}
 				//If we have Payshop data, we should delete it
-				if ( $order_mb_details = $this->get_payshop_order_details( $order->mb_get_id() ) ) {
+				if ( $order_mb_details = $this->get_payshop_order_details( $order->get_id() ) ) {
 					foreach ( $order_mb_details as $key => $value ) {
-						$order->mb_delete_meta_data( '_'.$this->payshop_id.'_'.$key );
+						$order->delete_meta_data( '_'.$this->payshop_id.'_'.$key );
 					}
 				}
 				//If we have Credit Card data, we should delete it
-				if ( $order_mb_details = $this->get_creditcard_order_details( $order->mb_get_id() ) ) {
+				if ( $order_mb_details = $this->get_creditcard_order_details( $order->get_id() ) ) {
 					foreach ( $order_mb_details as $key => $value ) {
-						$order->mb_delete_meta_data( '_'.$this->creditcard_id.'_'.$key );
+						$order->delete_meta_data( '_'.$this->creditcard_id.'_'.$key );
 					}
 				}
+				$order->save();
 				break;
 
 
@@ -887,26 +888,28 @@ final class WC_IfthenPay_Webdados {
 	/* Set new order Multibanco Entity/Reference/Value on meta */
 	public function multibanco_set_order_mb_details( $order_id, $order_mb_details ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$order->mb_update_meta_data( '_'.$this->multibanco_id.'_ent', $order_mb_details['ent'] );
-		$order->mb_update_meta_data( '_'.$this->multibanco_id.'_ref', $order_mb_details['ref'] );
-		$order->mb_update_meta_data( '_'.$this->multibanco_id.'_val', $order_mb_details['val'] );
+		$order->update_meta_data( '_'.$this->multibanco_id.'_ent', $order_mb_details['ent'] );
+		$order->update_meta_data( '_'.$this->multibanco_id.'_ref', $order_mb_details['ref'] );
+		$order->update_meta_data( '_'.$this->multibanco_id.'_val', $order_mb_details['val'] );
 		if ( $this->get_multibanco_ref_mode() == 'incremental_expire' ) {
 			//Update last seed
 			$this->multibanco_last_incremental_expire_ref++;
 			update_option( 'multibanco_last_incremental_expire_ref', intval( $this->multibanco_last_incremental_expire_ref ) );
 			//Update order reference expiration
-			$order->mb_update_meta_data( '_'.$this->multibanco_id.'_exp', $this->get_reference_expiration_days( intval( apply_filters( 'multibanco_ifthen_incremental_expire_days', 0 ) ) ) );
+			$order->update_meta_data( '_'.$this->multibanco_id.'_exp', $this->get_reference_expiration_days( intval( apply_filters( 'multibanco_ifthen_incremental_expire_days', 0 ) ) ) );
 		}
+		$order->save();
 		$this->debug_log_extra( $this->multibanco_id, 'multibanco_set_order_mb_details - Details updated on the database: '.serialize( $order_mb_details ).' - Order: '.$order_id );
 	}
 
 	/* Clear Multibanco Entity/Reference/Value on meta */
 	public function multibanco_clear_order_mb_details( $order_id ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$order->mb_delete_meta_data( '_'.$this->multibanco_id.'_ent' );
-		$order->mb_delete_meta_data( '_'.$this->multibanco_id.'_ref' );
-		$order->mb_delete_meta_data( '_'.$this->multibanco_id.'_val' );
-		$order->mb_delete_meta_data( '_'.$this->multibanco_id.'_exp' );
+		$order->delete_meta_data( '_'.$this->multibanco_id.'_ent' );
+		$order->delete_meta_data( '_'.$this->multibanco_id.'_ref' );
+		$order->delete_meta_data( '_'.$this->multibanco_id.'_val' );
+		$order->delete_meta_data( '_'.$this->multibanco_id.'_exp' );
+		$order->save();
 	}
 
 	/* Get Reference expiration date/time in days */
@@ -954,12 +957,13 @@ final class WC_IfthenPay_Webdados {
 	/* Set new order MB WAY details on meta */
 	public function multibanco_set_order_mbway_details( $order_id, $order_mbway_details ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$order->mb_update_meta_data( '_'.$this->mbway_id.'_mbwaykey', $order_mbway_details['mbwaykey'] );
-		$order->mb_update_meta_data( '_'.$this->mbway_id.'_id_pedido', $order_mbway_details['id_pedido'] );
-		$order->mb_update_meta_data( '_'.$this->mbway_id.'_phone', $order_mbway_details['phone'] );
-		$order->mb_update_meta_data( '_'.$this->mbway_id.'_val', $order_mbway_details['val'] );
-		$order->mb_update_meta_data( '_'.$this->mbway_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
-		$order->mb_update_meta_data( '_'.$this->mbway_id.'_exp', $this->get_mbway_expiration() );
+		$order->update_meta_data( '_'.$this->mbway_id.'_mbwaykey', $order_mbway_details['mbwaykey'] );
+		$order->update_meta_data( '_'.$this->mbway_id.'_id_pedido', $order_mbway_details['id_pedido'] );
+		$order->update_meta_data( '_'.$this->mbway_id.'_phone', $order_mbway_details['phone'] );
+		$order->update_meta_data( '_'.$this->mbway_id.'_val', $order_mbway_details['val'] );
+		$order->update_meta_data( '_'.$this->mbway_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
+		$order->update_meta_data( '_'.$this->mbway_id.'_exp', $this->get_mbway_expiration() );
+		$order->save();
 	}
 
 	/* Get MBWAY expiration date/time */
@@ -972,38 +976,40 @@ final class WC_IfthenPay_Webdados {
 	/* Set new order Payshop Reference details on meta */
 	public function multibanco_set_order_payshop_details( $order_id, $order_payshop_details ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$order->mb_update_meta_data( '_'.$this->payshop_id.'_payshopkey', $order_payshop_details['payshopkey'] );
-		$order->mb_update_meta_data( '_'.$this->payshop_id.'_ref', $order_payshop_details['ref'] );
-		$order->mb_update_meta_data( '_'.$this->payshop_id.'_request_id', $order_payshop_details['request_id'] );
-		$order->mb_update_meta_data( '_'.$this->payshop_id.'_id', $order_payshop_details['id'] );
-		$order->mb_update_meta_data( '_'.$this->payshop_id.'_val', $order_payshop_details['val'] );
-		$order->mb_update_meta_data( '_'.$this->payshop_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
-		if ( isset( $order_payshop_details['exp'] ) ) $order->mb_update_meta_data( '_'.$this->payshop_id.'_exp', $order_payshop_details['exp'] );
+		$order->update_meta_data( '_'.$this->payshop_id.'_payshopkey', $order_payshop_details['payshopkey'] );
+		$order->update_meta_data( '_'.$this->payshop_id.'_ref', $order_payshop_details['ref'] );
+		$order->update_meta_data( '_'.$this->payshop_id.'_request_id', $order_payshop_details['request_id'] );
+		$order->update_meta_data( '_'.$this->payshop_id.'_id', $order_payshop_details['id'] );
+		$order->update_meta_data( '_'.$this->payshop_id.'_val', $order_payshop_details['val'] );
+		$order->update_meta_data( '_'.$this->payshop_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
+		if ( isset( $order_payshop_details['exp'] ) ) $order->update_meta_data( '_'.$this->payshop_id.'_exp', $order_payshop_details['exp'] );
+		$order->save();
 	}
 
 	/* Set new order Credit Card details on meta */
 	public function multibanco_set_order_creditcard_details( $order_id, $order_creditcard_details ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_creditcardkey', $order_creditcard_details['creditcardkey'] );
-		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_request_id', $order_creditcard_details['request_id'] );
-		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_id', $order_creditcard_details['id'] );
-		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_val', $order_creditcard_details['val'] );
-		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_payment_url', $order_creditcard_details['payment_url'] );
-		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
+		$order->update_meta_data( '_'.$this->creditcard_id.'_creditcardkey', $order_creditcard_details['creditcardkey'] );
+		$order->update_meta_data( '_'.$this->creditcard_id.'_request_id', $order_creditcard_details['request_id'] );
+		$order->update_meta_data( '_'.$this->creditcard_id.'_id', $order_creditcard_details['id'] );
+		$order->update_meta_data( '_'.$this->creditcard_id.'_val', $order_creditcard_details['val'] );
+		$order->update_meta_data( '_'.$this->creditcard_id.'_payment_url', $order_creditcard_details['payment_url'] );
+		$order->update_meta_data( '_'.$this->creditcard_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
+		$order->save();
 	}
 
 	/* Get/Create Multibanco Reference */
 	public function multibanco_get_ref( $order_id, $force_change = false ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Force change: '.( $force_change ? 'true' : 'false' ).' - Order '.$order->mb_get_id() );
+		$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Force change: '.( $force_change ? 'true' : 'false' ).' - Order '.$order->get_id() );
 		if ( $this->wc_deposits_active ) {
 			if ( ! $this->multibanco_deposits_already_forced ) {
-				if ( $order->mb_get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' && is_checkout() && has_action( 'woocommerce_thankyou' ) ) {
-					if ( $order->mb_get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) {
-						if ( $order->mb_get_meta( '_wc_deposits_second_payment_paid' ) == 'no' ) {
+				if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' && is_checkout() && has_action( 'woocommerce_thankyou' ) ) {
+					if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) {
+						if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) == 'no' ) {
 							$force_change = true;
 							$this->multibanco_deposits_already_forced = true;
-							$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Force change: true, because of WC Deposits - Order '.$order->mb_get_id() );
+							$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Force change: true, because of WC Deposits - Order '.$order->get_id() );
 						}
 					}
 				}
@@ -1016,7 +1022,7 @@ final class WC_IfthenPay_Webdados {
 				&&
 				$order_mb_details = $this->get_multibanco_order_details( $order_id )
 			) {
-				$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Got reference from database '.serialize( $order_mb_details ).' - Order '.$order->mb_get_id() );
+				$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Got reference from database '.serialize( $order_mb_details ).' - Order '.$order->get_id() );
 				//Already created, return it!
 				return array(
 					'ent' => $order_mb_details['ent'],
@@ -1056,15 +1062,15 @@ final class WC_IfthenPay_Webdados {
 						) {
 							if ( isset( $this->multibanco_ents_no_repeat[ $base['ent'] ] ) && intval( $this->multibanco_ents_no_repeat[ $base['ent'] ] ) > 0 ) {
 								//No repeat in x days
-								$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - will create reference (No repeat in x days) - Order '.$order->mb_get_id() );
+								$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - will create reference (No repeat in x days) - Order '.$order->get_id() );
 								$ref = $this->multibanco_create_ref( $base['ent'], $base['subent'], $this->get_multibanco_ref_seed(), $this->get_order_total_to_pay( $order ), intval( $this->multibanco_ents_no_repeat[ $base['ent'] ] ) );
 							} else {
 								if ( in_array( intval( $base['ent'] ), $this->multibanco_ents_no_check_digit ) && ( $this->multibanco_settings['use_order_id'] =='yes' ) ) {
 									//Special entities with no check digit and (eventually) expiration date - We can use the order ID
-									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Special entities with no check digit and (eventually) expiration date) - Order '.$order->mb_get_id() );
+									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Special entities with no check digit and (eventually) expiration date) - Order '.$order->get_id() );
 									$ref = $this->multibanco_create_ref_no_check_digit( $base['ent'], $base['subent'], $order_id, $this->get_order_total_to_pay( $order ) );
 								} else {
-									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Default mode) - Order '.$order->mb_get_id() );
+									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Default mode) - Order '.$order->get_id() );
 									$ref = $this->multibanco_create_ref( $base['ent'], $base['subent'], $this->get_multibanco_ref_seed(), $this->get_order_total_to_pay( $order ) ); //For random mode - Less loop possibility
 								}
 							}
@@ -1206,7 +1212,7 @@ final class WC_IfthenPay_Webdados {
 							);
 					} else {
 						$payshop = new WC_Payshop_IfThen_Webdados;
-						if ( $payshop->webservice_set_pedido( $order->mb_get_id() ) ) {
+						if ( $payshop->webservice_set_pedido( $order->get_id() ) ) {
 							return $this->get_payshop_order_details( $order_id );
 						} else {
 							return __( 'Error contacting IfthenPay servers to create Payshop Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' );
@@ -1223,7 +1229,7 @@ final class WC_IfthenPay_Webdados {
 	public function multibanco_woocommerce_checkout_update_order_meta( $order_id ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		//Avoid duplicate instructions on the email...
-		if ( $order->mb_get_payment_method() == $this->multibanco_id ) {
+		if ( $order->get_payment_method() == $this->multibanco_id ) {
 			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Force ref generation before anything - Order '.$order_id );
 			$ref = $this->multibanco_get_ref( $order_id );
 			//That should do it...
@@ -1237,16 +1243,16 @@ final class WC_IfthenPay_Webdados {
 		if( ! method_exists( $order, 'mb_get_total' ) ) {
 			$order = new WC_Order_MB_Ifthen( $order->get_id() );
 		}
-		$order_total_to_pay = $order->mb_get_total();
+		$order_total_to_pay = $order->get_total();
 		if ( $this->wc_deposits_active ) {
 			//Has deposit
-			if ( $order->mb_get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) {
+			if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) {
 				//First payment?
-				if ( $order->mb_get_meta( '_wc_deposits_deposit_paid' ) != 'yes' && $order->mb_get_status() != 'partially-paid' ) {
-					$order_total_to_pay = floatval( $order->mb_get_meta( '_wc_deposits_deposit_amount' ) );
+				if ( $order->get_meta( '_wc_deposits_deposit_paid' ) != 'yes' && $order->get_status() != 'partially-paid' ) {
+					$order_total_to_pay = floatval( $order->get_meta( '_wc_deposits_deposit_amount' ) );
 				} else {
 					//Second payment
-					$order_total_to_pay = floatval( $order->mb_get_meta( '_wc_deposits_second_payment' ) );
+					$order_total_to_pay = floatval( $order->get_meta( '_wc_deposits_second_payment' ) );
 				}
 			}
 		}
@@ -1282,13 +1288,13 @@ final class WC_IfthenPay_Webdados {
 			//Our order object
 			$order = new WC_Order_MB_Ifthen( $order_id );
 
-			switch( $order->mb_get_payment_method() ) {
+			switch( $order->get_payment_method() ) {
 
 				//Multibanco
 				case $this->multibanco_id:
 					if ( $this->version >= '1.7.9.2' ) {
 						//Details already existed - Let's check the order status
-						$order_status = $order->mb_get_status();
+						$order_status = $order->get_status();
 						if ( $this->order_needs_payment( $order ) ) {
 	
 							$order_total_to_pay = $this->get_order_total_to_pay( $order );
@@ -1306,7 +1312,7 @@ final class WC_IfthenPay_Webdados {
 									$this->woocommerce_new_customer_note_fix_wpml_do_it( $order_id );
 								}
 								$ref = $this->multibanco_get_ref( $order_id, true );
-								$this->debug_log( $this->multibanco_id, 'Order '.$order->mb_get_id().' value changed' );
+								$this->debug_log( $this->multibanco_id, 'Order '.$order->get_id().' value changed' );
 								if ( is_array( $ref ) ) {
 									$order->add_order_note(
 										sprintf(
@@ -1373,7 +1379,7 @@ wc_price( $order_total_to_pay )
 
 					//Payshop
 					case $this->payshop_id:
-						$order_status = $order->mb_get_status();
+						$order_status = $order->get_status();
 						if ( $this->order_needs_payment( $order ) ) {
 
 							$order_total_to_pay = $this->get_order_total_to_pay( $order );
@@ -1391,7 +1397,7 @@ wc_price( $order_total_to_pay )
 									$this->woocommerce_new_customer_note_fix_wpml_do_it( $order_id );
 								}
 								$ref = $this->payshop_get_ref( $order_id, true );
-								$this->debug_log( $this->payshop_id, 'Order '.$order->mb_get_id().' value changed' );
+								$this->debug_log( $this->payshop_id, 'Order '.$order->get_id().' value changed' );
 								if ( is_array( $ref ) ) {
 									$order->add_order_note(
 										sprintf(
@@ -1537,7 +1543,7 @@ wc_price( $order_total_to_pay )
 	public function woocommerce_payment_complete_reduce_order_stock( $reduce, $order_id, $payment_method, $stock_when ) {
 		if ( $reduce ) {
 			$order = new WC_Order_MB_Ifthen( $order_id );
-			if ( $order->mb_get_payment_method() == $payment_method ) {
+			if ( $order->get_payment_method() == $payment_method ) {
 				if ( version_compare( WC_VERSION, '3.4.0', '>=' ) ) { //https://github.com/woocommerce/woocommerce/commit/70c9cff608761fcd48b57f709059e00b1ffeee38#diff-27a48ce67fa604181c90b4bb464164ac
 					//After 3.4.0
 					if ( $this->order_needs_payment( $order ) ) {
@@ -1662,7 +1668,7 @@ wc_price( $order_total_to_pay )
 	public function multibanco_sms_instructions( $message, $order_id ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
-		if ( $order->mb_get_payment_method() == $this->multibanco_id ) {
+		if ( $order->get_payment_method() == $this->multibanco_id ) {
 			if ( $this->order_needs_payment( $order ) ) {
 				$ref = $this->multibanco_get_ref( $order_id );
 				if ( is_array( $ref) ) {
@@ -1704,7 +1710,7 @@ wc_price( $order_total_to_pay )
 	public function payshop_sms_instructions( $message, $order_id ) {
 		$order = new WC_Order_MB_Ifthen( $order_id );
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
-		if ( $order->mb_get_payment_method() == $this->payshop_id ) {
+		if ( $order->get_payment_method() == $this->payshop_id ) {
 			if ( $this->order_needs_payment( $order ) ) {
 				$ref = $this->payshop_get_ref( $order_id );
 				if ( is_array( $ref) ) {
@@ -1861,7 +1867,7 @@ wc_price( $order_total_to_pay )
 	public function woocommerce_new_customer_note_fix_wpml_do_it( $order_id ) {
 		global $sitepress;
 		$order = new WC_Order_MB_Ifthen( $order_id );
-		$lang = $order->mb_get_wpml_language();
+		$lang = $order->get_meta( 'wpml_language' );
 		if( !empty( $lang ) && $lang != $sitepress->get_default_language() ){
 			$this->mb_ifthen_locale = $sitepress->get_locale( $lang ); //Set global to be used on wpml_ajax_fix_locale_do_it above
 			add_filter( 'plugin_locale', array( $this, 'wpml_ajax_fix_locale_do_it' ), 1, 2 );
@@ -1946,7 +1952,7 @@ wc_price( $order_total_to_pay )
 		if ( intval( $order_id ) > 0 && intval( $_POST['order_id'] ) == intval( $order_id ) ) {
 			$order = new WC_Order_MB_Ifthen( intval( $order_id ) );
 			echo json_encode(
-				array( 'order_status' => $order->mb_get_status() )
+				array( 'order_status' => $order->get_status() )
 			);
 		} else {
 			echo json_encode(
@@ -1963,7 +1969,7 @@ wc_price( $order_total_to_pay )
 				$order = new WC_Order_MB_Ifthen( intval( $_REQUEST['order_id'] ) );
 				$mbway = new WC_MBWAY_IfThen_Webdados;
 				$phone = isset( $_REQUEST['phone'] ) ? trim( sanitize_text_field( $_REQUEST['phone'] ) ) : '';
-				if ( $mbway->webservice_set_pedido( $order->mb_get_id(), $phone ) ) {
+				if ( $mbway->webservice_set_pedido( $order->get_id(), $phone ) ) {
 					echo json_encode( array(
 						'status' => 1,
 						'message'  => __( 'MB WAY Payment has been requested', 'multibanco-ifthen-software-gateway-for-woocommerce' )
@@ -2000,7 +2006,7 @@ wc_price( $order_total_to_pay )
 		$order_id = $order->get_id();
 		$order = new WC_Order_MB_Ifthen( intval( $order_id ) );
 
-		if ( in_array( $order->mb_get_payment_method() , array( $this->multibanco_id, $this->mbway_id, $this->creditcard_id , $this->payshop_id ) ) ) {
+		if ( in_array( $order->get_payment_method() , array( $this->multibanco_id, $this->mbway_id, $this->creditcard_id , $this->payshop_id ) ) ) {
 			$statuses = array_unique( array_merge( $statuses, $this->unpaid_statuses ) );
 		}
 
@@ -2020,7 +2026,7 @@ wc_price( $order_total_to_pay )
 			$order_id = $order->get_id();
 			$order = new WC_Order_MB_Ifthen( intval( $order_id ) );
 
-			switch( $order->mb_get_payment_method() ) {
+			switch( $order->get_payment_method() ) {
 				case $this->multibanco_id:
 					if ( apply_filters( 'multibanco_ifthen_hide_my_account_pay_button', false ) ) unset( $actions['pay'] );
 					break;
@@ -2110,7 +2116,7 @@ wc_price( $order_total_to_pay )
 	 */
 	public function order_needs_payment( $order ) {
 		if ( method_exists( $order, 'mb_get_status' ) ) {
-			return $order->needs_payment() || $order->mb_get_status() == 'on-hold' || $order->mb_get_status() == 'pending';
+			return $order->needs_payment() || $order->get_status() == 'on-hold' || $order->get_status() == 'pending';
 		} else {
 			//Credit Card and Payshop might send us a regular WooCommerce order and not ours - In the future this is the only one to be used
 			return $order->needs_payment() || $order->get_status() == 'on-hold' || $order->get_status() == 'pending';
