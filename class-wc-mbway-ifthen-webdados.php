@@ -41,7 +41,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			$this->has_fields = true;
 
 			$this->method_title = __( 'Pagamento MB WAY no telemóvel (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			$this->method_description = __( 'Easy and simple payment using “MB WAY” on your mobile phone. (Only available for customers of Portuguese banks with MB WAY app installed. Payment service provided by IfthenPay.)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_description = __( 'Easy and simple payment using “MB WAY” on your mobile phone. (Only available for customers of Portuguese banks with MB WAY app installed - Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			if ( WC_IfthenPay_Webdados()->wc_subscriptions_active && $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
 				$this->supports = array(
 					'products',
@@ -507,7 +507,7 @@ Chave anti-phishing (MB WAY):
 URL:
 '.WC_IfthenPay_Webdados()->mbway_notify_url.'
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Payshop (IfthenPay) for WooCommerce” para '.$to.' com CC para '.$cc;
+Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit Card and Payshop (IfthenPay) for WooCommerce” para '.$to.' com CC para '.$cc;
 				$headers = array(
 					'From: '.get_option( 'admin_email' ).' <'.get_option( 'admin_email' ).'>',
 					'Cc: '.$cc
@@ -773,7 +773,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						} else {
 							//Processing
-							if ( $order->has_status( 'processing' ) ) {
+							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'mbway_ifthen_email_instructions_payment_received_send', true, $order_id ) ) {
 									echo $this->email_instructions_payment_received( $order_id );
 								}

@@ -39,7 +39,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			$this->has_fields = false;
 
 			$this->method_title = __( 'Pagamento de Serviços no Multibanco (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			$this->method_description = __( 'Easy and simple payment using “Pagamento de Serviços” at any “Multibanco” ATM terminal or your Home Banking service. (Only available to customers of Portuguese banks. Payment service provided by IfthenPay.)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_description = __( 'Easy and simple payment using “Pagamento de Serviços” at any “Multibanco” ATM terminal or your Home Banking service. (Only available to customers of Portuguese banks - Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			if ( WC_IfthenPay_Webdados()->wc_subscriptions_active && $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
 				$this->supports = array(
 					'products',
@@ -612,7 +612,7 @@ Chave anti-phishing (Multibanco):
 URL:
 '.WC_IfthenPay_Webdados()->multibanco_notify_url.'
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Payshop (IfthenPay) for WooCommerce” para '.$to.' com CC para '.$cc;
+Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit Card and Payshop (IfthenPay) for WooCommerce” para '.$to.' com CC para '.$cc;
 				$headers = array(
 					'From: '.get_option( 'admin_email' ).' <'.get_option( 'admin_email' ).'>',
 					'Cc: '.$cc
@@ -832,7 +832,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY and Paysh
 							}
 						} else {
 							//Processing
-							if ( $order->has_status( 'processing' ) ) {
+							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'multibanco_ifthen_email_instructions_payment_received_send', true, $order_id ) ) {
 									echo $this->email_instructions_payment_received( $order_id );
 								}

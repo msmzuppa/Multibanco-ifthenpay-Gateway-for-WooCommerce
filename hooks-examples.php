@@ -13,6 +13,10 @@ add_filter( 'multibanco_ifthen_show_callback_notice', '__return_false' );
 add_filter( 'mbway_ifthen_show_callback_notice', '__return_false' );
 
 
+// Payshop - Hide non requested callback notice
+add_filter( 'payshop_ifthen_show_callback_notice', '__return_false' );
+
+
 // Multibanco - Format Multibanco reference
 add_filter( 'multibanco_ifthen_format_ref', 'my_multibanco_ifthen_format_ref' );
 function my_multibanco_ifthen_format_ref( $ref ) {
@@ -277,7 +281,25 @@ function my_multibanco_ifthen_unpaid_order_cancelled( $order_id ) {
 }
 
 
-// MB WAY - Cancel orders if "Manage stock" and "Hold stock (minutes)" are configured - Be advised that the MB WAY reference will still be active and can be paid
+// Payshop - Cancel orders if "Manage stock" and "Hold stock (minutes)" are configured - Be advised that the Payshop reference will still be active and can be paid
+add_filter( 'payshop_ifthen_cancel_unpaid_orders', '__return_true' );
+
+
+// Payshop - Restore stock on cancelled unpaid orders
+add_filter( 'payshop_ifthen_cancel_unpaid_orders_restore_stock', 'my_payshop_ifthen_cancel_unpaid_orders_restore_stock', 10, 2 );
+function my_payshop_ifthen_cancel_unpaid_orders_restore_stock( $bool, $order_id ) {
+	return true;
+}
+
+
+// Payshop - Action when the unpaid orders is cancelled
+add_action( 'payshop_ifthen_unpaid_order_cancelled', 'my_payshop_ifthen_unpaid_order_cancelled' );
+function my_payshop_ifthen_unpaid_order_cancelled( $order_id ) {
+	wp_mail( 'email@your.domain', 'Payshop unpaid order #'.$order_id.' cancelled', 'Payshop unpaid order #'.$order_id.' cancelled' );
+}
+
+
+// MB WAY - Cancel orders if "Manage stock" and "Hold stock (minutes)" are configured - Should not be needed as MBWAY status is pending and WooCommerce should take care of it by itself
 add_filter( 'mbway_ifthen_cancel_unpaid_orders', '__return_true' );
 
 

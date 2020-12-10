@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Multibanco, MBWAY and Payshop (IfthenPay) for WooCommerce
+ * Plugin Name: Multibanco, MBWAY, Credit Card and Payshop (IfthenPay) for WooCommerce
  * Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
- * Description: This plugin allows customers with a Portuguese bank account to pay WooCommerce orders using Multibanco (Pag. Serviços) and MB WAY, through IfthenPay’s payment gateway.
+ * Description: This plugin allows customers with a Portuguese bank account to pay WooCommerce orders using Multibanco (Pag. Serviços), MB WAY, Credit Card and Payshop through IfthenPay’s payment gateway.
  * Version: 4.4.6
  * Author: Webdados
  * Author URI: https://www.webdados.pt
@@ -42,6 +42,7 @@ if ( in_array( 'woocommerce/woocommerce.php', (array) get_option( 'active_plugin
 			require_once( dirname( __FILE__ ) . '/class-wc-multibanco-ifthen-webdados.php' );
 			require_once( dirname( __FILE__ ) . '/class-wc-mbway-ifthen-webdados.php' );
 			if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
+				require_once( dirname( __FILE__ ) . '/class-wc-creditcard-ifthen-webdados.php' );
 				require_once( dirname( __FILE__ ) . '/class-wc-payshop-ifthen-webdados.php' );
 			}
 			$GLOBALS['WC_IfthenPay_Webdados'] = WC_IfthenPay_Webdados();
@@ -75,7 +76,7 @@ if ( in_array( 'woocommerce/woocommerce.php', (array) get_option( 'active_plugin
 function admin_notices_mbifthen_woocommerce_not_active() {
 	?>
 	<div class="notice notice-error is-dismissible">
-		<p><?php _e( '<strong>Multibanco, MBWAY and Payshop (IfthenPay) for WooCommerce</strong> is installed and active but <strong>WooCommerce (2.6.0 or above)</strong> is not.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
+		<p><?php _e( '<strong>Multibanco, MBWAY, Credit Card and Payshop (IfthenPay) for WooCommerce</strong> is installed and active but <strong>WooCommerce (2.6.0 or above)</strong> is not.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
 	</div>
 	<?php
 }

@@ -17,6 +17,7 @@ final class WC_IfthenPay_Webdados {
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
 	public $mbway_id      = 'mbway_ifthen_for_woocommerce';
 	public $payshop_id    = 'payshop_ifthen_for_woocommerce';
+	public $creditcard_id = 'creditcard_ifthen_for_woocommerce';
 
 	/* Debug */
 	public $log = null;
@@ -76,6 +77,17 @@ final class WC_IfthenPay_Webdados {
 	public $payshop_banner                  = '';
 	public $payshop_icon                    = '';
 
+
+	/* Internal variables - For Credit Card */
+	public $creditcard_settings     = null;
+	public $creditcard_notify_url   = '';
+	public $creditcard_min_value    = 1; /* TBC */
+	public $creditcard_max_value    = 999999; /* TBC */
+	public $creditcard_banner_email = ''; /* Needed ? */
+	public $creditcard_banner       = ''; /* Needed ? */
+	public $creditcard_icon         = '';
+
+
 	/* Internal variables - This is here because on the main class duplication still happens - Fixed by checking class instances */
 	//public $instructions_sent_to_client = false;
 	//public $instructions_sent_to_admin = false;
@@ -125,6 +137,15 @@ final class WC_IfthenPay_Webdados {
 			home_url( '/?wc-api=WC_Payshop_IfThen_Webdados&chave=[CHAVE_ANTI_PHISHING]&id_cliente=[ID_CLIENTE]&id_transacao=[ID_TRANSACAO]&referencia=[REFERENCIA]&valor=[VALOR]&estado=[ESTADO]&datahorapag=[DATA_HORA_PAGAMENTO]' )
 			:
 			home_url( '/wc-api/WC_Payshop_IfThen_Webdados/?chave=[CHAVE_ANTI_PHISHING]&id_cliente=[ID_CLIENTE]&id_transacao=[ID_TRANSACAO]&referencia=[REFERENCIA]&valor=[VALOR]&estado=[ESTADO]&datahorapag=[DATA_HORA_PAGAMENTO]' )
+		);
+		//Credit Card
+		$this->creditcard_settings      = get_option( 'woocommerce_creditcard_ifthen_for_woocommerce_settings', '' );
+		$this->creditcard_notify_url    = (
+			get_option( 'permalink_structure' ) == ''
+			?
+			home_url( '/?wc-api=WC_CreditCard_IfThen_Webdados' )
+			:
+			home_url( '/wc-api/WC_CreditCard_IfThen_Webdados/' )
 		);
 		//Hooks
 		$this->init_hooks();
@@ -205,6 +226,10 @@ final class WC_IfthenPay_Webdados {
 		$this->payshop_banner_email    = plugins_url( 'images/banner_payshop.png', __FILE__ );
 		$this->payshop_banner          = plugins_url( 'images/payshop_banner.svg', __FILE__ );
 		$this->payshop_icon            = plugins_url( 'images/payshop_icon.svg', __FILE__ );
+
+		$this->creditcard_banner_email = plugins_url( 'images/banner_creditcard.png', __FILE__ );
+		$this->creditcard_banner       = plugins_url( 'images/creditcard_banner.svg', __FILE__ );
+		$this->creditcard_icon         = plugins_url( 'images/creditcard_icon.svg', __FILE__ );
 	}
 
 	/* Add settings link to plugin actions */
@@ -214,6 +239,7 @@ final class WC_IfthenPay_Webdados {
 			'mbway_settings' => '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->mbway_id.'">' . __( 'MB WAY settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>',
 		);
 		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
+			$action_links['creditcard_settings'] = '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->creditcard_id.'">' . __( 'Credit Card settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>';
 			$action_links['payshop_settings'] = '<a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->payshop_id.'">' . __( 'Payshop settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>';
 		}
 		return array_merge( $action_links, $links );
@@ -225,8 +251,9 @@ final class WC_IfthenPay_Webdados {
 		$methods[] = 'WC_Multibanco_IfThen_Webdados';
 		//MB WAY
 		$methods[] = 'WC_MBWAY_IfThen_Webdados';
-		//Payshop
-		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) { //Payshop only for WooCommerce 3.0 and above
+		//Credit Card and Payshop
+		if ( version_compare( WC_VERSION, '3.0', '>=' ) ) { //Only for WooCommerce 3.0 and above
+			$methods[] = 'WC_CreditCard_IfThen_Webdados';
 			$methods[] = 'WC_Payshop_IfThen_Webdados';
 		}
 		return $methods;
@@ -241,6 +268,7 @@ final class WC_IfthenPay_Webdados {
   			$payment_method_registry->register( $payment_method_instance );
   		}
   		//MB WAY - soon
+  		//Credit Card - soon
   		//Payshop - soon
 	}
 
@@ -443,6 +471,27 @@ final class WC_IfthenPay_Webdados {
 				'val'        => $val,
 				'time'       => $time,
 				'exp'        => $exp,
+			);
+		}
+		return false;
+	}
+
+	/* Get Credit Card order details */
+	public function get_creditcard_order_details( $order_id ) {
+		$order         = new WC_Order_MB_Ifthen( $order_id );
+		$creditcardkey = $order->mb_get_meta( '_'.$this->payshop_id.'_creditcardkey' );
+		$id            = $order->mb_get_meta( '_'.$this->payshop_id.'_id' );
+		$request_id    = $order->mb_get_meta( '_'.$this->payshop_id.'_request_id' );
+		$val           = $order->mb_get_meta( '_'.$this->payshop_id.'_val' );
+		$time          = $order->mb_get_meta( '_'.$this->payshop_id.'_time' );
+		if ( !empty( $creditcardkey ) && !empty( $id ) && !empty( $request_id )  && !empty( $val ) ) {
+			return array(
+				'creditcardkey' => $creditcardkey,
+				'ref'           => $ref,
+				'request_id'    => $request_id,
+				'id'            => $id,
+				'val'           => $val,
+				'time'          => $time,
 			);
 		}
 		return false;
@@ -723,9 +772,23 @@ final class WC_IfthenPay_Webdados {
 					).'.</p>';
 				}
 				break;
+			//Credit Card
+			case $this->creditcard_id:
+				if (
+					$order_mb_details = $this->get_creditcard_order_details( $order->mb_get_id() )
+				) {
+					//...
+				} else {
+					echo '<p>'.__( 'No details available', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'.</p><p>'.sprintf(
+						__( 'This must be an error because the payment method of this order is %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'Credit Card'
+					).'.</p>';
+
+				}
+				break;
 			//None
 			default:
-				echo '<p>'.__( 'No details available', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'.</p><p>'.__( 'The payment method of this order is not Multibanco, MB WAY or Payshop', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'.</p>';
+				echo '<p>'.__( 'No details available', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'.</p><p>'.__( 'The payment method of this order is not Multibanco, MB WAY, Credit Card or Payshop', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'.</p>';
 				echo '<style type="text/css">#'.$this->multibanco_id.' { display: none; }</style>';
 				//If we have Multibanco data, we should delete it
 				if ( $order_mb_details = $this->get_multibanco_order_details( $order->mb_get_id() ) ) {
@@ -743,6 +806,12 @@ final class WC_IfthenPay_Webdados {
 				if ( $order_mb_details = $this->get_payshop_order_details( $order->mb_get_id() ) ) {
 					foreach ( $order_mb_details as $key => $value ) {
 						$order->mb_delete_meta_data( '_'.$this->payshop_id.'_'.$key );
+					}
+				}
+				//If we have Credit Card data, we should delete it
+				if ( $order_mb_details = $this->get_creditcard_order_details( $order->mb_get_id() ) ) {
+					foreach ( $order_mb_details as $key => $value ) {
+						$order->mb_delete_meta_data( '_'.$this->creditcard_id.'_'.$key );
 					}
 				}
 				break;
@@ -859,6 +928,16 @@ final class WC_IfthenPay_Webdados {
 		$order->mb_update_meta_data( '_'.$this->payshop_id.'_val', $order_payshop_details['val'] );
 		$order->mb_update_meta_data( '_'.$this->payshop_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
 		if ( isset( $order_payshop_details['exp'] ) ) $order->mb_update_meta_data( '_'.$this->payshop_id.'_exp', $order_payshop_details['exp'] );
+	}
+
+	/* Set new order Credit Card details on meta */
+	public function multibanco_set_order_creditcard_details( $order_id, $order_creditcard_details ) {
+		$order = new WC_Order_MB_Ifthen( $order_id );
+		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_creditcardkey', $order_creditcard_details['_creditcardkey'] );
+		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_request_id', $order_creditcard_details['request_id'] );
+		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_id', $order_creditcard_details['id'] );
+		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_val', $order_creditcard_details['val'] );
+		$order->mb_update_meta_data( '_'.$this->creditcard_id.'_time', date_i18n( 'Y-m-d H:i:s' ) );
 	}
 
 	/* Get/Create Multibanco Reference */
@@ -1127,7 +1206,7 @@ final class WC_IfthenPay_Webdados {
 
 	/* Get total to pay */
 	public function get_order_total_to_pay( $order ) {
-		//Make sure it's a WC_Order_MB_Ifthen (from Payshop)
+		//Make sure it's a WC_Order_MB_Ifthen (from Payshop or Credit Card)
 		if( ! method_exists( $order, 'mb_get_total' ) ) {
 			$order = new WC_Order_MB_Ifthen( $order->get_id() );
 		}
@@ -1466,7 +1545,10 @@ wc_price( $order_total_to_pay )
 		if ( apply_filters( 'multibanco_ifthen_cancel_unpaid_orders', false ) ) {
 			$methods[] = $this->multibanco_id;
 		}
-		if ( apply_filters( 'mbway_ifthen_cancel_unpaid_orders', false ) ) {
+		if ( apply_filters( 'payshop_ifthen_cancel_unpaid_orders', false ) ) {
+			$methods[] = $this->payshop_id;
+		}
+		if ( apply_filters( 'mbway_ifthen_cancel_unpaid_orders', false ) ) { //Doesn't make sense, but the developer could set it to on-hold...
 			$methods[] = $this->mbway_id;
 		}
 		if ( count( $methods ) > 0 ) {
@@ -1491,6 +1573,10 @@ wc_price( $order_total_to_pay )
 								case $this->multibanco_id:
 									$filter_stock = 'multibanco_ifthen_cancel_unpaid_orders_restore_stock';
 									$action = 'multibanco_ifthen_unpaid_order_cancelled';
+									break;
+								case $this->payshop_id:
+									$filter_stock = 'payshop_ifthen_cancel_unpaid_orders_restore_stock';
+									$action = 'payshop_ifthen_unpaid_order_cancelled';
 									break;
 								case $this->mbway_id:
 									$filter_stock = 'mbway_ifthen_cancel_unpaid_orders_restore_stock';
@@ -1878,7 +1964,7 @@ wc_price( $order_total_to_pay )
 		$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
 		$order = new WC_Order_MB_Ifthen( intval( $order_id ) );
 
-		if ( in_array( $order->mb_get_payment_method() , array( $this->multibanco_id, $this->mbway_id, $this->payshop_id ) ) ) {
+		if ( in_array( $order->mb_get_payment_method() , array( $this->multibanco_id, $this->mbway_id, $this->creditcard_id , $this->payshop_id ) ) ) {
 			$statuses = array_unique( array_merge( $statuses, $this->unpaid_statuses ) );
 		}
 
@@ -1905,6 +1991,8 @@ wc_price( $order_total_to_pay )
 				case $this->mbway_id:
 					if ( apply_filters( 'mbway_ifthen_hide_my_account_pay_button', false ) ) unset( $actions['pay'] );
 					break;
+				case $this->creditcard_id:
+					if ( apply_filters( 'creditcard_ifthen_hide_my_account_pay_button', false ) ) unset( $actions['pay'] );
 				case $this->payshop_id:
 					if ( apply_filters( 'payshop_ifthen_hide_my_account_pay_button', false ) ) unset( $actions['pay'] );
 					break;
@@ -1988,7 +2076,7 @@ wc_price( $order_total_to_pay )
 		if ( method_exists( $order, 'mb_get_status' ) ) {
 			return $order->needs_payment() || $order->mb_get_status() == 'on-hold' || $order->mb_get_status() == 'pending';
 		} else {
-			//Payshop might send us a regular WooCommerce order and not ours - In the future this is the only one to be used
+			//Credit Card and Payshop might send us a regular WooCommerce order and not ours - In the future this is the only one to be used
 			return $order->needs_payment() || $order->get_status() == 'on-hold' || $order->get_status() == 'pending';
 		}
 	}
@@ -2091,7 +2179,7 @@ wc_price( $order_total_to_pay )
 				if ( count( $notices ) > 0 ) {
 					?>
 					<div class="notice notice-error notice-alt">
-						<p><strong><?php _e( 'Multibanco, MBWAY and Payshop (IfthenPay) for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+						<p><strong><?php _e( 'Multibanco, MBWAY, Credit Card and Payshop (IfthenPay) for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 						<p>
 							<?php _e( 'We are working on implementing the latest and safest technology, so you will soon need:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						</p>
