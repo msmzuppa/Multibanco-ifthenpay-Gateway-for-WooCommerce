@@ -278,13 +278,6 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 													.( WC_IfthenPay_Webdados()->wpml_active ? ' '.__( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ), 
 									'default' => $this->get_method_description()
 								),
-					'small_icon' => array(
-									'title' => __( 'Use small icon?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'type' => 'checkbox', 
-									'label' => __( 'Use a small Multibanco icon on the checkout', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'default' => 'yes',
-									'description' => __( 'Non-small icons are deprecated and will be removed soon. If you enable this option you’ll not be able to disable it again.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-								),
 					'extra_instructions' => array(
 									'title' => __( 'Extra instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'textarea',
@@ -396,7 +389,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 									'default' => 'no',
 									'description' => sprintf(
 														__( 'Log plugin events, such as callback requests, in %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-														( version_compare( WC_VERSION, '3.0', '>=' ) && defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )
+														( defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )
 														?
 														'<a href="admin.php?page=wc-status&tab=logs&source='.esc_attr( $this->id ).'" target="_blank">'.__( 'WooCommerce &gt; Status &gt; Logs', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</a>'
 														:
@@ -408,7 +401,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 									'type' => 'email',
 									'label' => __( 'Enable email logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'default' => '',
-									'description' => __( 'Send plugin events to this email address, such as callback requests.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'description' => __( 'Send main plugin events to this email address, such as callback requests.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								)
 				)	);
 			//}
@@ -419,11 +412,6 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 								'default' => 0
 							),
 			) );
-
-			//Deprecate non-small icons
-			if ( $this->get_option( 'small_icon', 'yes' ) == 'yes' ) {
-				unset( $this->form_fields['small_icon'] );
-			}
 
 			//Allow other plugins to add settings fields
 			$this->form_fields = array_merge( $this->form_fields , apply_filters( 'multibanco_ifthen_multibanco_settings_fields', array( ) ) );
@@ -630,8 +618,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 * Icon HTML
 		 */
 		public function get_icon() {
-			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id.'_title', $this->title ) : $this->title );
-			$icon_html = ( $this->get_option( 'small_icon', 'yes' ) == 'yes' ? '<img src="'.esc_url( WC_IfthenPay_Webdados()->multibanco_icon ).'" alt="'.esc_attr( $alt ).'" width="25" height="24"/>' : '<img src="'.esc_url( WC_IfthenPay_Webdados()->multibanco_banner ).'" alt="'.esc_attr( $alt ).'" width="114" height="24"/>' );
+			$alt       = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id.'_title', $this->title ) : $this->title );
+			$icon_html = '<img src="'.esc_url( WC_IfthenPay_Webdados()->multibanco_icon ).'" alt="'.esc_attr( $alt ).'" width="25" height="24"/>';
 			return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
 		}
 
@@ -640,11 +628,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 */
 		function thankyou( $order_id ) {
 			if ( is_object( $order_id ) ) {
-				$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order_id->get_id() : $order_id->id;
+				$order_id = $order_id->get_id();
 			}
 			$order = new WC_Order_MB_Ifthen( $order_id );
 			if ( $this->id === $order->mb_get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
+					//We might have to deal with deposits...
 					$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order_id );
 					if ( is_array( $ref ) ) {
 						echo $this->thankyou_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order_id );
@@ -784,7 +773,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			$this->debug_log_extra( 'Email ('.$email_id.') instructions send: '.( $send ? 'true' : 'false' ) );
 			//Send
 			if ( $send ) {
-				$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
+				$order_id = $order->get_id();
 				$order = new WC_Order_MB_Ifthen( $order_id );
 				//Go
 				if ( $this->id === $order->mb_get_payment_method() ) {
@@ -913,7 +902,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 */
 		function sms_instructions_yith( $placeholders, $order ) {
 			if ( is_array($placeholders) ) {
-				$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
+				$order_id = $order->get_id();
 				$placeholders['{multibanco_ifthen}'] = WC_IfthenPay_Webdados()->multibanco_sms_instructions( '', $order_id );
 			}
 			return $placeholders;
@@ -940,7 +929,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) $order->mb_reduce_order_stock();
 			
 			// Remove cart
-			WC()->cart->empty_cart();
+			if ( isset( WC()->cart ) ) {
+				WC()->cart->empty_cart();
+			}
 			
 			// Empty awaiting payment session
 			if ( isset( $_SESSION['order_awaiting_payment'] ) ) unset( $_SESSION['order_awaiting_payment'] );
@@ -954,7 +945,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 					$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because mode is incremental_expire - Order '.$order->mb_get_id() );
 				} else {
 					$base = apply_filters( 'multibanco_ifthen_base_ent_subent', array( 'ent' => WC_IfthenPay_Webdados()->multibanco_settings['ent'], 'subent' => WC_IfthenPay_Webdados()->multibanco_settings['subent'] ), $order );
-					if ( version_compare( WC_VERSION, '3.0', '>=' ) && isset( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) && intval( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) > 0 ) {
+					if ( isset( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) && intval( WC_IfthenPay_Webdados()->multibanco_ents_no_repeat[ $base['ent'] ] ) > 0 ) {
 						$clear_details = true;
 						$this->debug_log_extra( 'process_payment - Is pay form, clear details from database to force new ref because its a special entity with no repetition of references - Order '.$order->mb_get_id() );
 					} else {
@@ -1092,52 +1083,22 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				if ( $arguments_ok ) { // Isto deve ser separado em vários IFs para melhor se identificar o erro
 					$orders_exist = false;
 					$orders_count = 0;
-					if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
-						//The old way
-						$args = array(
-							'post_type' => 'shop_order',
-							'post_status' => array( 'wc-on-hold', 'wc-pending' ),
-							'posts_per_page' => -1,
-							'meta_query' => array(
-								array(
-									'key' => '_'.$this->id.'_ent',
-									'value' => $ent,
-									'compare' => 'LIKE'
-								),
-								array(
-									'key' => '_'.$this->id.'_ref',
-									'value' => $ref,
-									'compare' => 'LIKE'
-								)
-							)
-						);
-						$the_query = new WP_Query( $args );
-						if ( $the_query->have_posts() ) {
-							$orders_exist = true;
-							$orders_count = $the_query->post_count;
-							while ( $the_query->have_posts() ) : $the_query->the_post();
-								$order = new WC_Order_MB_Ifthen( $the_query->post->ID );
-							endwhile;
-						}
-					} else {
-						$pending_status = apply_filters( 'multibanco_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
-						$args = array(
-							'type'               => array( 'shop_order' ),
-							'status'             => $pending_status,
-							'limit'              => -1,
-							'_'.$this->id.'_ent' => $ent,
-							'_'.$this->id.'_ref' => $ref,
-						);
-						$orders = wc_get_orders( $args );
-						if ( count($orders)>0 ) {
-							$orders_exist = true;
-							$orders_count = count($orders);
-							foreach ( $orders as $order ) {
-								$order = new WC_Order_MB_Ifthen( $order->get_id() );
-							}
+					$pending_status = apply_filters( 'multibanco_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
+					$args = array(
+						'type'               => array( 'shop_order' ),
+						'status'             => $pending_status,
+						'limit'              => -1,
+						'_'.$this->id.'_ent' => $ent,
+						'_'.$this->id.'_ref' => $ref,
+					);
+					$orders = wc_get_orders( $args );
+					if ( count($orders)>0 ) {
+						$orders_exist = true;
+						$orders_count = count($orders);
+						foreach ( $orders as $order ) {
+							$order = new WC_Order_MB_Ifthen( $order->get_id() );
 						}
 					}
-
 					if ( $orders_exist ) {
 						if ( $orders_count == 1 ) {
 							if (

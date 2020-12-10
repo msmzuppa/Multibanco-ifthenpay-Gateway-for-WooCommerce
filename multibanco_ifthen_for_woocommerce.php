@@ -41,10 +41,10 @@ if ( in_array( 'woocommerce/woocommerce.php', (array) get_option( 'active_plugin
 			require_once( dirname( __FILE__ ) . '/class-wc-order-mb-ifthen.php' );
 			require_once( dirname( __FILE__ ) . '/class-wc-multibanco-ifthen-webdados.php' );
 			require_once( dirname( __FILE__ ) . '/class-wc-mbway-ifthen-webdados.php' );
-			if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
+			if ( version_compare( WC_VERSION, '4.0', '>=' ) ) {
 				require_once( dirname( __FILE__ ) . '/class-wc-creditcard-ifthen-webdados.php' );
-				require_once( dirname( __FILE__ ) . '/class-wc-payshop-ifthen-webdados.php' );
 			}
+			require_once( dirname( __FILE__ ) . '/class-wc-payshop-ifthen-webdados.php' );
 			$GLOBALS['WC_IfthenPay_Webdados'] = WC_IfthenPay_Webdados();
 			/* Add settings links - This is here because inside the main class we cannot call the correct plugin_basename( __FILE__ ) */
 			add_filter( 'plugin_action_links_'.plugin_basename( __FILE__ ), array( WC_IfthenPay_Webdados(), 'add_settings_link' ) );

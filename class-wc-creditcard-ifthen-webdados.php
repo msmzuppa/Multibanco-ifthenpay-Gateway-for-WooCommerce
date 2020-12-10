@@ -39,7 +39,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$this->has_fields = false;
 
 			$this->method_title       = __( 'Credit or Debit Card (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			$this->method_description = __( 'Easy and simple payment using a Credit or Debit Card. (Payment service provided by IfthenPay via BNP Paribas)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_description = __( 'Easy and simple payment using a Credit or Debit Card. (Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			/*if ( $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
 				$this->supports = array(
 					'products',
@@ -52,7 +52,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			}*/
 
 			//Webservice
-			$this->api_url = 'https://ifthenpay.com/api/creditcard/sandbox/init/';
+			$this->api_url = 'https://ifthenpay.com/api/creditcard/sandbox/init/'; //test mode
 	
 			//Plugin options and settings
 			$this->init_form_fields();
@@ -85,10 +85,10 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				//add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 4 ); - "Hyyan WooCommerce Polylang Integration" removes this action
 				add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions_1' ), 10, 4 ); //Avoid "Hyyan WooCommerce Polylang Integration" remove_action
 		
-				// Payment listener/API hook
+				// Payment listener - Return from payment gateway
 				add_action( 'woocommerce_api_wc_creditcard_ifthen_webdados', array( $this, 'callback' ) );
 		
-				// Admin notice if callback activation email is still not sent
+				// Admin notices
 				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 
 			}
@@ -238,7 +238,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 									'label' => __( 'Enable logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'default' => 'no',
 									'description' => sprintf(
-														__( 'Log plugin events, such as callback requests, in %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+														__( 'Log plugin events in %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 														( defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )
 														?
 														'<a href="admin.php?page=wc-status&tab=logs&source='.esc_attr( $this->id ).'" target="_blank">'.__( 'WooCommerce &gt; Status &gt; Logs', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</a>'
@@ -251,7 +251,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 									'type' => 'email',
 									'label' => __( 'Enable email logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'default' => '',
-									'description' => __( 'Send plugin events to this email address, such as callback requests.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'description' => __( 'Send main plugin events to this email address.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								)
 				) );
 			//}
@@ -274,7 +274,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				<?php if ( ! apply_filters( 'multibanco_ifthen_hide_settings_right_bar', false ) ) WC_IfthenPay_Webdados()->admin_right_bar(); ?>
 				<div id="wc_ifthen_settings">
 					<h2>
-						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner ); ?>" alt="<?php echo esc_attr( $title ); ?>" width="182" height="48"/>
+						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner ); ?>" alt="<?php echo esc_attr( $title ); ?>" width="68" height="48"/>
 						<br/>
 						<?php echo $title; ?>
 						<small>v.<?php echo $this->version; ?></small>
@@ -361,14 +361,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 					
-					//Coming from the gateway? Show the error and send the customer to the payment form
-					//...
-					//Another payment option
-					?>
-					<p class="<?php echo $this->id; ?>_pay_another_method <?php echo $this->id; ?>_text_small">
-						<a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="button"><?php _e( 'Click here if you wish to use another payment method', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ?></a>
-					</p>
-					<?php
+					//We are only going to be here if it's a deposit payment. We might have to deal with it...
 
 				} else {
 					//Processing
@@ -475,7 +468,11 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						}
 						//On Hold or pending
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
-							//We should not be here because there's no email for pending orders
+							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
+								//WooCommerce deposits - No instructions
+							} else {
+								//We should not be here because there's no email for pending orders
+							}
 						} else {
 							//Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
@@ -497,7 +494,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			ob_start();
 			?>
 			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;">
-				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcar_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
+				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
 				<strong><?php _e( 'Credit or Debit Card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
@@ -511,24 +508,62 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		 * API Init Payment
 		 */
 		function api_init_payment( $order_id ) {
-
 			$id            = $order_id; //We could randomize this...
 			$order         = wc_get_order( $order_id );
+			$valor         = round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
 			$creditcardkey = apply_filters( 'multibanco_ifthen_base_creditcardkey', $this->creditcardkey, $order );
+			$url           = $this->api_url.'/'.$creditcardkey;
 			$args          = array(
 				'method'   => 'POST',
 				'timeout'  => apply_filters( 'creditcard_ifthen_api_timeout', 30 ),
 				'blocking' => true,
 				'body'     => array(
 					'orderId'     => (string) $id,
-					'amount'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
+					'amount'      => (string) $valor,
 					'successUrl'  => add_query_arg( 'status', 'success', WC_IfthenPay_Webdados()->creditcard_notify_url ),
 					'errorUrl'    => add_query_arg( 'status', 'error', WC_IfthenPay_Webdados()->creditcard_notify_url ),
 					'cancelUrl'   => add_query_arg( 'status', 'cancel', WC_IfthenPay_Webdados()->creditcard_notify_url ),
 				),
 			);
-			var_dump($args);
 			$args['body'] = json_encode( $args['body'] ); //Json not post variables
+			$response = wp_remote_post( $url, $args );
+			if ( is_wp_error( $response ) ) {
+				$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - '.$response->get_error_message();
+				$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+				return false;
+			} else {
+				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) == 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
+					if ( $body = json_decode( trim( $response['body'] ) ) ) {
+						if ( intval( $body->Status ) == 0 ) {
+							WC_IfthenPay_Webdados()->multibanco_set_order_creditcard_details( $order_id, array(
+								'creditcardkey' => $creditcardkey,
+								'request_id'    => $body->RequestId,
+								'id'            => $id,
+								'val'           => $valor,
+								'payment_url'   => $body->PaymentUrl,
+							) );
+							$this->debug_log( '- Credit Card payment request created on IfthenPay servers - Redirecting to payment gateway - Order '.$order_id.' - RequestId: '.$body->RequestId );
+							do_action( 'creditcard_ifthen_created_reference', $body->RequestId, $order_id );
+							return $body->PaymentUrl;
+						} else {
+							$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - Error code and message: '.$body->Status.' / '.$body->Message;
+							$this->debug_log( $debug_msg, 'error', true, $debug_msg );
+							return false;
+						}
+					} else {
+						$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - Can not json_decode body';
+						$this->debug_log( $debug_msg, 'error', true, $debug_msg );
+						return false;
+					}
+				} else {
+					$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - Incorrect response code: '.$response['response']['code'];
+					$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+					$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+					return false;
+				}
+			}
+
 
 			return false;
 
@@ -604,17 +639,24 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		function process_payment( $order_id ) {
 			//Webservice
 			$order = wc_get_order( $order_id );
-			if ( $this->api_init_payment( $order_id ) ) {
+			if ( $redirect_url = $this->api_init_payment( $order_id ) ) {
+				//WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
+				if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
+					add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
+					add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
+				}
 				//Mark pending
 				$order->update_status( 'pending', __( 'Awaiting Credit Card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-				// Remove cart
-				WC()->cart->empty_cart();
+				// Remove cart - not now, only after paid
+				//if ( isset( WC()->cart ) ) {
+				//	WC()->cart->empty_cart();
+				//}
 				// Empty awaiting payment session
 				if ( isset( $_SESSION['order_awaiting_payment'] ) ) unset($_SESSION['order_awaiting_payment'] );
 				// Return payment url redirect
 				return array(
-					'result' => 'success',
-					'redirect' => $this->get_return_url( $order ) //Payment gateway URL
+					'result'   => 'success',
+					'redirect' => $redirect_url //Payment gateway URL
 				);
 			} else {
 				wc_add_notice( __( 'Error contacting IfthenPay servers to create Credit Card Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
@@ -662,147 +704,159 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
+			//As in PayPal, we only empty the cart if it was paid
+			if ( isset( WC()->cart ) ) {
+				WC()->cart->empty_cart();
+			}
 		}
 
 		/**
 		 * Callback - Return from the payment gateway
 		 */
 		function callback() {
-			
-			/*@ob_clean();
-			//We must 1st check the situation and then process it and send email to the store owner in case of error.
+
+			$redirect_url = '';
+			$error        = false;
+			$order_id     = 0;
+			$orders_exist = false;
+
 			if (
-				isset( $_GET['chave'] )
+				isset( $_GET['status'] )
 				&&
-				isset( $_GET['id_cliente'] )
+				isset( $_GET['id'] )
 				&&
-				isset( $_GET['id_transacao'] )
+				isset( $_GET['amount'] )
 				&&
-				isset( $_GET['referencia'] )
-				&&
-				isset( $_GET['valor'] )
-				&&
-				isset( $_GET['estado'] )
+				isset( $_GET['requestId'] )
 			) {
-				//Let's process it
-				$this->debug_log( '- Callback ('.$_SERVER['REQUEST_URI'].') with all arguments from '.$_SERVER['REMOTE_ADDR'] );
-				$referencia   = trim( $_GET['referencia'] );
-				$id_cliente   = trim( $_GET['id_cliente'] );
-				$id_transacao = str_replace( ' ', '+', trim( $_GET['id_transacao'] ) ); //If there's a plus sign on the URL We'll get it as a space, so we need to get it back
-				$val          = floatval( $_GET['valor'] );
-				$estado       = trim( $_GET['estado'] );
-				$arguments_ok = true;
-				$arguments_error = '';
-				if ( trim( $_GET['chave'] ) != trim( $this->secret_key ) ) {
-					$arguments_ok = false;
-					$arguments_error .= ' - Key';
-				}
-				if ( !is_numeric( $referencia ) ) {
-					$arguments_ok = false;
-					$arguments_error .= ' - Referencia (numeric)';
-				}
-				if ( trim( $id_cliente ) == '' ) {
-					$arguments_ok = false;
-					$arguments_error .= ' - id_cliente';
-				}
-				if ( trim( $id_transacao ) == '' ) {
-					$arguments_ok = false;
-					$arguments_error .= ' - id_transacao';
-				}
-				if ( !$val >= 1 ) {
-					$arguments_ok = false;
-					$arguments_error .= ' - Value';
-				}
-				if ( $arguments_ok ) { //Isto deve ser separado em vários IFs para melhor se identificar o erro
-					if ( trim( $estado ) == 'PAGO' ) {
-						$orders_exist = false;
-						
-						
-						$pending_status = apply_filters( 'creditcard_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
-						$args = array(
-							'type'                      => array( 'shop_order' ),
-							'status'                    => $pending_status,
-							'limit'                     => -1,
-							'_'.$this->id.'_request_id' => $id_transacao,
-							'_'.$this->id.'_ref'        => $referencia,
-							'_'.$this->id.'_id'         => $id_cliente,
-						);
-						$orders = wc_get_orders( $args );
-						if ( count($orders)>0 ) {
-							$orders_exist = true;
-							$orders_count = count($orders);
-							foreach ( $orders as $order ) {
-								$order = wc_get_order( $order->get_id() );
-							}
-						}
+				$this->debug_log( '- Callback ('.$_SERVER['REQUEST_URI'].') with all arguments' );
+				$request_id = trim( $_GET['requestId'] );
+				$id         = trim( $_GET['id'] );
+				$val        = floatval( $_GET['amount'] );
+				switch( trim( $_GET['status'] ) ) {
 
-						if ( $orders_exist ) {
-							if ( $orders_count == 1 ) {
-								if (
-									floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) )
-									// TEMPORARY - https://github.com/woocommerce/woocommerce/issues/26582
-									||
-									WC_IfthenPay_Webdados()->should_fix_woocommerce_420()
-								) {
-									if ( WC_IfthenPay_Webdados()->should_fix_woocommerce_420() && ( floatval( $val ) != floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) ) {
-										$this->debug_log( '-- Credit Card payment received but value does not match - Order '.$order->get_id().' - Callbak value '.floatval( $val ).' - Order value '.floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 'warning' );
+					case 'success':
+						$get_order = $this->callback_helper_get_pending_order( $request_id, $id, $val );
+						if ( $get_order['success'] && $get_order['order'] ) {
+							$order = $get_order['order'];
+							$order_id = $order->get_id();
+							$note = __( 'Credit or Debit Card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+							//WooCommerce Deposits second payment?
+							if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
+								if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { //Has deposit
+									if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) { //First payment - OK!
+										if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { //Second payment - not ok
+											if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $val ) ) { //This really seems like the second payment
+												//Set the current order status temporarly back to partially-paid, but first stop the emails
+												add_filter( 'woocommerce_email_enabled_customer_partially_paid', '__return_false' );
+												add_filter( 'woocommerce_email_enabled_partial_payment', '__return_false' );
+												$order->update_status( 'partially-paid', __( 'Temporary status. Used to force WooCommerce Deposits to correctly set the order to processing.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+											}
+										}
 									}
-									$note=__( 'Credit Card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-									if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] )!='' ) {
-										$note.=' '.trim( $_GET['datahorapag'] );
-									}
-									$this->payment_complete( $order, '', $note );
-									do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id() );
-									
-									header( 'HTTP/1.1 200 OK' );
-									$this->debug_log( '-- Credit Card payment received - Order '.$order->get_id(), 'notice', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - Payshop payment received' );
-									echo 'OK - Credit Card payment received';
-								} else {	
-									header( 'HTTP/1.1 200 OK' );
-									$err = 'Error: The value does not match';
-									$this->debug_log( '-- '.$err.' - Order '.$order->get_id(), 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - The value does not match' );
-									echo $err;
-									do_action( 'creditcard_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET );
 								}
-							} else {
-								header( 'HTTP/1.1 200 OK' );
-								$err = 'Error: More than 1 order found awaiting payment with these details';
-								$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - More than 1 order found awaiting payment with these details' );
-								echo $err;
-								do_action( 'creditcard_ifthen_callback_payment_failed', 0, $err, $_GET );
 							}
-
+							$this->payment_complete( $order, '', $note );
+							do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id() );
+							wp_redirect( $this->get_return_url( $order ) );
+							exit;
 						} else {
-							header( 'HTTP/1.1 200 OK' );
-							$err = 'Error: No orders found awaiting payment with these details';
-							$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No orders found awaiting payment with these details' );
-							echo $err;
-							do_action( 'creditcard_ifthen_callback_payment_failed', 0, $err, $_GET );
+							$error = $get_order['error'];
 						}
-					} else {
-						header( 'HTTP/1.1 200 OK' );
-						$err = 'Error: Cannot process '.trim( $estado ).' status';
-						$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - Cannot process '.trim( $estado ).' status' );
-						echo $err;
-						do_action( 'creditcard_ifthen_callback_payment_failed', 0, $err, $_GET );
-					}
+						break;
 
-				} else {
-					//header("Status: 400");
-					$err = 'Argument errors';
-					$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') with argument errors from '.$_SERVER['REMOTE_ADDR'].$arguments_error );
-					do_action( 'creditcard_ifthen_callback_payment_failed', 0, $err, $_GET );
-					wp_die( $err, 'WC_CreditCard_IfThen_Webdados', array( 'response' => 500 ) ); //Sends 500
+					case 'error':
+						//No additional $_GET field with the error code or message?
+						$get_order = $this->callback_helper_get_pending_order( $request_id, $id, $val );
+						if ( $get_order['success'] && $get_order['order'] ) {
+							$order = $get_order['order'];
+							$order_id = $order->get_id();
+							$error = __( 'Payment failed on the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce');
+							$order->update_status( 'failed', $error );
+						} else {
+							$error = __( 'Payment failed on the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce').' - '.$get_order['error'];
+						}
+						wc_add_notice( $error, 'error' );
+						$redirect_url = wc_get_checkout_url();
+						break;
+
+					case 'cancel':
+						$get_order = $this->callback_helper_get_pending_order( $request_id, $id, $val );
+						if ( $get_order['success'] && $get_order['order'] ) {
+							$order = $get_order['order'];
+							$order_id = $order->get_id();
+							$error = __( 'Payment cancelled by the customer at the gateway.', 'multibanco-ifthen-software-gateway-for-woocommerce');
+							$order->update_status( 'failed', $error );
+							$redirect_url = $order->get_cancel_order_url_raw();
+						} else {
+							$error = __( 'Payment cancelled by the customer at the gateway.', 'multibanco-ifthen-software-gateway-for-woocommerce').' - '.$get_order['error'];
+						}
+						wc_add_notice( $error, 'error' );
+						break;
+
+					default:
+						//??
+						break;
+
 				}
 			} else {
-				//header("Status: 400");
-				$err = 'Callback ('.$_SERVER['REQUEST_URI'].') with missing arguments from '.$_SERVER['REMOTE_ADDR'];
-				$this->debug_log( '- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') with missing arguments from '.$_SERVER['REMOTE_ADDR'] );
-				do_action( 'creditcard_ifthen_callback_payment_failed', 0, $err, $_GET );
-				wp_die( 'Error: Something is missing...', 'WC_CreditCard_IfThen_Webdados', array( 'response' => 500 ) ); //Sends 500
+				$error = 'Callback ('.$_SERVER['REQUEST_URI'].') with missing arguments';
 			}
-			*/
 
+			//Error and redirect
+			if ( $error ) {
+				$this->debug_log( '- '.$error, 'warning', true, $error );
+				do_action( 'creditcard_ifthen_callback_payment_failed', $order_id, $error, $_GET );
+				if ( $redirect_url ) {
+					wp_redirect( $redirect_url );
+				} else {
+					//???
+				}
+				exit;
+			}
+
+		}
+
+		function callback_helper_get_pending_order( $request_id, $id, $val ) {
+			$return = array(
+				'success' => false,
+				'error'   => false,
+				'order'   => false,
+			);
+			$pending_status = apply_filters( 'creditcard_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
+			$args = array(
+				'type'                      => array( 'shop_order' ),
+				'status'                    => $pending_status,
+				'limit'                     => -1,
+				'_'.$this->id.'_request_id' => $request_id,
+				'_'.$this->id.'_id'         => $id,
+			);
+			$orders = wc_get_orders( $args );
+			if ( count( $orders ) > 0 ) {
+				$orders_exist = true;
+				$orders_count = count( $orders );
+				foreach ( $orders as $order ) {
+					$order = wc_get_order( $order->get_id() );
+				}
+			}
+			if ( $orders_exist ) {
+				if ( $orders_count == 1 ) {
+					if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
+						$return['success'] = true;
+						$return['order']   = $order;
+						return $return;
+					} else {
+						$return['error'] = 'Error: More than 1 order found awaiting payment with these details';
+						return $return;
+					}
+				} else {
+					$return['error'] = 'Error: No orders found awaiting payment with these details';
+					return $return;
+				}
+			} else {
+				$return['error'] = 'Error: The value does not match';
+				return $return;
+			}
 		}
 
 		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
@@ -822,7 +876,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			) {
 				?>
 				<div id="creditcard_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
-					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 182px;"/>
+					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 68px;"/>
 					<p>
 						<?php
 							echo sprintf(

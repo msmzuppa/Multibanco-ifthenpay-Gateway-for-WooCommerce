@@ -30,7 +30,7 @@ If not, get to know our new plugin: [Invoicing with InvoiceXpress for WooCommerc
 
 * Generates a Multibanco Reference for simple payment on the Portuguese ATM network or Home Banking service;
 * Allows the customer to pay using MB WAY using his mobile phone;
-* Allows the customer to pay using his Credit or Debit Card;
+* Allows the customer to pay using his Credit or Debit Card (WooCommerce >= 4.0);
 * Generates a Payshop Reference for simple payment on the [Payshop agents network](https://www.payshop.pt/fepsapl/app/open/showSearchAgent.jspx), CTT stores or post offices available all over Portugal;
 * Automatically changes the order status to “Processing” (or “Completed” if the order only contains virtual downloadable products) and notifies both the customer and the store owner, if the automatic “Callback” upon payment is activated; 
 * Automatic “Callback” can be activated upon request to IfthenPay, via the plugin settings screen for each payment method;
@@ -174,12 +174,14 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 == Changelog ==
 
 = ... =
-* New payment method available: “Credit or Debit Card”
+* You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
+* New payment method available: “Credit or Debit Card” (WooCommerce >= 4.0)
 * Plugin name changed
 
 * Requires WooCommerce 3.0.0 or above
 * **For WooCommerce 2.6.0 support you need to use [version 4.4.7](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.7.zip)**
 
+* Remove non-small icons
 * Bugfix: check for the “Completed” status on mbway.js, in addition to “Processing”
 * Bugfix: PHP notice on Multibanco “Incremental references with expiration date” mode
 * Full readme.txt and hooks-examples.php revision

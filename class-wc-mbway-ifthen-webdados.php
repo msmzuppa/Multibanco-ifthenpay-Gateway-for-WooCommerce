@@ -225,13 +225,6 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 													.( WC_IfthenPay_Webdados()->wpml_active ? ' '.__( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ), 
 									'default' => $this->get_method_description()
 								),
-					'small_icon' => array(
-									'title' => __( 'Use small icon?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'type' => 'checkbox', 
-									'label' => __( 'Use a small MB WAY icon on the checkout', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'default' => 'yes',
-									'description' => __( 'Non-small icons are deprecated and will be removed soon. If you enable this option you’ll not be able to disable it again.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-								),
 					'extra_instructions' => array(
 									'title' => __( 'Extra instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'textarea',
@@ -313,7 +306,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									'default' => 'no',
 									'description' => sprintf(
 														__( 'Log plugin events, such as callback requests, in %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-														( version_compare( WC_VERSION, '3.0', '>=' ) && defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )
+														( defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )
 														?
 														'<a href="admin.php?page=wc-status&tab=logs&source='.esc_attr( $this->id ).'" target="_blank">'.__( 'WooCommerce &gt; Status &gt; Logs', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</a>'
 														:
@@ -325,7 +318,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									'type' => 'email',
 									'label' => __( 'Enable email logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'default' => '',
-									'description' => __( 'Send plugin events to this email address, such as callback requests.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'description' => __( 'Send main plugin events to this email address, such as callback requests.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								)
 				) );
 			//}
@@ -336,11 +329,6 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 								'default' => 0
 							),
 			) );
-
-			//Deprecate non-small icons
-			if ( $this->get_option( 'small_icon', 'yes' ) == 'yes' ) {
-				unset( $this->form_fields['small_icon'] );
-			}
 
 			//Allow other plugins to add settings fields
 			$this->form_fields = array_merge( $this->form_fields , apply_filters( 'multibanco_ifthen_mbway_settings_fields', array( ) ) );
@@ -525,8 +513,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 * Icon HTML
 		 */
 		public function get_icon() {
-			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id.'_title', $this->title ) : $this->title );
-			$icon_html = ( $this->get_option( 'small_icon', 'yes' ) == 'yes' ? '<img src="'.esc_url( WC_IfthenPay_Webdados()->mbway_icon ).'" alt="'.esc_attr( $alt ).'" width="25" height="24"/>' : '<img src="'.esc_url( WC_IfthenPay_Webdados()->mbway_banner ).'" alt="'.esc_attr( $alt ).'" width="57" height="24"/>' );
+			$alt       = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id.'_title', $this->title ) : $this->title );
+			$icon_html = '<img src="'.esc_url( WC_IfthenPay_Webdados()->mbway_icon ).'" alt="'.esc_attr( $alt ).'" width="25" height="24"/>';
 			return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
 		}
 
@@ -535,11 +523,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 */
 		function thankyou( $order_id ) {
 			if ( is_object( $order_id ) ) {
-				$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order_id->get_id() : $order_id->id;
+				$order_id = $order_id->get_id();
 			}
 			$order = new WC_Order_MB_Ifthen( $order_id );
 			if ( $this->id === $order->mb_get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
+					//We might have to deal with deposits...
 					if ( date_i18n( 'Y-m-d H:i:s', strtotime( '-'.intval( WC_IfthenPay_Webdados()->mbway_minutes * WC_IfthenPay_Webdados()->mbway_multiplier_new_payment * 60 ).' SECONDS', current_time( 'timestamp' ) ) ) > $order->mb_get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_time' ) ) {
 						//Expired
 						$expired = true;
@@ -739,7 +728,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			//$this->debug_log( 'Email instructions send: '.( $send ? 'true' : 'false' ) );
 			//Send
 			if ( $send ) {
-				$order_id = version_compare( WC_VERSION, '3.0', '>=' ) ? $order->get_id() : $order->id;
+				$order_id = $order->get_id();
 				$order = new WC_Order_MB_Ifthen( $order_id );
 				//Go
 				if ( $this->id === $order->mb_get_payment_method() ) {
@@ -956,7 +945,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 					$order->update_status( 'pending', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				}
 				// Remove cart
-				WC()->cart->empty_cart();
+				if ( isset( WC()->cart ) ) {
+					WC()->cart->empty_cart();
+				}
 				// Empty awaiting payment session
 				if ( isset( $_SESSION['order_awaiting_payment'] ) ) unset($_SESSION['order_awaiting_payment'] );
 				// Return thankyou redirect
@@ -1099,58 +1090,34 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 					//Payments
 					if ( trim( $estado ) == 'PAGO' ) {
 						$orders_exist = false;
-						if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
-							//The old way
-							$args = array(
-								'post_type' => 'shop_order',
-								'post_status' => array( 'wc-on-hold', 'wc-pending' ),
-								'posts_per_page' => -1,
-								'meta_query' => array(
-									array(
-										'key' => '_'.$this->id.'_id_pedido',
-										'value' => $id_pedido,
-										'compare' => 'LIKE'
-									)
-								)
-							);
-							$the_query = new WP_Query( $args );
-							if ( $the_query->have_posts() ) {
-								$orders_exist = true;
-								$orders_count = $the_query->post_count;
-								while ( $the_query->have_posts() ) : $the_query->the_post();
-									$order = new WC_Order_MB_Ifthen( $the_query->post->ID );
-								endwhile;
+						$pending_status = apply_filters( 'mbway_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
+						$args = array(
+							'type'                     => array( 'shop_order' ),
+							'status'                   => $pending_status,
+							'limit'                    => -1,
+							'_'.$this->id.'_id_pedido' => $id_pedido,
+						);
+						$orders = wc_get_orders( $args );
+						if ( count($orders)>0 ) {
+							$orders_exist = true;
+							$orders_count = count($orders);
+							foreach ( $orders as $order ) {
+								$order = new WC_Order_MB_Ifthen( $order->get_id() );
 							}
 						} else {
-							$pending_status = apply_filters( 'mbway_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); //Double filter - Should we deprectate this one?
-							$args = array(
-								'type'                     => array( 'shop_order' ),
-								'status'                   => $pending_status,
-								'limit'                    => -1,
-								'_'.$this->id.'_id_pedido' => $id_pedido,
-							);
-							$orders = wc_get_orders( $args );
-							if ( count($orders)>0 ) {
-								$orders_exist = true;
-								$orders_count = count($orders);
-								foreach ( $orders as $order ) {
-									$order = new WC_Order_MB_Ifthen( $order->get_id() );
+							$err = 'Error: No orders found awaiting payment with these details - We are going to try by reference (order id) only';
+							$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No orders found awaiting payment with these details - We are going to try by reference only (if, immediately after, you get the “MB WAY payment received” log entry, you can ignore this error)' );
+							//Maybe the webservice timed-out and we are getting the payment anyway?
+							try {
+								$order = new WC_Order_MB_Ifthen( intval( $referencia ) );
+								//Maybe we should check for failed?
+								if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
+									$orders_exist = true;
+									$orders_count = 1;
 								}
-							} else {
-								$err = 'Error: No orders found awaiting payment with these details - We are going to try by reference (order id) only';
-								$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No orders found awaiting payment with these details - We are going to try by reference only (if, immediately after, you get the “MB WAY payment received” log entry, you can ignore this error)' );
-								//Maybe the webservice timed-out and we are getting the payment anyway?
-								try {
-									$order = new WC_Order_MB_Ifthen( intval( $referencia ) );
-									//Maybe we should check for failed?
-									if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
-										$orders_exist = true;
-										$orders_count = 1;
-									}
-								} catch ( Exception $e ) {
-									$err = 'Error: No orders found awaiting payment with these details - '.$e->getMessage().' - Order '.intval( $referencia );
-									$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No orders found awaiting payment with these detailss - '.$e->getMessage().' - Order '.intval( $referencia ) );
-								}
+							} catch ( Exception $e ) {
+								$err = 'Error: No orders found awaiting payment with these details - '.$e->getMessage().' - Order '.intval( $referencia );
+								$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No orders found awaiting payment with these detailss - '.$e->getMessage().' - Order '.intval( $referencia ) );
 							}
 						}
 						//Order ID?
@@ -1217,33 +1184,30 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 					//Refunds
 					} elseif ( trim( $estado ) == 'DEVOLVIDO' ) {
 						$refunds_exist = false;
-						//Only for WC 3.0 and up, come on....
-						if ( version_compare( WC_VERSION, '3.0', '>=' ) ) {
-							//Find the exact refund
-							$args = array(
-								'type'    => array( 'shop_order_refund' ), //Refund
-								//'status'  => 'completed',                //Not nedded?
-								'limit'   => -1,
-								'parent'  => intval( $referencia ),        //Child of original order
-								'orderby' => 'modified',
-								'order'   => 'ASC',                        //Oldest recent refunds first, so we process them in order if there are several
-							);
-							$refunds = wc_get_orders( $args );
-							foreach ( $refunds as $refund ) {
-								if ( $refund->get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received' ) == '' ) {
-									if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $refund ) ) ) {
-										//Get parent order and add a note
-										if ( $order = wc_get_order( intval( $referencia ) ) ) {
-											$note = sprintf(
-												__( 'MB WAY callback received for refund #%s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-												$refund->get_id()
-											);
-											$order->add_order_note( $note );
-											//Set as callback received so we do not process it again
-											$refund->update_meta_data( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received', date_i18n( 'Y-m-d H:i:s' ) );
-											$refund->save();
-											$refunds_exist = true;
-										}
+						//Find the exact refund
+						$args = array(
+							'type'    => array( 'shop_order_refund' ), //Refund
+							//'status'  => 'completed',                //Not nedded?
+							'limit'   => -1,
+							'parent'  => intval( $referencia ),        //Child of original order
+							'orderby' => 'modified',
+							'order'   => 'ASC',                        //Oldest recent refunds first, so we process them in order if there are several
+						);
+						$refunds = wc_get_orders( $args );
+						foreach ( $refunds as $refund ) {
+							if ( $refund->get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received' ) == '' ) {
+								if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $refund ) ) ) {
+									//Get parent order and add a note
+									if ( $order = wc_get_order( intval( $referencia ) ) ) {
+										$note = sprintf(
+											__( 'MB WAY callback received for refund #%s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+											$refund->get_id()
+										);
+										$order->add_order_note( $note );
+										//Set as callback received so we do not process it again
+										$refund->update_meta_data( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received', date_i18n( 'Y-m-d H:i:s' ) );
+										$refund->save();
+										$refunds_exist = true;
 									}
 								}
 							}

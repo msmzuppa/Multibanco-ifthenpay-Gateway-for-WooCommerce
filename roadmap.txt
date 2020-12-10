@@ -1,5 +1,15 @@
-4.0.0:
+5.0.0:
 
+- Credit Card
+	- Testar os vários cenários de callback:
+		- Cancelamento : Feito
+		- Authentication KO - FAILURE : Volta ao ecrã de pagamento
+		- Technical Problem - ERROR : ERRO -> Vai para o SUCCESS
+		- Authentication OK - SUCCESS : Feito
+		- Authentication not realized - ATTEMPT : ERRO -> Vai para o SUCCESS
+	- Implementar e testar compatibilidade com o Deposits: Feito
+
+- Remover suporte WC < 3.0 de uma vez por todas (!!!)
 
 
 FUTURO:

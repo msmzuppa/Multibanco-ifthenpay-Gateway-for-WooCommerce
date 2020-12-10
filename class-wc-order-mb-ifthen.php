@@ -24,7 +24,7 @@ class WC_Order_MB_Ifthen extends WC_Order {
 	 * Returns the unique key for this order.
 	 */
 	public function mb_get_order_key() {
-		return ? $this->get_order_key();
+		return $this->get_order_key();
 	}
 
 	/**

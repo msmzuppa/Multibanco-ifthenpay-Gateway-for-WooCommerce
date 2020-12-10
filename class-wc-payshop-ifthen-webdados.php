@@ -229,13 +229,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 													.( WC_IfthenPay_Webdados()->wpml_active ? ' '.__( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ), 
 									'default' => $this->get_method_description()
 								),
-					'small_icon' => array(
-									'title' => __( 'Use small icon?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'type' => 'checkbox', 
-									'label' => __( 'Use a small Payshop icon on the checkout', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'default' => 'yes',
-									'description' => __( 'Non-small icons are deprecated and will be removed soon. If you enable this option you’ll not be able to disable it again.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-								),
 					'extra_instructions' => array(
 									'title' => __( 'Extra instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'textarea',
@@ -345,7 +338,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 									'type' => 'email',
 									'label' => __( 'Enable email logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'default' => '',
-									'description' => __( 'Send plugin events to this email address, such as callback requests.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'description' => __( 'Send main plugin events to this email address, such as callback requests.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								)
 				) );
 			//}
@@ -356,11 +349,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 								'default' => 0
 							),
 			) );
-
-			//Deprecate non-small icons
-			if ( $this->get_option( 'small_icon', 'yes' ) == 'yes' ) {
-				unset( $this->form_fields['small_icon'] );
-			}
 
 			//Allow other plugins to add settings fields
 			$this->form_fields = array_merge( $this->form_fields , apply_filters( 'multibanco_ifthen_payshop_settings_fields', array( ) ) );
@@ -545,8 +533,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 * Icon HTML
 		 */
 		public function get_icon() {
-			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id.'_title', $this->title ) : $this->title );
-			$icon_html = ( $this->get_option( 'small_icon', 'yes' ) == 'yes' ? '<img src="'.esc_attr( WC_IfthenPay_Webdados()->payshop_icon ).'" alt="'.esc_attr( $alt ).'" width="25" height="24"/>' : '<img src="'.esc_attr( WC_IfthenPay_Webdados()->payshop_banner ).'" alt="'.esc_attr( $alt ).'" width="91" height="24"/>' );
+			$alt       = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id.'_title', $this->title ) : $this->title );
+			$icon_html = '<img src="'.esc_attr( WC_IfthenPay_Webdados()->payshop_icon ).'" alt="'.esc_attr( $alt ).'" width="25" height="24"/>';
 			return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
 		}
 
@@ -560,6 +548,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			$order = wc_get_order( $order_id );
 			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
+					//We might have to deal with deposits...
 					if ( $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) != '' && date_i18n( 'Y-m-d' ) > $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) ) {
 						//Expired
 						$expired = true;
@@ -934,7 +923,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				// Reduce stock levels
 				if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
 				// Remove cart
-				WC()->cart->empty_cart();
+				if ( isset( WC()->cart ) ) {
+					WC()->cart->empty_cart();
+				}
 				// Empty awaiting payment session
 				if ( isset( $_SESSION['order_awaiting_payment'] ) ) unset($_SESSION['order_awaiting_payment'] );
 				// Return thankyou redirect
