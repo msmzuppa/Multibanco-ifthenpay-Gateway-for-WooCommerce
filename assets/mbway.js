@@ -25,7 +25,7 @@ jQuery( function( $ ) {
 		$.post( woocommerce_params.ajax_url, data, function( response ) {
 			var response = JSON.parse( response );
 			console.log( 'Status: ' + response.order_status );
-			if ( response.order_status && response.order_status == 'processing' ) {
+			if ( response.order_status && ( response.order_status == 'processing' || response.order_status == 'completed' ) ) {
 				//DONE
 				location.reload();
 			} else {

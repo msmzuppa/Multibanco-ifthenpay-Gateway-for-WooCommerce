@@ -172,15 +172,17 @@ IfthenPay’s privacy policy can be found at [https://ifthenpay.com/termos-polit
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
 = ... =
-* New payment method available: Credit or Debit Card
+* New payment method available: “Credit or Debit Card”
 * Plugin name changed
 
 * Requires WooCommerce 3.0.0 or above
 * **For WooCommerce 2.6.0 support you need to use [version 4.4.7](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.7.zip)**
 
+* Bugfix: check for the “Completed” status on mbway.js, in addition to “Processing”
+* Bugfix: PHP notice on Multibanco “Incremental references with expiration date” mode
 * Full readme.txt and hooks-examples.php revision
-* Fix a PHP notice on Multibanco “Incremental references with expiration date” mode
 
 = 4.4.7 - 2020-12-10 =
 * You can safely update this plugin if you’re running WooCommece 2.6.0 or newer **but we’ll drop support for WooCommerce previous to 3.0 IN THE NEXT RELEASE**
