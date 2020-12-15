@@ -359,7 +359,7 @@ final class WC_IfthenPay_Webdados {
 		$value_to_pay = null;
 		//Order total or cart total?
 		$pay_slug = get_option( 'woocommerce_checkout_pay_endpoint', 'order-pay' );
-		$order_id = absint(get_query_var($pay_slug));
+		$order_id = absint( get_query_var( $pay_slug ) );
 		if ( $order_id > 0 ) {
 			//Pay screen on My Account
 			$order = wc_get_order( $order_id );
@@ -900,7 +900,7 @@ final class WC_IfthenPay_Webdados {
 			$order->update_meta_data( '_'.$this->multibanco_id.'_exp', $this->get_reference_expiration_days( intval( apply_filters( 'multibanco_ifthen_incremental_expire_days', 0 ) ) ) );
 		}
 		$order->save();
-		$this->debug_log_extra( $this->multibanco_id, 'multibanco_set_order_mb_details - Details updated on the database: '.serialize( $order_mb_details ).' - Order: '.$order_id );
+		$this->debug_log_extra( $this->multibanco_id, 'multibanco_set_order_mb_details - Details updated on the database: '.serialize( $order_mb_details ).' - Order: '.$order->get_id() );
 	}
 
 	/* Clear Multibanco Entity/Reference/Value on meta */
@@ -1021,7 +1021,7 @@ final class WC_IfthenPay_Webdados {
 			if (
 				!$force_change
 				&&
-				$order_mb_details = $this->get_multibanco_order_details( $order_id )
+				$order_mb_details = $this->get_multibanco_order_details( $order->get_id() )
 			) {
 				$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Got reference from database '.serialize( $order_mb_details ).' - Order '.$order->get_id() );
 				//Already created, return it!
@@ -1069,28 +1069,28 @@ final class WC_IfthenPay_Webdados {
 								if ( in_array( intval( $base['ent'] ), $this->multibanco_ents_no_check_digit ) && ( $this->multibanco_settings['use_order_id'] =='yes' ) ) {
 									//Special entities with no check digit and (eventually) expiration date - We can use the order ID
 									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Special entities with no check digit and (eventually) expiration date) - Order '.$order->get_id() );
-									$ref = $this->multibanco_create_ref_no_check_digit( $base['ent'], $base['subent'], $order_id, $this->get_order_total_to_pay( $order ) );
+									$ref = $this->multibanco_create_ref_no_check_digit( $base['ent'], $base['subent'], $order->get_id(), $this->get_order_total_to_pay( $order ) );
 								} else {
 									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Default mode) - Order '.$order->get_id() );
 									$ref = $this->multibanco_create_ref( $base['ent'], $base['subent'], $this->get_multibanco_ref_seed(), $this->get_order_total_to_pay( $order ) ); //For random mode - Less loop possibility
 								}
 							}
 							//Store on the order for later use (like the email)
-							$this->multibanco_set_order_mb_details( $order_id, array(
+							$this->multibanco_set_order_mb_details( $order->get_id(), array(
 								'ent'	=>	$base['ent'],
 								'ref'	=>	$ref,
 								'val'	=>	$this->get_order_total_to_pay( $order ),
 							) );
-							$this->debug_log( $this->multibanco_id, 'Multibanco payment details ('.$base['ent'].' / '.$ref.' / '.$this->get_order_total_to_pay( $order ).') generated for Order '.$order_id );
+							$this->debug_log( $this->multibanco_id, 'Multibanco payment details ('.$base['ent'].' / '.$ref.' / '.$this->get_order_total_to_pay( $order ).') generated for Order '.$order->get_id() );
 							//Return it!
 							do_action( 'multibanco_ifthen_created_reference', array(
 								'ent' => $base['ent'],
 								'ref' => $ref
-							), $order_id, $force_change );
+							), $order->get_id(), $force_change );
 							//WooCommerce Deposits support - force ref creation again
 							if ( ! $force_change && $this->wc_deposits_active && ! $this->multibanco_action_deposits_set ) {
 								add_action( 'woocommerce_checkout_order_processed', array( $this, 'multibanco_get_ref_deposit' ), 20, 1 );
-								$this->debug_log( $this->multibanco_id, 'Because of WooCommerce Deposits a new reference will be generated for Order '.$order_id );
+								$this->debug_log( $this->multibanco_id, 'Because of WooCommerce Deposits a new reference will be generated for Order '.$order->get_id() );
 								$this->multibanco_action_deposits_set = true;
 							}
 							return array(
@@ -1190,7 +1190,7 @@ final class WC_IfthenPay_Webdados {
 			if (
 				!$force_change
 				&&
-				$order_mb_details = $this->get_payshop_order_details( $order_id )
+				$order_mb_details = $this->get_payshop_order_details( $order->get_id() )
 
 			) {
 				//Already created, return it!
@@ -1214,7 +1214,7 @@ final class WC_IfthenPay_Webdados {
 					} else {
 						$payshop = new WC_Payshop_IfThen_Webdados;
 						if ( $payshop->webservice_set_pedido( $order->get_id() ) ) {
-							return $this->get_payshop_order_details( $order_id );
+							return $this->get_payshop_order_details( $order->get_id() );
 						} else {
 							return __( 'Error contacting IfthenPay servers to create Payshop Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 						}
@@ -1231,10 +1231,10 @@ final class WC_IfthenPay_Webdados {
 		$order = wc_get_order( $order_id );
 		//Avoid duplicate instructions on the email...
 		if ( $order->get_payment_method() == $this->multibanco_id ) {
-			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Force ref generation before anything - Order '.$order_id );
-			$ref = $this->multibanco_get_ref( $order_id );
+			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Force ref generation before anything - Order '.$order->get_id() );
+			$ref = $this->multibanco_get_ref( $order->get_id() );
 			//That should do it...
-			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Ref: '.serialize( $ref ).' - Order '.$order_id );
+			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Ref: '.serialize( $ref ).' - Order '.$order->get_id() );
 		}
 	}
 
@@ -1660,7 +1660,7 @@ wc_price( $order_total_to_pay )
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
 		if ( $order->get_payment_method() == $this->multibanco_id ) {
 			if ( $this->order_needs_payment( $order ) ) {
-				$ref = $this->multibanco_get_ref( $order_id );
+				$ref = $this->multibanco_get_ref( $order->get_id() );
 				if ( is_array( $ref) ) {
 					$instructions =  
 						'Multibanco'
@@ -1676,7 +1676,7 @@ wc_price( $order_total_to_pay )
 						.' '
 						.$ref['val'];
 					//Filters in case the website owner wants to customize the message
-					$instructions = apply_filters( 'multibanco_ifthen_sms_instructions', $instructions, $ref['ent'], $ref['ref'], $ref['val'], $order_id );
+					$instructions = apply_filters( 'multibanco_ifthen_sms_instructions', $instructions, $ref['ent'], $ref['ref'], $ref['val'], $order->get_id() );
 				} else {
 					//error getting ref
 				}
@@ -1702,7 +1702,7 @@ wc_price( $order_total_to_pay )
 		$instructions = ''; //We return an empty string so that we always replace our placeholder, even if it's not our gateway
 		if ( $order->get_payment_method() == $this->payshop_id ) {
 			if ( $this->order_needs_payment( $order ) ) {
-				$ref = $this->payshop_get_ref( $order_id );
+				$ref = $this->payshop_get_ref( $order->get_id() );
 				if ( is_array( $ref) ) {
 					$instructions = 
 						'Payshop'
@@ -1717,7 +1717,7 @@ wc_price( $order_total_to_pay )
 						$instructions .= ' '.__( 'Valid.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' '.$ref['exp'];
 					}
 					//Filters in case the website owner wants to customize the message
-					$instructions = apply_filters( 'payshop_ifthen_sms_instructions', $instructions, $ref['ref'], $ref['val'], $ref['exp'], $order_id );
+					$instructions = apply_filters( 'payshop_ifthen_sms_instructions', $instructions, $ref['ref'], $ref['val'], $ref['exp'], $order->get_id() );
 				} else {
 					//error getting ref
 				}

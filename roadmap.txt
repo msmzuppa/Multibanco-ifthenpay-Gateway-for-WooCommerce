@@ -10,7 +10,7 @@
 	- Implementar e testar compatibilidade com o Deposits: Feito
 	- Enviar email à IfthenPay a explicar o funcionamento do novo método
 
-- Remover suporte WC < 3.0 de uma vez por todas (!!!)
+- Remover suporte WC < 3.0 de uma vez por todas (!!!): Feito
 
 
 FUTURO:

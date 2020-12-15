@@ -533,14 +533,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 					if ( date_i18n( 'Y-m-d H:i:s', strtotime( '-'.intval( WC_IfthenPay_Webdados()->mbway_minutes * WC_IfthenPay_Webdados()->mbway_multiplier_new_payment * 60 ).' SECONDS', current_time( 'timestamp' ) ) ) > $order->get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_time' ) ) {
 						//Expired
 						$expired = true;
-						echo $this->thankyou_instructions_table_html_expired( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
+						echo $this->thankyou_instructions_table_html_expired( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
 					} else {
 						//Not expired
 						$expired = false;
-						echo $this->thankyou_instructions_table_html( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
+						echo $this->thankyou_instructions_table_html( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
 					}
 					//Another payment option
-					if ( $expired || apply_filters( 'mbway_ifthen_enable_pay_another_method_thankyou', true, $order_id ) ) {
+					if ( $expired || apply_filters( 'mbway_ifthen_enable_pay_another_method_thankyou', true, $order->get_id() ) ) {
 						?>
 						<p class="<?php echo $this->id; ?>_pay_another_method <?php echo $this->id; ?>_text_small">
 							<a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="button"><?php _e( 'Click here if you wish to use another payment method', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ?></a>
@@ -548,10 +548,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 						<?php
 					}
 					if ( is_wc_endpoint_url( 'order-received' ) ) {
-						if ( apply_filters( 'mbway_ifthen_enable_check_order_status_thankyou', true, $order_id ) ) { // return false to mbway_ifthen_enable_check_order_status_thankyou in order to stop the ajax checking
+						if ( apply_filters( 'mbway_ifthen_enable_check_order_status_thankyou', true, $order->get_id() ) ) { // return false to mbway_ifthen_enable_check_order_status_thankyou in order to stop the ajax checking
 							//Check order status
 							?>
-							<input type="hidden" id="mbway-order-id" value="<?php echo intval( $order_id ); ?>"/>
+							<input type="hidden" id="mbway-order-id" value="<?php echo intval( $order->get_id() ); ?>"/>
 							<input type="hidden" id="mbway-order-key" value="<?php echo esc_attr( $order->get_order_key() ); ?>"/>
 							<?php
 							wp_enqueue_script( 'mbway-ifthenpay', plugins_url( 'assets/mbway.js', __FILE__ ) , array( 'jquery' ), $this->version.( WP_DEBUG ? '.'.rand( 0, 99999 ) : '' ), true );
@@ -564,7 +564,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				} else {
 					//Processing
 					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && ! is_wc_endpoint_url( 'view-order') ) {
-						echo $this->email_instructions_payment_received( $order_id );
+						echo $this->email_instructions_payment_received( $order->get_id() );
 					}
 				}
 			}
@@ -684,7 +684,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				</tr>
 				<tr>
 					<td><?php _e( 'Information', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
-					<td class="mb_value"><?php echo apply_filters( 'mbway_ifthen_webservice_desc', get_bloginfo( 'name' ).' #'.$order_id, $order_id ); ?></td>
+					<td class="mb_value"><?php echo apply_filters( 'mbway_ifthen_webservice_desc', get_bloginfo( 'name' ).' #'.$order->get_id(), $order->get_id() ); ?></td>
 				</tr>
 				<tr>
 					<td colspan="2" class="extra_instructions"><?php printf(
@@ -695,7 +695,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				</tr>
 			</table>
 			<?php
-			return apply_filters( 'mbway_ifthen_thankyou_instructions_table_html_expired', ob_get_clean(), round( $order_total, 2 ), $order_id ); //Missing MB WAY email or phone number?
+			return apply_filters( 'mbway_ifthen_thankyou_instructions_table_html_expired', ob_get_clean(), round( $order_total, 2 ), $order->get_id() ); //Missing MB WAY email or phone number?
 		}
 		function order_details_after_order_table( $order ) {
 			if( is_wc_endpoint_url( 'view-order' ) ) {
@@ -755,15 +755,15 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {
-								if ( apply_filters( 'mbway_ifthen_email_instructions_pending_send', true, $order_id ) ) {
-									echo $this->email_instructions_table_html( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
+								if ( apply_filters( 'mbway_ifthen_email_instructions_pending_send', true, $order->get_id() ) ) {
+									echo $this->email_instructions_table_html( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
 								}
 							}
 						} else {
 							//Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
-								if ( apply_filters( 'mbway_ifthen_email_instructions_payment_received_send', true, $order_id ) ) {
-									echo $this->email_instructions_payment_received( $order_id );
+								if ( apply_filters( 'mbway_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
+									echo $this->email_instructions_payment_received( $order->get_id() );
 								}
 							}
 						}
@@ -852,8 +852,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			$order    = wc_get_order( $order_id );
 			$mbwaykey = apply_filters( 'multibanco_ifthen_base_mbwaykey', $this->mbwaykey, $order );
 			$desc     = trim( get_bloginfo( 'name' ) );
-			$desc     = substr( $desc, 0, MBWAY_IFTHEN_DESC_LEN - strlen( ' #'.$order_id ) );
-			$desc     .= ' #'.$order_id;
+			$desc     = substr( $desc, 0, MBWAY_IFTHEN_DESC_LEN - strlen( ' #'.$order->get_id() ) );
+			$desc     .= ' #'.$order->get_id();
 			$args     = array(
 				'method'   => 'POST',
 				'timeout'  => apply_filters( 'mbway_ifthen_webservice_timeout', 30 ),
@@ -861,11 +861,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				'body'     => array(
 					'MbWayKey'   => $mbwaykey,
 					'canal'      => '03', //Online
-					'referencia' => (string) $order_id,
+					'referencia' => (string) $order->get_id(),
 					'valor'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
 					'nrtlm'      => $phone,
 					'email'      => '', //Não usamos
-					'descricao'  => $this->webservice_filter_descricao( apply_filters( 'mbway_ifthen_webservice_desc', $desc, $order_id ) ),
+					'descricao'  => $this->webservice_filter_descricao( apply_filters( 'mbway_ifthen_webservice_desc', $desc, $order->get_id() ) ),
 				),
 			);
 			$response = wp_remote_post( $url, $args );
@@ -885,14 +885,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 								$id_pedido = trim( $xmlData->IdPedido );
 								$valor = floatval( $xmlData->Valor );
 								if ( $valor == round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ) ) {
-									WC_IfthenPay_Webdados()->multibanco_set_order_mbway_details( $order_id, array(
+									WC_IfthenPay_Webdados()->multibanco_set_order_mbway_details( $order->get_id(), array(
 										'mbwaykey'  => $mbwaykey,
 										'id_pedido' => $id_pedido,
 										'phone'     => $phone,
 										'val'       => $valor,
 									) );
 									$this->debug_log( '- MB WAY payment request created on IfthenPay servers - Order '.$order->get_id().' - id_pedido: '.$id_pedido );
-									do_action( 'mbway_ifthen_created_reference', $id_pedido, $order_id, $phone );
+									do_action( 'mbway_ifthen_created_reference', $id_pedido, $order->get_id(), $phone );
 									return true;
 								} else {
 									$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Incorrect "Valor"';
@@ -934,7 +934,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			//Webservice
 			$order = wc_get_order( $order_id );
 			$phone = isset( $_POST[$this->id.'_phone'] ) ? trim( sanitize_text_field( $_POST[$this->id.'_phone'] ) ) : '';
-			if ( $this->webservice_set_pedido( $order_id, $phone ) ) {
+			if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
 				if ( ! $this->order_initial_status_pending ) {
 					// Mark as on-hold
 					$order->update_status( 'on-hold', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
@@ -1034,7 +1034,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order_id, $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
 			} else {
 				return $bool;
 			}

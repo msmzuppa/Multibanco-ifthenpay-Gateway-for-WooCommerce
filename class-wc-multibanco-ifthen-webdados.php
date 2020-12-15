@@ -636,9 +636,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 					//We might have to deal with deposits...
-					$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order_id );
+					$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order->get_id() );
 					if ( is_array( $ref ) ) {
-						echo $this->thankyou_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order_id );
+						echo $this->thankyou_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order->get_id() );
 					} else {
 						?>
 						<p><strong><?php _e( 'Error getting Multibanco payment details', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>.</strong></p>
@@ -802,11 +802,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 								//WooCommerce deposits - No instructions
 							} else {
-								$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order_id );
+								$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order->get_id() );
 								$this->debug_log_extra( 'Email ('.$email_id.') instructions - Got reference '.serialize( $ref ).' - Order '.$order->get_id() );
 								if ( is_array( $ref ) ) {
-									if ( apply_filters( 'multibanco_ifthen_email_instructions_pending_send', true, $order_id ) ) {
-										echo $this->email_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order_id );
+									if ( apply_filters( 'multibanco_ifthen_email_instructions_pending_send', true, $order->get_id() ) ) {
+										echo $this->email_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order->get_id() );
 									}
 								} else {
 									?>
@@ -822,8 +822,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 						} else {
 							//Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
-								if ( apply_filters( 'multibanco_ifthen_email_instructions_payment_received_send', true, $order_id ) ) {
-									echo $this->email_instructions_payment_received( $order_id );
+								if ( apply_filters( 'multibanco_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
+									echo $this->email_instructions_payment_received( $order->get_id() );
 								}
 							}
 						}
@@ -901,9 +901,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 * SMS instructions for Twilio SMS Notifications
 		 */
 		function sms_instructions_yith( $placeholders, $order ) {
-			if ( is_array($placeholders) ) {
-				$order_id = $order->get_id();
-				$placeholders['{multibanco_ifthen}'] = WC_IfthenPay_Webdados()->multibanco_sms_instructions( '', $order_id );
+			if ( is_array( $placeholders ) ) {
+				$placeholders['{multibanco_ifthen}'] = WC_IfthenPay_Webdados()->multibanco_sms_instructions( '', $order->get_id() );
 			}
 			return $placeholders;
 		}
@@ -923,7 +922,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 			}
 			
 			// Mark as on-hold
-			if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order_id ) ) $order->update_status( 'on-hold', __( 'Awaiting Multibanco payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+			if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->get_id() ) ) $order->update_status( 'on-hold', __( 'Awaiting Multibanco payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 			
 			// Reduce stock levels
 			if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
@@ -964,7 +963,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 					}
 				}				
 				if ( $clear_details ) {
-					WC_IfthenPay_Webdados()->multibanco_clear_order_mb_details( $order_id );
+					WC_IfthenPay_Webdados()->multibanco_clear_order_mb_details( $order->get_id() );
 				} else {
 					$this->debug_log_extra( 'process_payment - Is pay form, details from database NOT cleared - Order '.$order->get_id() );
 				}
@@ -1028,7 +1027,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order_id, $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
 			} else {
 				return $bool;
 			}

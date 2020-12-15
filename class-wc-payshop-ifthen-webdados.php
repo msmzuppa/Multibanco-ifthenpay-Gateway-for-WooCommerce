@@ -543,25 +543,26 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		 */
 		function thankyou( $order_id ) {
 			if ( is_object( $order_id ) ) {
-				$order_id = $order_id->get_id();
+				$order = $order_id;
+			} else {
+				$order = wc_get_order( $order_id );
 			}
-			$order = wc_get_order( $order_id );
 			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 					//We might have to deal with deposits...
 					if ( $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) != '' && date_i18n( 'Y-m-d' ) > $order->get_meta( '_'.WC_IfthenPay_Webdados()->payshop_id.'_exp' ) ) {
 						//Expired
 						$expired = true;
-						echo $this->thankyou_instructions_table_html_expired( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) );
+						echo $this->thankyou_instructions_table_html_expired( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) );
 					} else {
 						//Not expired
 						$expired = false;
-						echo $this->thankyou_instructions_table_html( $order_id, round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) );
+						echo $this->thankyou_instructions_table_html( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) );
 					}
 				} else {
 					//Processing
 					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && !is_wc_endpoint_url( 'view-order') ) {
-						echo $this->email_instructions_payment_received( $order_id );
+						echo $this->email_instructions_payment_received( $order->get_id() );
 					}
 				}
 			}
@@ -680,7 +681,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 				</tr>
 			</table>
 			<?php
-			return apply_filters( 'payshop_ifthen_thankyou_instructions_table_html_expired', ob_get_clean(), round( $order_total, 2 ), $order_id );
+			return apply_filters( 'payshop_ifthen_thankyou_instructions_table_html_expired', ob_get_clean(), round( $order_total, 2 ), $order->get_id() );
 		}
 		function order_details_after_order_table( $order ) {
 			if( is_wc_endpoint_url( 'view-order' ) ) {
@@ -863,9 +864,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 							if ( $date_exp ) {
 								$details['exp'] = $date_exp->format( 'Y-m-d' );
 							}
-							WC_IfthenPay_Webdados()->multibanco_set_order_payshop_details( $order_id, $details );
+							WC_IfthenPay_Webdados()->multibanco_set_order_payshop_details( $order->get_id(), $details );
 							$this->debug_log( '- Payshop payment request created on IfthenPay servers - Order '.$order->get_id() );
-							do_action( 'payshop_ifthen_created_reference', trim( $response_data->Reference ), $order_id );
+							do_action( 'payshop_ifthen_created_reference', trim( $response_data->Reference ), $order->get_id() );
 							return true;
 						} else {
 							$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Missing "Reference" or "RequestId"';
@@ -912,14 +913,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		function process_payment( $order_id ) {
 			//Webservice
 			$order = wc_get_order( $order_id );
-			if ( $this->webservice_set_pedido( $order_id ) ) {
+			if ( $this->webservice_set_pedido( $order->get_id() ) ) {
 				//WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
 				if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 					add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
 					add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 				}
 				// Mark as on-hold
-				if ( apply_filters( 'payshop_ifthen_set_on_hold', true, $order_id ) ) $order->update_status( 'on-hold', __( 'Awaiting Payshop payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				if ( apply_filters( 'payshop_ifthen_set_on_hold', true, $order->get_id() ) ) $order->update_status( 'on-hold', __( 'Awaiting Payshop payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				// Reduce stock levels
 				if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
 				// Remove cart
@@ -984,7 +985,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit C
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order_id, $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
 			} else {
 				return $bool;
 			}

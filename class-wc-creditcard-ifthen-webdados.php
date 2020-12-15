@@ -355,9 +355,10 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		 */
 		function thankyou( $order_id ) {
 			if ( is_object( $order_id ) ) {
-				$order_id = $order_id->get_id();
+				$order = $order_id;
+			} else {
+				$order = wc_get_order( $order_id );
 			}
-			$order = wc_get_order( $order_id );
 			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 					
@@ -366,7 +367,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				} else {
 					//Processing
 					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && !is_wc_endpoint_url( 'view-order') ) {
-						echo $this->email_instructions_payment_received( $order_id );
+						echo $this->email_instructions_payment_received( $order->get_id() );
 					}
 				}
 			}
@@ -528,7 +529,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$args['body'] = json_encode( $args['body'] ); //Json not post variables
 			$response = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
-				$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - '.$response->get_error_message();
+				$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - '.$response->get_error_message();
 				$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
@@ -536,92 +537,26 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) == 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
 					if ( $body = json_decode( trim( $response['body'] ) ) ) {
 						if ( intval( $body->Status ) == 0 ) {
-							WC_IfthenPay_Webdados()->multibanco_set_order_creditcard_details( $order_id, array(
+							WC_IfthenPay_Webdados()->multibanco_set_order_creditcard_details( $order->get_id(), array(
 								'creditcardkey' => $creditcardkey,
 								'request_id'    => $body->RequestId,
 								'id'            => $id,
 								'val'           => $valor,
 								'payment_url'   => $body->PaymentUrl,
 							) );
-							$this->debug_log( '- Credit Card payment request created on IfthenPay servers - Redirecting to payment gateway - Order '.$order_id.' - RequestId: '.$body->RequestId );
-							do_action( 'creditcard_ifthen_created_reference', $body->RequestId, $order_id );
+							$this->debug_log( '- Credit Card payment request created on IfthenPay servers - Redirecting to payment gateway - Order '.$order->get_id().' - RequestId: '.$body->RequestId );
+							do_action( 'creditcard_ifthen_created_reference', $body->RequestId, $order->get_id() );
 							return $body->PaymentUrl;
 						} else {
-							$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - Error code and message: '.$body->Status.' / '.$body->Message;
+							$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Error code and message: '.$body->Status.' / '.$body->Message;
 							$this->debug_log( $debug_msg, 'error', true, $debug_msg );
 							return false;
 						}
 					} else {
-						$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - Can not json_decode body';
+						$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Can not json_decode body';
 						$this->debug_log( $debug_msg, 'error', true, $debug_msg );
 						return false;
 					}
-				} else {
-					$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order_id.' - Incorrect response code: '.$response['response']['code'];
-					$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
-					$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
-					return false;
-				}
-			}
-
-
-			return false;
-
-/*
-			$order = wc_get_order( $order_id );
-			$creditcardkey = apply_filters( 'multibanco_ifthen_base_creditcardkey', $this->creditcardkey, $order );
-			$args = array(
-				'method'   => 'POST',
-				'timeout'  => apply_filters( 'creditcard_ifthen_webservice_timeout', 30 ),
-				'blocking' => true,
-				'body'     => array(
-					'creditcardkey' => $creditcardkey,
-					'id'         => (string) $id,
-					'valor'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
-				),
-			);
-			if ( $date_exp ) {
-				$args['body']['validade'] = $date_exp->format( 'Ymd' );
-			}
-			$args['body'] = json_encode( $args['body'] ); //Json not post variables
-
-			$response = wp_remote_post( $this->webservice_url, $args );
-			if ( is_wp_error( $response ) ) {
-				$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - '.$response->get_error_message();
-				$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
-				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
-				return false;
-			} else {
-				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) == 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
-
-					if ( $response_data = json_decode( $response['body'] ) ) {
-						if ( trim( $response_data->Reference ) != '' && trim( $response_data->RequestId ) != '' ) {
-							$details = array(
-								'creditcardkey' => $creditcardkey,
-								'ref'        => trim( $response_data->Reference ),
-								'request_id' => trim( $response_data->RequestId ),
-								'id'         => $id,
-								'val'        => WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ),
-							);
-							if ( $date_exp ) {
-								$details['exp'] = $date_exp->format( 'Y-m-d' );
-							}
-							WC_IfthenPay_Webdados()->multibanco_set_order_creditcard_details( $order_id, $details );
-							$this->debug_log( '- Credit Card payment request created on IfthenPay servers - Order '.$order->get_id() );
-							do_action( 'creditcard_ifthen_created_reference', trim( $response_data->Reference ), $order_id );
-							return true;
-						} else {
-							$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Missing "Reference" or "RequestId"';
-							$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
-							$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
-							return false;
-						}
-					} else {
-						$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - "json_decode" failed';
-						$this->debug_log( $debug_msg, 'error', true, $debug_msg );
-						return false;
-					}
-
 				} else {
 					$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Incorrect response code: '.$response['response']['code'];
 					$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
@@ -629,7 +564,6 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					return false;
 				}
 			}
-*/
 			return false;
 		}
 
@@ -639,7 +573,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		function process_payment( $order_id ) {
 			//Webservice
 			$order = wc_get_order( $order_id );
-			if ( $redirect_url = $this->api_init_payment( $order_id ) ) {
+			if ( $redirect_url = $this->api_init_payment( $order->get_id() ) ) {
 				//WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
 				if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 					add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
