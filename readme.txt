@@ -177,11 +177,11 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
 * **New payment method available: “Credit or Debit Card”** (WooCommerce >= 4.0)
 * **Requires WooCommerce 3.0.0 or above**
-* **For WooCommerce 2.6.0 support you need to use [version 4.4.8](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.8.zip)**
+* **For WooCommerce 2.6.0 support you need to use [version 4.4.9](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.9.zip)**
 * Plugin name changed
 * Remove non-small icons
 * Renamed our order metabox to “IfthenPay” for simplicity
-* --------------------------------------------------------------->>>>> New and faster MBWAY endpoint TBC
+* New and faster MBWAY endpoint
 * Bugfix: check for the “Completed” status on mbway.js, in addition to “Processing”
 * Bugfix: PHP notice on Multibanco “Incremental references with expiration date” mode
 * Bugfix: When paying again from the customer area, the old reference was being sent on the email in Multibanco “Incremental references with expiration date” mode
