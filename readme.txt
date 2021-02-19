@@ -4,7 +4,7 @@ Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos,
 Author URI: https://www.webdados.pt
 Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
 Requires at least: 4.4
-Tested up to: 5.6
+Tested up to: 5.7
 Requires PHP: 5.6
 Stable tag: 5.0.0-beta
 
@@ -185,12 +185,16 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Bugfix: check for the “Completed” status on mbway.js, in addition to “Processing”
 * Bugfix: PHP notice on Multibanco “Incremental references with expiration date” mode
 * Bugfix: When paying again from the customer area, the old reference was being sent on the email in Multibanco “Incremental references with expiration date” mode
-* Fix force “New order” email to the store owner upon Multibanco payment on WooCommerce 5.0 and above and add the same functionality to Payshop
+* Force “New order” email to the store owner upon Payshop payment
 * Full readme.txt and hooks-examples.php revision
 
-= 4.4.8 - 2020-12-22 =
+= 4.4.9 - 2021-02-19 =
 * You can safely update this plugin if you’re running WooCommece 2.6.0 or newer **but we’ll drop support for WooCommerce previous to 3.0 IN THE NEXT RELEASE**
 * Last release before 5.0 (good news are on its way)
+* Fix force “New order” email to the store owner upon Multibanco payment on WooCommerce 5.0 and above
+* Tested with WordPress 5.7-beta2-50285 and WooCommerce 5.1.0-beta.1
+
+= 4.4.8 - 2020-12-22 =
 * Fix minimum and maximum values for all gateways
 * Fix PHP notice
 * Tested with WordPress 5.7-alpha-49862 and WooCommerce 4.9.0-beta.1

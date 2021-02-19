@@ -9,7 +9,7 @@
  * Text Domain: multibanco-ifthen-software-gateway-for-woocommerce
  * Domain Path: /lang
  * WC requires at least: 3.0
- * WC tested up to: 4.8
+ * WC tested up to: 5.1
 **/
 
 /* WooCommerce CRUD ready */
