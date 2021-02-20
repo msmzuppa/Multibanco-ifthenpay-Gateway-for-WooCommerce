@@ -1,4 +1,4 @@
-=== Multibanco, MBWAY, Credit card and Payshop (IfthenPay) for WooCommerce ===
+=== Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce ===
 Contributors: webdados, ifthenpay
 Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos, gateway, mb way, debit card, mobile, atm, debit card, credit card, bank, ecommerce, e-commerce, ifthen, ifthen software, ifthenpay, webdados, sms, php7, cartão de débito, cartão de crédito, cartões, gdpr
 Author URI: https://www.webdados.pt
@@ -58,7 +58,7 @@ If not, get to know our new plugin: [Invoicing with InvoiceXpress for WooCommerc
 
 == Installation ==
 
-* Use the included automatic install feature on your WordPress admin panel and search for “Multibanco, MBWAY, Credit card and Payshop (IfthenPay) for WooCommerce”.
+* Use the included automatic install feature on your WordPress admin panel and search for “Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce”.
 * Multibanco: Go to WooCoomerce > Settings > Checkout > Pagamento de Serviços no Multibanco and fill in the data provided by IfthenPay (Entity and Subentity) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
 * MB WAY: Go to WooCoomerce > Settings > Checkout > Pagamento MB WAY no telemóvel and fill in the data provided by IfthenPay (MB WAY Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
 * Credit or debit card: Go to WooCoomerce > Settings > Checkout > Credit or debit card and fill in the data provided by IfthenPay (Credit card Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
@@ -179,7 +179,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * **Requires WooCommerce 3.0 or above**
 * **For WooCommerce 2.6 support you need to use [version 4.4.9](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.9.zip)**
 * Plugin name changed
-* New and faster MBWAY endpoint
+* New and faster MB WAY endpoint
 * Force “New order” email to the store owner upon Payshop payment
 * Remove non-small icons
 * Renamed our order metabox to “IfthenPay” for simplicity
@@ -209,7 +209,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 = 4.4.6 - 2020-11-04 =
 * Bugfix setting the Multibanco order cancelation when using references with expiration (Thanks @josefreitas2)
-* Lay ground for a (yet to be confirmed) MBWAY refund functionality - Callback processing
+* Lay ground for a (yet to be confirmed) MB WAY refund functionality - Callback processing
 * Tested with WordPress 5.6-beta1-49314 and WooCommerce 4.7.0-rc.1
 
 = 4.4.5 - 2020-08-11 =
@@ -237,7 +237,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Bugfix checking if order is paid when the "WooCommerce Order Status Manager" (by SkyVerge) plugin is active
 
 = 4.4.0 =
-* New `ifthen_unpaid_statuses` filter to allow developers to set additional valid "unpaid" statuses for Multibanco, MBWAY and Payshop orders, besides the default ones ("on-hold", "pending" and "partially-paid"). The statuses are used for callback validation, SMS message template, show order as unpaid on the backoffice, show "Pay" button on My Account orders list, issue new references if order value changes on the backoffice, reduce order stock rules, thank you page and email payment instructions.
+* New `ifthen_unpaid_statuses` filter to allow developers to set additional valid "unpaid" statuses for Multibanco, MB WAY and Payshop orders, besides the default ones ("on-hold", "pending" and "partially-paid"). The statuses are used for callback validation, SMS message template, show order as unpaid on the backoffice, show "Pay" button on My Account orders list, issue new references if order value changes on the backoffice, reduce order stock rules, thank you page and email payment instructions.
 * Enforce requirement of WooCommerce 2.6.0 or above and bumped the `WC requires at least` tag accordingly
 * Enforce requirement of WordPress 4.4 or above and bumped the `Requires at least` tag accordingly
 * New filter `ifthen_debug_log_extra` that will allow developers to further debug the Multibanco reference generation (for now)

@@ -52,6 +52,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			}*/
 
 			//Webservice
+			//$this->api_url = 'https://ifthenpay.com/api/creditcard/sandbox/init/'; //production mode
 			$this->api_url = 'https://ifthenpay.com/api/creditcard/sandbox/init/'; //test mode
 	
 			//Plugin options and settings
@@ -59,14 +60,14 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$this->init_settings();
 	
 			//User settings
-			$this->title              = $this->get_option( 'title' );
-			$this->description        = $this->get_option( 'description' );
-			$this->creditcardkey      = $this->get_option( 'creditcardkey' );
-			$this->settings_saved     = $this->get_option( 'settings_saved' );
-			$this->send_to_admin      = ( $this->get_option( 'send_to_admin' ) == 'yes' ? true : false );
-			$this->only_portugal      = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
-			$this->only_above         = $this->get_option( 'only_above' );
-			$this->only_bellow        = $this->get_option( 'only_bellow' );
+			$this->title          = $this->get_option( 'title' );
+			$this->description    = $this->get_option( 'description' );
+			$this->creditcardkey  = $this->get_option( 'creditcardkey' );
+			$this->settings_saved = $this->get_option( 'settings_saved' );
+			$this->send_to_admin  = ( $this->get_option( 'send_to_admin' ) == 'yes' ? true : false );
+			$this->only_portugal  = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
+			$this->only_above     = $this->get_option( 'only_above' );
+			$this->only_bellow    = $this->get_option( 'only_bellow' );
 	 	
 			// Actions and filters
 			if ( self::$instances == 1 ) { //Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)

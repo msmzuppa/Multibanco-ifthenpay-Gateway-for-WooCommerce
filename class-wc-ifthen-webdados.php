@@ -233,7 +233,7 @@ final class WC_IfthenPay_Webdados {
 	public function add_settings_link( $links ) {
 		$settings_links = __( 'Settings:', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 		$settings_links .= ' <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->multibanco_id.'">Multibanco</a>';
-		$settings_links .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->mbway_id.'">MBWAY</a>';
+		$settings_links .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->mbway_id.'">MB WAY</a>';
 		if ( version_compare( WC_VERSION, '4.0', '>=' ) ) {
 			$settings_links .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section='.$this->creditcard_id.'">' . __( 'Credit card', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>';
 		}
@@ -970,7 +970,7 @@ final class WC_IfthenPay_Webdados {
 		$order->save();
 	}
 
-	/* Get MBWAY expiration date/time */
+	/* Get MB WAY expiration date/time */
 	public function get_mbway_expiration() {
 		$d = date_create( date_i18n( DateTime::ISO8601 ) );
 		date_add( $d, date_interval_create_from_date_string( '+'.$this->mbway_minutes.' minutes' ) );
@@ -1878,13 +1878,19 @@ wc_price( $order_total_to_pay )
 					<img src="<?php echo plugins_url( 'images/ifthenpay.svg', __FILE__ ); ?>" width="200"/>
 				</a>
 			</p>
-			<h4><?php _e( 'Technical support or custom WordPress/WooCommerce development', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</h4>
+			<h4><?php _e( 'Premium technical support or custom WordPress/WooCommerce development', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</h4>
 			<p>
 				<a href="https://www.webdados.pt/contactos/<?php echo esc_attr( $this->out_link_utm); ?>" title="<?php echo esc_attr( sprintf( __( 'Please contact %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 'Webdados' ) ); ?>" target="_blank">
 					<img src="<?php echo plugins_url( 'images/webdados.svg', __FILE__ ); ?>" width="200"/>
 				</a>
 			</p>
-			<h4><?php _e( 'Please rate our plugin at WordPress.org', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</h4>
+			<h4><?php _e( 'Free technical support', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</h4>
+			<p style="text-align: center">
+				<a href="https://wordpress.org/support/plugin/multibanco-ifthen-software-gateway-for-woocommerce/" target="_blank">
+					<?php _e( 'WordPress.org forum', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+				</a>
+			</p>
+			<h4><?php _e( 'Please rate our plugin', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</h4>
 			<a href="https://wordpress.org/support/view/plugin-reviews/multibanco-ifthen-software-gateway-for-woocommerce?filter=5#postform" target="_blank" style="text-align: center;">
 				<div class="star-rating"><div class="star star-full"></div><div class="star star-full"></div><div class="star star-full"></div><div class="star star-full"></div><div class="star star-full"></div></div>
 			</a>
@@ -1895,7 +1901,7 @@ wc_price( $order_total_to_pay )
 				<li>
 					-
 					<a href="https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/<?php echo esc_attr( $this->out_link_utm); ?>#extensions" target="_blank">
-						<?php _e( 'Multibanco and MBWAY (IfthenPay) Entity per Category add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php _e( 'Entity per Category add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					</a>
 				</li>
 			</ul>
@@ -1905,26 +1911,32 @@ wc_price( $order_total_to_pay )
 			<ul>
 				<li>
 					-
-					<a href="https://www.webdados.pt/wordpress/plugins/dpd-portugal-para-woocommerce-wordpress/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'DPD (Chronopost/SEUR) Portugal for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
-					</a>
-				</li>
-				<li>
-					-
 					<a href="https://invoicewoo.com/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
 						<?php _e( 'Invoicing with InvoiceXpress for WooCommerce – Pro', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					</a>
 				</li>
 				<li>
 					-
-					<a href="https://www.webdados.pt/wordpress/plugins/shop-as-client-for-woocommerce/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'Shop as Client for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+					<a href="https://www.webdados.pt/wordpress/plugins/dpd-portugal-para-woocommerce-wordpress/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
+						<?php _e( 'DPD (Chronopost/SEUR) Portugal for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+					</a>
+				</li>
+				<li>
+					-
+					<a href="https://shop.webdados.com/product/portuguese-postcodes-for-woocommerce-technical-support/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
+						<?php _e( 'Portuguese Postcodes for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					</a>
 				</li>
 				<li>
 					-
 					<a href="https://www.webdados.pt/wordpress/plugins/feed-kuantokusta-para-woocommerce/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
 						<?php _e( 'Feed KuantoKusta for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+					</a>
+				</li>
+				<li>
+					-
+					<a href="https://www.webdados.pt/wordpress/plugins/shop-as-client-for-woocommerce/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
+						<?php _e( 'Shop as Client for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					</a>
 				</li>
 				<li>
@@ -2197,7 +2209,7 @@ wc_price( $order_total_to_pay )
 				if ( count( $notices ) > 0 ) {
 					?>
 					<div class="notice notice-error notice-alt">
-						<p><strong><?php _e( 'Multibanco, MBWAY, Credit card and Payshop (IfthenPay) for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+						<p><strong><?php _e( 'Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 						<p>
 							<?php _e( 'We are working on implementing the latest and safest technology, so you will soon need:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						</p>

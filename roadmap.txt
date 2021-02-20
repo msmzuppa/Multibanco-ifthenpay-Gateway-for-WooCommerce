@@ -8,7 +8,7 @@
 		- Authentication OK - SUCCESS : Feito
 		- Authentication not realized - ATTEMPT : ERRO -> Vai para o SUCCESS
 	- Implementar e testar compatibilidade com o Deposits: Feito
-	- Enviar email à IfthenPay a explicar o funcionamento do novo método
+	- Enviar email à IfthenPay a explicar o funcionamento do novo método: Feito
 
 - Remover suporte WC < 3.0 de uma vez por todas (!!!): Feito
 
@@ -19,13 +19,14 @@ FUTURO:
 	- Na encomenda, fazer como no Stripe e mostrar o valor pago em comissões
 	- Ter opção de ordenar os métodos de pagamento pela ordem do que fica mais barato
 
-MBWAY e MULTIBANCO:
+MB WAY e MULTIBANCO:
 - Verificar funcionamento na inserção de encomendas manuais
 
 MULTIBANCO:
 - Opção para cancelar encomendas cuja expiração da referência já passou
 
-MBWAY:
-- O mbway.js deve verificar se está paga e não o estado da encomenda, ou então pelo menos pesquisar "processing" e "completed"
+MB WAY:
+- O mbway.js deve verificar se está paga e não o estado da encomenda
+	ou então pelo menos pesquisar "processing" e "completed": Feito
 - Processar refunds e pedir pelo webservice (callback já está)
 	- Verificar condições e para quem pode ou não ser activado

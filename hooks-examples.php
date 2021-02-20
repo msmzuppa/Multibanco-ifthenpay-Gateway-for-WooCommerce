@@ -299,7 +299,7 @@ function my_payshop_ifthen_unpaid_order_cancelled( $order_id ) {
 }
 
 
-// MB WAY - Cancel orders if "Manage stock" and "Hold stock (minutes)" are configured - Should not be needed as MBWAY status is pending and WooCommerce should take care of it by itself
+// MB WAY - Cancel orders if "Manage stock" and "Hold stock (minutes)" are configured - Should not be needed as MB WAY status is pending and WooCommerce should take care of it by itself
 add_filter( 'mbway_ifthen_cancel_unpaid_orders', '__return_true' );
 
 
