@@ -38,8 +38,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 			$this->has_fields = false;
 
-			$this->method_title       = __( 'Credit or Debit Card (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			$this->method_description = __( 'Easy and simple payment using a Credit or Debit Card. (Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_title       = __( 'Credit or debit card (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_description = __( 'Easy and simple payment using a Credit or debit card. (Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			/*if ( $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
 				$this->supports = array(
 					'products',
@@ -79,7 +79,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				add_filter( 'woocommerce_available_payment_gateways', array( $this, 'disable_unless_portugal' ) );
 				add_filter( 'woocommerce_available_payment_gateways', array( $this, 'disable_only_above_or_bellow' ) );
 
-				// NO SMS Integrations for Credit Cards
+				// NO SMS Integrations for Credit cards
 		 		
 				// Customer Emails
 				//add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 4 ); - "Hyyan WooCommerce Polylang Integration" removes this action
@@ -158,13 +158,13 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				'enabled' => array(
 								'title' => __( 'Enable/Disable', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 								'type' => 'checkbox', 
-								'label' => __( 'Enable “Credit or Debit Card” (using IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+								'label' => __( 'Enable “Credit or debit card” (using IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 								'default' => 'no'
 							),
 				'creditcardkey' => array(
-								'title' => __( 'Credit Card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+								'title' => __( 'Credit card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 								'type' => 'text',
-								'description' => __( 'Credit Card Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+								'description' => __( 'Credit card Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 								'default' => '',
 								'css' => 'width: 130px;',
 								'placeholder' => 'XXX-000000',
@@ -181,7 +181,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 									'type' => 'text', 
 									'description' => __( 'This controls the title which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 													.( WC_IfthenPay_Webdados()->wpml_active ? ' '.__( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ), 
-									'default' => 'Credit or Debit Card'
+									'default' => 'Credit or debit card'
 								),
 					'description' => array(
 									'title' => __( 'Description', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
@@ -201,7 +201,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 									'type' => 'number', 
 									'description' => __( 'Enable only for orders above x &euro;. Leave blank (or zero) to allow for any order value.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' <br/> '.sprintf(
 										__( 'By design, %1$s only allows payments from %2$s to %3$s (inclusive). You can use this option to further limit this range.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										'Credit or Debit Card',
+										__( 'Credit or debit card', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 										wc_price( WC_IfthenPay_Webdados()->creditcard_min_value, array( 'currency' => 'EUR' ) ),
 										wc_price( WC_IfthenPay_Webdados()->creditcard_max_value, array( 'currency' => 'EUR' ) )
 									), 
@@ -212,7 +212,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 									'type' => 'number', 
 									'description' => __( 'Enable only for orders below x &euro; (exclusive). Leave blank (or zero) to allow for any order value.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' <br/> '.sprintf(
 										__( 'By design, %1$s only allows payments from %2$s to %3$s (inclusive). You can use this option to further limit this range.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										'Credit or Debit Card',
+										__( 'Credit or debit card', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 										wc_price( WC_IfthenPay_Webdados()->creditcard_min_value, array( 'currency' => 'EUR' ) ),
 										wc_price( WC_IfthenPay_Webdados()->creditcard_max_value, array( 'currency' => 'EUR' ) )
 									), 
@@ -226,7 +226,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 										'title' => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 										'type' => 'checkbox', 
 										'label' => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										'description' => __( 'Shows “Credit or Debit Card” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with Credit or Debit Card if the original subscription used this payment method. If this option is not activated, Credit or Debit Card will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'description' => __( 'Shows “Credit or debit card” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with Credit or debit card if the original subscription used this payment method. If this option is not activated, Credit or debit card will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 										'default' => 'no'
 									),
 					) );
@@ -285,10 +285,10 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					<ul class="wc_ifthen_list">
 						<li><?php printf( __( 'Set WooCommerce currency to <strong>Euros (&euro;)</strong> %1$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<a href="admin.php?page=wc-settings&amp;tab=general">&gt;&gt;</a>.' ); ?></li>
 						<li><?php printf( __( 'Sign a contract with %1$s. To know more about this service, please go to %2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong><a href="https://ifthenpay.com/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">IfthenPay</a></strong>', '<a href="https://ifthenpay.com/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">https://ifthenpay.com</a>' ); ?></li>
-						<li><?php _e( 'Fill out all the details (Credit Card Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<li><?php _e( 'Fill out all the details (Credit card Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						<li><?php printf(
 							__( 'Never use the same %1$s on more than one website or any other system, online or offline. Ask %2$s for new ones for each single platform.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							__( 'Credit Card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							__( 'Credit card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'<a href="https://ifthenpay.com/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">IfthenPay</a>'
 						); ?></li>
 					</ul>
@@ -303,13 +303,13 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						if ( $this->settings_saved == 1 ) {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Invalid Credit Card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php _e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						} else {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Set the Credit Card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php _e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						}
@@ -497,7 +497,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
-				<strong><?php _e( 'Credit or Debit Card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+				<strong><?php _e( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
 				<?php _e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 			</p>
@@ -544,7 +544,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 								'val'           => $valor,
 								'payment_url'   => $body->PaymentUrl,
 							) );
-							$this->debug_log( '- Credit Card payment request created on IfthenPay servers - Redirecting to payment gateway - Order '.$order->get_id().' - RequestId: '.$body->RequestId );
+							$this->debug_log( '- Credit card payment request created on IfthenPay servers - Redirecting to payment gateway - Order '.$order->get_id().' - RequestId: '.$body->RequestId );
 							do_action( 'creditcard_ifthen_created_reference', $body->RequestId, $order->get_id() );
 							return $body->PaymentUrl;
 						} else {
@@ -580,7 +580,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 				}
 				//Mark pending
-				$order->update_status( 'pending', __( 'Awaiting Credit Card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				$order->update_status( 'pending', __( 'Awaiting Credit card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				// Remove cart - not now, only after paid
 				//if ( isset( WC()->cart ) ) {
 				//	WC()->cart->empty_cart();
@@ -593,7 +593,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					'redirect' => $redirect_url //Payment gateway URL
 				);
 			} else {
-				wc_add_notice( __( 'Error contacting IfthenPay servers to create Credit Card Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
+				wc_add_notice( __( 'Error contacting IfthenPay servers to create Credit card Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
 			}
 			return;
 		}
@@ -674,7 +674,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						if ( $get_order['success'] && $get_order['order'] ) {
 							$order = $get_order['order'];
 							$order_id = $order->get_id();
-							$note = __( 'Credit or Debit Card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+							$note = __( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 							//WooCommerce Deposits second payment?
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
 								if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { //Has deposit
@@ -815,7 +815,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						<?php
 							echo sprintf(
 								__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong>Credit or Debit Card (IfthenPay)</strong>'
+								'<strong>Credit or debit card (IfthenPay)</strong>'
 							); ?>
 						<br/>
 						<?php

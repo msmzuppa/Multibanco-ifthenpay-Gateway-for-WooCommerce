@@ -601,7 +601,7 @@ Chave anti-phishing (Multibanco):
 URL:
 '.WC_IfthenPay_Webdados()->multibanco_notify_url.'
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit Card and Payshop (IfthenPay) for WooCommerce” para '.$to.' com CC para '.$cc;
+Email enviado automaticamente do plugin WordPress “Multibanco, MBWAY, Credit card and Payshop (IfthenPay) for WooCommerce” para '.$to.' com CC para '.$cc;
 				$headers = array(
 					'From: '.get_option( 'admin_email' ).' <'.get_option( 'admin_email' ).'>',
 					'Cc: '.$cc
