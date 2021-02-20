@@ -3,7 +3,7 @@ Contributors: webdados, ifthenpay
 Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos, gateway, mb way, debit card, mobile, atm, debit card, credit card, bank, ecommerce, e-commerce, ifthen, ifthen software, ifthenpay, webdados, sms, php7, cartão de débito, cartão de crédito, cartões, gdpr
 Author URI: https://www.webdados.pt
 Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
-Requires at least: 4.4
+Requires at least: 4.6
 Tested up to: 5.7
 Requires PHP: 5.6
 Stable tag: 5.0.0-beta
@@ -19,7 +19,7 @@ The MB WAY (using the customer mobile phone number), Credit or debit card and CT
 
 This is the official [IfthenPay](https://ifthenpay.com) plugin, and a contract with this company is required. Technical support is provided by [Webdados](https://www.webdados.pt).
 
-**This plugin will soon require WordPress 4.5, WooCommerce 3.0 and PHP 7.0 or above.**
+**This plugin will soon require WordPress 5.0, WooCommerce 3.4 and PHP 7.0 or above.**
 If you cannot update any of these components, you should check the changelog of this plugin to find out which is the last version you can use in your scenario.
 
 = Are you already issuing automatic invoices on your WooCommerce store? =
@@ -63,7 +63,7 @@ If not, get to know our new plugin: [Invoicing with InvoiceXpress for WooCommerc
 * MB WAY: Go to WooCoomerce > Settings > Checkout > Pagamento MB WAY no telemóvel and fill in the data provided by IfthenPay (MB WAY Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
 * Credit or debit card: Go to WooCoomerce > Settings > Checkout > Credit or debit card and fill in the data provided by IfthenPay (Credit card Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
 * Payshop: Go to WooCoomerce > Settings > Checkout > Pagamento na rede de agentes Payshop and fill in the data provided by IfthenPay (Payshop Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
-* Make sure you ask IfthenPay to activate the “Callback” on their side with the URL and Anti-phishing key provided in the settings screen. There is a feature in each payment method screen that allows you to make this request via email, except on Credit card where this is not needed.
+* Make sure you ask IfthenPay to activate the “Callback” on their side with the URL and Anti-phishing key provided in the settings screen. There is a feature in each payment method screen that allows you to make this request via a webservice, except on Credit card where this is not needed.
 * Start receiving payments :-)
 
 == Frequently Asked Questions ==
@@ -176,7 +176,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 = 5.0.0 - DATE? =
 * You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
 * **New payment method available: “Credit or debit card”** (WooCommerce >= 4.0)
-* **Requires WooCommerce 3.0 or above**
+* **Requires WordPress 4.6 and WooCommerce 3.0 or above**
 * **For WooCommerce 2.6 support you need to use [version 4.4.9](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.9.zip)**
 * Plugin name changed
 * New and faster MB WAY endpoint
@@ -188,7 +188,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Bugfix: PHP notice on Multibanco “Incremental references with expiration date” mode
 * Bugfix: When paying again from the customer area, the old reference was being sent on the email in Multibanco “Incremental references with expiration date” mode
 * Full readme.txt and hooks-examples.php revision
-* Several smaller code improvements
+* Several small improvements
 
 = 4.4.9 - 2021-02-19 =
 * You can safely update this plugin if you’re running WooCommece 2.6.0 or newer **but we’ll drop support for WooCommerce previous to 3.0 IN THE NEXT RELEASE**

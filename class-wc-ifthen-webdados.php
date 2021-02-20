@@ -2171,11 +2171,11 @@ wc_price( $order_total_to_pay )
 				)
 			) {
 				$notices = array();
-				//WordPress below 4.5
-				if ( version_compare( get_bloginfo( 'version' ), '4.5', '<' ) ) {
+				//WordPress below 4.6
+				if ( version_compare( get_bloginfo( 'version' ), '4.6', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>WordPress 4.4</strong>',
+						'<strong>WordPress 4.6</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							get_bloginfo( 'version' )
