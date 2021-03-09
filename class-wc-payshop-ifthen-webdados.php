@@ -112,7 +112,12 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 		 		
 				// Customer Emails
 				//add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 4 ); - "Hyyan WooCommerce Polylang Integration" removes this action
-				add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions_1' ), 10, 4 ); //Avoid "Hyyan WooCommerce Polylang Integration" remove_action
+				add_action(
+					apply_filters( 'payshop_ifthen_email_hook', 'woocommerce_email_before_order_table' ),
+					array( $this, 'email_instructions_1' ),
+					apply_filters( 'payshop_ifthen_email_hook_priority', 10 ),
+					4
+				); //Avoid "Hyyan WooCommerce Polylang Integration" remove_action
 		
 				// Payment listener/API hook
 				add_action( 'woocommerce_api_wc_payshop_ifthen_webdados', array( $this, 'callback' ) );

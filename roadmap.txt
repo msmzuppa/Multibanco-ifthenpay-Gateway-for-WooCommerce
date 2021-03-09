@@ -12,6 +12,9 @@
 
 - Remover suporte WC < 3.0 de uma vez por todas (!!!): Feito
 
+- Quando uma encomenda não é encontrada pelo callback, por não estar no estado correcto, mas é encontrada num outro estado (cancelada, em processamento, concluída...) devemos deixar uma nota na encomenda.
+No caso das encomendas canceladas até devíamos gerar um alerta mais importante.
+
 
 FUTURO:
 - Ter campos em cada método para o cliente inserir o que tem contratado com a IfthenPay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!

@@ -161,6 +161,8 @@ Although this is the official IfthenPay WooCommerce plugin, development and supp
 For free/standard support you should use the support forums here at WordPress.org
 For premium, urgent and experimental integrations support or custom developments you should contact [Webdados](https://www.webdados.pt/contactos/). Charges may (and most certainly will) apply.
 
+Any support related to failed payments or credit card authorizations should be directed to [IfthenPay](https://ifthenpay.com/#contactos).
+
 = Is this plugin compliant with the European Union General Data Protection Regulation (GDPR)? =
 
 This plugin does not collect or send to Webdados (the plugin author) or IfthenPay (the payment processor) any private data of the website where it’s installed, it’s customers or the orders themselves.
@@ -185,6 +187,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Renamed our order metabox to “IfthenPay” for simplicity
 * Simplification of the way we check if WooCommerce is active
 * Do not change the Multibanco reference when paying again from the customer areain “Incremental references with expiration date” mode and the reference is not expired yet
+* New filters to allow repositioning of the payment instructions on emails: `multibanco_ifthen_email_hook`, `multibanco_ifthen_email_hook_priority`, `mbway_ifthen_email_hook`, `mbway_ifthen_email_hook_priority`, `creditcard_ifthen_email_hook`, `creditcard_ifthen_email_hook_priority`, `payshop_ifthen_email_hook` and `payshop_ifthen_email_hook_priority`
 * Bugfix: check for the “Completed” status on mbway.js, in addition to “Processing”
 * Bugfix: PHP notice on Multibanco “Incremental references with expiration date” mode
 * Bugfix: When paying again from the customer area, the old reference was being sent on the email in Multibanco “Incremental references with expiration date” mode
