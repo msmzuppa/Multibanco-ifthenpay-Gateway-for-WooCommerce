@@ -177,8 +177,11 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 5.0.0 - 2020-03-16 =
+= 5.xxx - DATE =
 * You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
+* Fix Credit card settings fields not hiding when the key is not set
+
+= 5.0.0 - 2020-03-16 =
 * **New payment method available: “Credit or debit card”** (WooCommerce >= 4.0) - You need to sign an [amendment to the contract](https://www.ifthenpay.com/downloads/ifmb/AditamentoCCredito.pdf)
 * **Requires WordPress 4.6 and WooCommerce 3.0 or above**
 * **For WooCommerce 2.6 support you need to use [version 4.4.9](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.9.zip)**

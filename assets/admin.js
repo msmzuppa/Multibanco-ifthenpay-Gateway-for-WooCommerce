@@ -29,6 +29,15 @@
 					hide_extra_fields = false;
 				}
 				break;
+			case 'creditcard':
+				if (
+					$( '#woocommerce_creditcard_ifthen_for_woocommerce_creditcardkey' ).val().trim().length == 10
+					&&
+					$( '#woocommerce_creditcard_ifthen_for_woocommerce_creditcardkey' ).val().trim() != ''
+				) {
+					hide_extra_fields = false;
+				}
+				break;
 			case 'payshop':
 				if (
 					$( '#woocommerce_payshop_ifthen_for_woocommerce_payshopkey' ).val().trim().length == 10
@@ -55,9 +64,7 @@
 					$( '#wc_ifthen_settings .mb_hide_extra_fields' ).hide();
 					break;
 				case 'mbway':
-					$( '#wc_ifthen_settings table.form-table tr:nth-child(n+3)' ).hide();
-					$( '#wc_ifthen_settings .mb_hide_extra_fields' ).hide();
-					break;
+				case 'creditcard':
 				case 'payshop':
 					$( '#wc_ifthen_settings table.form-table tr:nth-child(n+3)' ).hide();
 					$( '#wc_ifthen_settings .mb_hide_extra_fields' ).hide();

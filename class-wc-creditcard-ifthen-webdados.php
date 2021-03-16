@@ -307,13 +307,11 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						); ?></li>
 					</ul>
 					<?php
-					$hide_extra_fields = false;
 					if(
 						trim( strlen( $this->creditcardkey) ) == 10
 					) {
 						//OK
 					} else {
-						$hide_extra_fields = true;
 						if ( $this->settings_saved == 1 ) {
 							?>
 							<div id="message" class="error">
