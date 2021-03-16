@@ -6,7 +6,9 @@ Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software
 Requires at least: 4.6
 Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 5.0.0-beta
+Stable tag: 5.0.0
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 This plugin allows customers with a Portuguese bank account to pay WooCommerce orders using using Multibanco (Pag. Serviços), MB WAY, Credit card and Payshop through IfthenPay’s payment gateway.
 
@@ -175,9 +177,9 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 5.0.0 - DATE? =
+= 5.0.0 - 2020-03-16 =
 * You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
-* **New payment method available: “Credit or debit card”** (WooCommerce >= 4.0)
+* **New payment method available: “Credit or debit card”** (WooCommerce >= 4.0) - You need to sign an [amendment to the contract](https://www.ifthenpay.com/downloads/ifmb/AditamentoCCredito.pdf)
 * **Requires WordPress 4.6 and WooCommerce 3.0 or above**
 * **For WooCommerce 2.6 support you need to use [version 4.4.9](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.9.zip)**
 * Plugin name changed
@@ -186,14 +188,16 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Remove non-small icons
 * Renamed our order metabox to “IfthenPay” for simplicity
 * Simplification of the way we check if WooCommerce is active
-* Do not change the Multibanco reference when paying again from the customer areain “Incremental references with expiration date” mode and the reference is not expired yet
+* Do not change the Multibanco reference when paying again from the customer area in “Incremental references with expiration date” mode and the reference is not expired yet
 * New filters to allow repositioning of the payment instructions on emails: `multibanco_ifthen_email_hook`, `multibanco_ifthen_email_hook_priority`, `mbway_ifthen_email_hook`, `mbway_ifthen_email_hook_priority`, `creditcard_ifthen_email_hook`, `creditcard_ifthen_email_hook_priority`, `payshop_ifthen_email_hook` and `payshop_ifthen_email_hook_priority`
+* New `mbway_ifthen_pay_another_method_button_text` to be able to change the “choose another method button text” on MB WAY
 * Bugfix: check for the “Completed” status on mbway.js, in addition to “Processing”
 * Bugfix: PHP notice on Multibanco “Incremental references with expiration date” mode
 * Bugfix: When paying again from the customer area, the old reference was being sent on the email in Multibanco “Incremental references with expiration date” mode
 * Bugfix: When paying again from the customer area, no email was sent if the customer changes from Multibanco to Multibanco in “Incremental references with expiration date” mode and the reference is already expired
 * Full readme.txt and hooks-examples.php revision
 * Several small improvements
+* Tested with WordPress 5.8-alpha-50535 and WooCommerce 5.1.0
 
 = 4.4.9 - 2021-02-19 =
 * You can safely update this plugin if you’re running WooCommece 2.6.0 or newer **but we’ll drop support for WooCommerce previous to 3.0 IN THE NEXT RELEASE**

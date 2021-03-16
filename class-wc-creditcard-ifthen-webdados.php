@@ -52,8 +52,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			}*/
 
 			//Webservice
-			//$this->api_url = 'https://ifthenpay.com/api/creditcard/sandbox/init/'; //production mode
-			$this->api_url = 'https://ifthenpay.com/api/creditcard/sandbox/init/'; //test mode
+			$this->api_url_production = 'https://ifthenpay.com/api/creditcard/init/'; //production mode
+			$this->api_url_sandbox    = 'https://ifthenpay.com/api/creditcard/sandbox/init/'; //test mode
+			$this->api_url            = '';
 	
 			//Plugin options and settings
 			$this->init_form_fields();
@@ -71,6 +72,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 	 	
 			// Actions and filters
 			if ( self::$instances == 1 ) { //Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
+
 				add_action( 'woocommerce_update_options_payment_gateways_'.$this->id, array( $this, 'process_admin_options' ) );
 				if ( WC_IfthenPay_Webdados()->wpml_active ) add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'register_wpml_strings' ) );
 				add_action( 'woocommerce_thankyou_'.$this->id, array( $this, 'thankyou' ) );
@@ -96,6 +98,12 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		
 				// Admin notices
 				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+
+				//API URL
+				$this->api_url = apply_filters( 'creditcard_ifthen_sandbox', false ) ? $this->api_url_sandbox : $this->api_url_production;
+
+				//Method title in sandbox mode
+				if ( apply_filters( 'creditcard_ifthen_sandbox', false ) ) $this->title .= ' - SANDBOX (TEST MODE)';
 
 			}
 
@@ -170,7 +178,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				'creditcardkey' => array(
 								'title' => __( 'Credit card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 								'type' => 'text',
-								'description' => __( 'Credit card Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+								'description' => __( 'Credit card Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'creditcard_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ), 
 								'default' => '',
 								'css' => 'width: 130px;',
 								'placeholder' => 'XXX-000000',
@@ -530,6 +538,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					'successUrl'  => add_query_arg( 'status', 'success', WC_IfthenPay_Webdados()->creditcard_notify_url ),
 					'errorUrl'    => add_query_arg( 'status', 'error', WC_IfthenPay_Webdados()->creditcard_notify_url ),
 					'cancelUrl'   => add_query_arg( 'status', 'cancel', WC_IfthenPay_Webdados()->creditcard_notify_url ),
+					'language'    => substr( trim( get_locale() ), 0, 2 ),
 				),
 			);
 			$args['body'] = json_encode( $args['body'] ); //Json not post variables

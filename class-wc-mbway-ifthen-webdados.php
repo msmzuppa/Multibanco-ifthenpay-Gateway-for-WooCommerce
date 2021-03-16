@@ -549,7 +549,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					if ( $expired || apply_filters( 'mbway_ifthen_enable_pay_another_method_thankyou', true, $order->get_id() ) ) {
 						?>
 						<p class="<?php echo $this->id; ?>_pay_another_method <?php echo $this->id; ?>_text_small">
-							<a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="button"><?php _e( 'Click here if you wish to use another payment method', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ?></a>
+							<a href="<?php echo esc_url( $order->get_checkout_payment_url() ); ?>" class="button"><?php echo apply_filters( 'mbway_ifthen_pay_another_method_button_text', __( 'Click here if you wish to use another payment method', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?></a>
 						</p>
 						<?php
 					}
