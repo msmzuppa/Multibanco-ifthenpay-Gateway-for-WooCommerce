@@ -776,6 +776,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			}
 			$email_id = $email ? $email->id : '';
 			$this->debug_log_extra( 'Email ('.$email_id.') instructions send: '.( $send ? 'true' : 'false' ) );
+			//Apply filter
+			$send = apply_filters( 'multibanco_ifthen_send_email_instructions', $send, $order, $sent_to_admin, $plain_text, $email );
+			$this->debug_log_extra( 'Email ('.$email_id.') instructions send (after filter): '.( $send ? 'true' : 'false' ) );
 			//Send
 			if ( $send ) {
 				//Go

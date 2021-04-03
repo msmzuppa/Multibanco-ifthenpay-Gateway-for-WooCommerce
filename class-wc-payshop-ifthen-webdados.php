@@ -728,6 +728,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				}
 			}
 			//$this->debug_log( 'Email instructions send: '.( $send ? 'true' : 'false' ) );
+			//Apply filter
+			$send = apply_filters( 'payshop_ifthen_send_email_instructions', $send, $order, $sent_to_admin, $plain_text, $email );
 			//Send
 			if ( $send ) {
 				//Go

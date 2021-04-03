@@ -456,6 +456,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				}
 			}
 			//$this->debug_log( 'Email instructions send: '.( $send ? 'true' : 'false' ) );
+			//Apply filter
+			$send = apply_filters( 'creditcard_ifthen_send_email_instructions', $send, $order, $sent_to_admin, $plain_text, $email );
 			//Send
 			if ( $send ) {
 				//Go
