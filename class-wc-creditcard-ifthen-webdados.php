@@ -528,7 +528,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$valor         = round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
 			$creditcardkey = apply_filters( 'multibanco_ifthen_base_creditcardkey', $this->creditcardkey, $order );
 			$wd_secret     = substr( strrev( md5( time() ) ), 0, 10 ); //Set a secret on our end for extra validation
-			$url           = $this->api_url.'/'.$creditcardkey;
+			$url           = $this->api_url.$creditcardkey;
 			$args          = array(
 				'method'   => 'POST',
 				'timeout'  => apply_filters( 'creditcard_ifthen_api_timeout', 30 ),
@@ -690,28 +690,35 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					case 'success':
 						$get_order = $this->callback_helper_get_pending_order( $request_id, $id, $val, $wd_secret );
 						if ( $get_order['success'] && $get_order['order'] ) {
-							$order    = $get_order['order'];
-							$order_id = $order->get_id();
-							$note     = __( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-							//WooCommerce Deposits second payment?
-							if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
-								if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { //Has deposit
-									if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) { //First payment - OK!
-										if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { //Second payment - not ok
-											if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $val ) ) { //This really seems like the second payment
-												//Set the current order status temporarly back to partially-paid, but first stop the emails
-												add_filter( 'woocommerce_email_enabled_customer_partially_paid', '__return_false' );
-												add_filter( 'woocommerce_email_enabled_partial_payment', '__return_false' );
-												$order->update_status( 'partially-paid', __( 'Temporary status. Used to force WooCommerce Deposits to correctly set the order to processing.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+							$order         = $get_order['order'];
+							$order_id      = $order->get_id();
+							$order_details = WC_IfthenPay_Webdados()->get_creditcard_order_details( $order->get_id() );
+							$sk            = trim( sanitize_text_field( $_GET['sk'] ) );
+							$hash          = hash_hmac( 'sha256', $id.$val.$request_id, $order_details['creditcardkey'] );
+							if ( $sk == $hash ) {
+								$note     = __( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+								//WooCommerce Deposits second payment?
+								if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
+									if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { //Has deposit
+										if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) { //First payment - OK!
+											if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { //Second payment - not ok
+												if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $val ) ) { //This really seems like the second payment
+													//Set the current order status temporarly back to partially-paid, but first stop the emails
+													add_filter( 'woocommerce_email_enabled_customer_partially_paid', '__return_false' );
+													add_filter( 'woocommerce_email_enabled_partial_payment', '__return_false' );
+													$order->update_status( 'partially-paid', __( 'Temporary status. Used to force WooCommerce Deposits to correctly set the order to processing.', '	multibanco-ifthen-software-gateway-for-woocommerce' ) );
+												}
 											}
 										}
 									}
 								}
+								$this->payment_complete( $order, '', $note );
+								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id() );
+								wp_redirect( $this->get_return_url( $order ) );
+								exit;
+							} else {
+								$error = 'Error: IfthenPay security hash validation failed';
 							}
-							$this->payment_complete( $order, '', $note );
-							do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id() );
-							wp_redirect( $this->get_return_url( $order ) );
-							exit;
 						} else {
 							$error = $get_order['error'];
 						}
