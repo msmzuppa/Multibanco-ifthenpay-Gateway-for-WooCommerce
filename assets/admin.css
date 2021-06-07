@@ -4,6 +4,29 @@
 #wc_ifthen_settings h2 img {
 	margin-bottom: 0.5em;
 }
+#wc_ifthen_premium_plugins li {
+	width: 46%;
+	float: left;
+	text-align: center;
+	overflow: hidden;
+	line-height: 1em;
+	margin-bottom: 1.2em;
+}
+#wc_ifthen_premium_plugins li:nth-child( odd ) {
+	margin-right: 2%;
+	clear: both;
+}
+#wc_ifthen_premium_plugins li:nth-child( even ) {
+	margin-left: 2%;
+}
+#wc_ifthen_premium_plugins li a {
+	display: inline-block;
+}
+#wc_ifthen_premium_plugins img {
+	width: 100px;
+	max-width: 100%;
+	height: auto;
+}
 @media (min-width: 961px) {
 	#wc_ifthen {
 		height: auto;

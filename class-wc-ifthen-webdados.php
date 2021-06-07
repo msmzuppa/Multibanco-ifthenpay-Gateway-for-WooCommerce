@@ -1916,43 +1916,57 @@ wc_price( $order_total_to_pay )
 			<div class="clear"></div>
 			<hr/>
 			<h4><?php _e( 'Other premium plugins', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</h4>
-			<ul>
-				<li>
-					-
-					<a href="https://invoicewoo.com/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'Invoicing with InvoiceXpress for WooCommerce – Pro', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
-					</a>
-				</li>
-				<li>
-					-
-					<a href="https://www.webdados.pt/wordpress/plugins/dpd-portugal-para-woocommerce-wordpress/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'DPD (Chronopost/SEUR) Portugal for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
-					</a>
-				</li>
-				<li>
-					-
-					<a href="https://shop.webdados.com/product/portuguese-postcodes-for-woocommerce-technical-support/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'Portuguese Postcodes for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
-					</a>
-				</li>
-				<li>
-					-
-					<a href="https://www.webdados.pt/wordpress/plugins/feed-kuantokusta-para-woocommerce/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'Feed KuantoKusta for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
-					</a>
-				</li>
-				<li>
-					-
-					<a href="https://www.webdados.pt/wordpress/plugins/shop-as-client-for-woocommerce/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'Shop as Client for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
-					</a>
-				</li>
-				<li>
-					-
-					<a href="https://www.webdados.pt/wordpress/plugins/multicaixa-gateway-proxypay-para-woocommerce-wordpress/<?php echo esc_attr( $this->out_link_utm); ?>" target="_blank">
-						<?php _e( 'Payment Multicaixa (ProxyPay gateway) for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
-					</a>
-				</li>
+			<ul id="wc_ifthen_premium_plugins">
+				<?php
+				$premium_plugins = array(
+					array(
+						'url'         => 'https://invoicewoo.com/',
+						'title'       => __( 'Invoicing with InvoiceXpress for WooCommerce – Pro', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'short_title' => __( 'InvoiceXpress', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'image'       => 'invoicexpress-woocommerce.png',
+					),
+					array(
+						'url'         => 'https://www.webdados.pt/wordpress/plugins/dpd-portugal-para-woocommerce-wordpress/',
+						'title'       => __( 'DPD (Chronopost/SEUR) Portugal for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'short_title' => __( 'DPD Portugal', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'image'       => 'dpd-portugal.png',
+					),
+					array(
+						'url'         => 'https://shop.webdados.com/product/portuguese-postcodes-for-woocommerce-technical-support/',
+						'title'       => __( 'Portuguese Postcodes for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'short_title' => __( 'Portuguese Postcodes', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'image'       => 'postcodes.png',
+					),
+					array(
+						'url'         => 'https://www.webdados.pt/wordpress/plugins/feed-kuantokusta-para-woocommerce/',
+						'title'       => __( 'Feed KuantoKusta for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'short_title' => __( 'KuantoKusta', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'image'       => 'kuantokusta.png',
+					),
+					array(
+						'url'         => 'https://www.webdados.pt/wordpress/plugins/shop-as-client-for-woocommerce/',
+						'title'       => __( 'Shop as Client for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'short_title' => __( 'Shop as Client', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'image'       => 'shop-as-client.png',
+					),
+					array(
+						'url'         => 'https://www.webdados.pt/wordpress/plugins/multicaixa-gateway-proxypay-para-woocommerce-wordpress/',
+						'title'       => __( 'Payment Multicaixa (ProxyPay gateway) for WooCommerce PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'short_title' => __( 'Payment Multicaixa', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'image'       => 'multicaixa.png',
+					),
+				);
+				foreach( $premium_plugins as $premium_plugin ) {
+					?>
+					<li>
+						<a href="<?php echo esc_url( $premium_plugin['url'].$this->out_link_utm); ?>" target="_blank" title="<?php echo esc_attr( $premium_plugin['title'] ); ?>">
+							<img src="<?php echo esc_url( plugins_url( 'images/premium_plugins/'.$premium_plugin['image'], __FILE__ ) ); ?>" width="600" height="600" alt="<?php echo esc_attr( $premium_plugin['title'] ); ?>"/>
+							<small><?php echo $premium_plugin['short_title']; ?></small>
+						</a>
+					</li>
+					<?php
+				}
+				?>
 			</ul>
 			<div class="clear"></div>
 		</div>
