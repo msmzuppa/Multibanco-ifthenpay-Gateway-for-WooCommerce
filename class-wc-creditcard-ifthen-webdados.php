@@ -849,9 +849,13 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		function admin_notices() {
 			//New method
 			if (
-				strlen( trim( $this->creditcardkey ) ) != 10
-				||
-				trim( $this->enabled ) != 'yes'
+				(
+					strlen( trim( $this->creditcardkey ) ) != 10
+					||
+					trim( $this->enabled ) != 'yes'
+				)
+				&&
+				( ! apply_filters( 'multibanco_ifthen_hide_newmethod_notifications', false ) )
 			) {
 				?>
 				<div id="creditcard_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
@@ -876,7 +880,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					notice    = jQuery( '#creditcard_ifthen_newmethod_notice');
 					dismissed = localStorage.getItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss' );
 					if ( !dismissed ) {
-						jQuery(notice).show();
+						jQuery( notice ).show();
 						jQuery( notice ).on( 'click', 'button.notice-dismiss', function() {
 							localStorage.setItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss', 1 );
 						});

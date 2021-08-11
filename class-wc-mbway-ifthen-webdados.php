@@ -31,7 +31,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			$this->id = WC_IfthenPay_Webdados()->mbway_id;
 	
 			// Logs
-			$this->debug = ( $this->get_option( 'debug' )=='yes' ? true : false );
+			$this->debug = ( $this->get_option( 'debug' ) == 'yes' ? true : false );
 			$this->debug_email = $this->get_option( 'debug_email' );
 			
 			//Check version and upgrade
@@ -965,6 +965,21 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			}
 			return;
 		}
+		/*function process_payment_rest_api( $order_id ) {
+			$order = wc_get_order( $order_id );
+			if ( $phone = $order->get_meta( $this->id.'_phone' ) ) {
+				if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
+					$order->update_status( 'pending', '[REST] '.__( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				} else {
+					//https://stackoverflow.com/questions/30922742/woocommerce-rest-api-v2-how-to-process-payment
+					$order->add_order_note( '[REST] '.__( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					wp_update_post(array(
+						'ID' => $id,
+						'post_excerpt' => __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+					));
+				}
+			}
+		}*/
 
 
 		/**
@@ -1290,9 +1305,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			}
 			//New method
 			if (
-				strlen( trim( $this->mbwaykey ) ) != 10
-				||
-				trim( $this->enabled ) != 'yes'
+				(
+					strlen( trim( $this->mbwaykey ) ) != 10
+					||
+					trim( $this->enabled ) != 'yes'
+				)
+				&&
+				( ! apply_filters( 'multibanco_ifthen_hide_newmethod_notifications', false ) )
 			) {
 				?>
 				<div id="mbway_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
@@ -1317,7 +1336,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					notice    = jQuery( '#mbway_ifthen_newmethod_notice');
 					dismissed = localStorage.getItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss' );
 					if ( !dismissed ) {
-						jQuery(notice).show();
+						jQuery( notice ).show();
 						jQuery( notice ).on( 'click', 'button.notice-dismiss', function() {
 							localStorage.setItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss', 1 );
 						});

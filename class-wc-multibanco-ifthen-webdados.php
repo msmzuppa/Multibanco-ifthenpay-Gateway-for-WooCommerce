@@ -545,7 +545,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 									<td>
 										<?php printf(
 											__( 'Incremental references with expiration date (%d days)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-											intval( apply_filters( 'multibanco_ifthen_incremental_expire_days', 0 ) )
+											intval( apply_filters( 'multibanco_ifthen_incremental_expire_days', 7 ) )
 										); ?>
 									</td>
 								</tr>

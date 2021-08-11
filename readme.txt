@@ -4,7 +4,7 @@ Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos,
 Author URI: https://www.webdados.pt
 Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
 Requires at least: 4.6
-Tested up to: 5.7
+Tested up to: 5.9
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv3
@@ -177,8 +177,12 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 5.1.1 - 2020-06-16 =
+= 5.1.2 - 2020-08-11 =
 * You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
+* It’s now possible to remove the new methods notifications by returning `true` to the `multibanco_ifthen_hide_newmethod_notifications` filter
+* Tested with 5.9-alpha-51588 and WooCommerce 5.6.0-rc.1
+
+= 5.1.1 - 2020-06-16 =
 * Fix a bug on the credit card gateway where some payments were not recognised
 * Small tweaks and debug
 * Tested with 5.8-beta2-51167 and WooCommerce 5.4.1
