@@ -177,28 +177,33 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 5.1.2 - 2020-08-11 =
+= 5.1.3 - 2022-01-05 =
 * You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
+* New option to set Payshop reference validity to 15 days
+* Tested with WordPress 5.9-RC1-52446 and WooCommerce 6.1.0-rc.2
+* Happy New Year!
+
+= 5.1.2 - 2021-08-11 =
 * It’s now possible to remove the new methods notifications by returning `true` to the `multibanco_ifthen_hide_newmethod_notifications` filter
 * Tested with 5.9-alpha-51588 and WooCommerce 5.6.0-rc.1
 
-= 5.1.1 - 2020-06-16 =
+= 5.1.1 - 2021-06-16 =
 * Fix a bug on the credit card gateway where some payments were not recognised
 * Small tweaks and debug
-* Tested with 5.8-beta2-51167 and WooCommerce 5.4.1
+* Tested with WordPress 5.8-beta2-51167 and WooCommerce 5.4.1
 
-= 5.1.0 - 2020-05-27 =
+= 5.1.0 - 2021-05-27 =
 * Several code tweaks, input sanitization and extra checks
 * Tested with WordPress 5.8-alpha-51034, WooCommerce 5.4.0-rc.1 and WooCommerce Blocks 5.2.0
 
-= 5.0.1 - 2020-04-03 =
+= 5.0.1 - 2021-04-03 =
 * New `multibanco_ifthen_send_email_instructions`, `mbway_ifthen_send_email_instructions`, `creditcard_ifthen_send_email_instructions` and `payshop_ifthen_send_email_instructions` filters to allow removing the payment gateway instructions from emails
 * Fix Credit card settings fields not hiding when the key is not set
 * WooCommerce Blocks (4.7.0 and above) improvements: respect the Multibanco "Only for Portuguese customers" setting and fix icon size
 * Small copy adjustments
 * Tested with WordPress 5.8-alpha-50650, WooCommerce 5.2.0-rc.1 and WooCommerce Blocks 4.7.0
 
-= 5.0.0 - 2020-03-16 =
+= 5.0.0 - 2021-03-16 =
 * **New payment method available: “Credit or debit card”** (WooCommerce >= 4.0) - You need to sign an [amendment to the contract](https://www.ifthenpay.com/downloads/ifmb/AditamentoCCredito.pdf)
 * **Requires WordPress 4.6 and WooCommerce 3.0 or above**
 * **For WooCommerce 2.6 support you need to use [version 4.4.9](https://downloads.wordpress.org/plugin/multibanco-ifthen-software-gateway-for-woocommerce.4.4.9.zip)**

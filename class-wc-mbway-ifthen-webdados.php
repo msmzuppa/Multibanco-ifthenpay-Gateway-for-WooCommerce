@@ -368,7 +368,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 					</ul>
 					<?php
 					if(
-						trim( strlen( $this->mbwaykey) ) == 10
+						strlen( trim( $this->mbwaykey) ) == 10
 						&&
 						trim( $this->secret_key ) != ''
 					) {
@@ -1033,7 +1033,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		}
 		function validate_fields() {
 			$phone = isset( $_POST[$this->id.'_phone'] ) ? trim( sanitize_text_field( $_POST[$this->id.'_phone'] ) ) : '';
-			if ( empty($phone) ) {
+			if ( empty( $phone ) ) {
 				wc_add_notice( sprintf( __( '%s is required', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong>'.__( 'Phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong>' ), 'error' );
 				return false;
 			} else {

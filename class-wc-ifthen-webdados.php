@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WC_IfthenPay_Webdados {
 	
 	/* Version */
-	public $version = '5.1.2';
+	public $version = '5.1.3';
 
 	/* IDs */
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
@@ -1104,10 +1104,10 @@ final class WC_IfthenPay_Webdados {
 							);
 						} else {
 							$error_details='';
-							if ( trim( strlen( $base['ent'] ) ) != 5 || ( !intval( $base['ent'] ) > 0 ) ) {
+							if ( strlen( trim( $base['ent'] ) ) != 5 || ( !intval( $base['ent'] ) > 0 ) ) {
 								$error_details = __( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 							} else {
-								if ( trim( strlen( $base['subent'] ) ) != 5 || ( !intval( $base['subent'] ) > 0 ) ) {
+								if ( strlen( trim( $base['subent'] ) ) > 3 || ( !intval( $base['subent'] ) > 0 ) ) {
 									$error_details = __( 'Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 								} else {
 									if ( trim( $this->multibanco_settings['secret_key'] ) == '' ) {

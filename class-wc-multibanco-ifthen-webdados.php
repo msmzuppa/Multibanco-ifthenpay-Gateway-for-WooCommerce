@@ -262,7 +262,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 								),
 				) );
 			}
-			//if( strlen( $this->get_option( 'ent' ) ) == 5 && trim( strlen( $this->get_option( 'subent' ) ) )<=3 && intval( $this->get_option( 'ent' ) )>0 && intval( $this->get_option( 'subent' ) )>0 && trim( $this->secret_key ) !='' ) {
+			//if( strlen( $this->get_option( 'ent' ) ) == 5 && strlen( trim( $this->get_option( 'subent' ) ) )<=3 && intval( $this->get_option( 'ent' ) )>0 && intval( $this->get_option( 'subent' ) )>0 && trim( $this->secret_key ) !='' ) {
 				$this->form_fields = array_merge( $this->form_fields, array(
 					'secret_key' => array(
 									'title' => __( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' (Multibanco)', 
@@ -451,9 +451,9 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					</ul>
 					<?php
 					if(
-						trim( strlen( $this->ent ) ) == 5
+						strlen( trim( $this->ent ) ) == 5
 						&&
-						trim( strlen( $this->subent ) ) <= 3
+						strlen( trim( $this->subent ) ) <= 3
 						&&
 						intval( $this->ent ) > 0
 						&&

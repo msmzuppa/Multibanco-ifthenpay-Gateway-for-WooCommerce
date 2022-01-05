@@ -308,7 +308,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					</ul>
 					<?php
 					if(
-						trim( strlen( $this->creditcardkey) ) == 10
+						strlen( trim( $this->creditcardkey ) ) == 10
 					) {
 						//OK
 					} else {

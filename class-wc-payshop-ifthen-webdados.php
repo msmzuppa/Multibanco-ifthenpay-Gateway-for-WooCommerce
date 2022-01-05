@@ -281,6 +281,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 				for( $i = 1; $i <= 10; $i++ ) {
 					$validity_options[$i] = sprintf( esc_html( _n( '%d day', '%d days', $i, 'multibanco-ifthen-software-gateway-for-woocommerce' ) ), $i );
 				}
+				$validity_options[15] = sprintf( esc_html( _n( '%d day', '%d days', 15, 'multibanco-ifthen-software-gateway-for-woocommerce' ) ), 15 );
 				for( $i = 2; $i <= 10; $i++ ) {
 					$validity_options[$i*10] = sprintf( esc_html( _n( '%d day', '%d days', $i*10, 'multibanco-ifthen-software-gateway-for-woocommerce' ) ), $i*10 );
 				}
@@ -402,7 +403,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 					</ul>
 					<?php
 					if(
-						trim( strlen( $this->payshopkey) ) == 10
+						strlen( trim( $this->payshopkey ) ) == 10
 						&&
 						trim( $this->secret_key ) != ''
 					) {
