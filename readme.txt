@@ -177,6 +177,11 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= 5.1.4 - 2022-05-04 =
+* May the 4th be with you
+* Small change on the checkout MB WAY field label
+* Tested with WordPress 6.0-beta2-53236 and WooCommerce 6.5.0-rc.1
+
 = 5.1.3 - 2022-01-05 =
 * You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
 * New option to set Payshop reference validity to 15 days

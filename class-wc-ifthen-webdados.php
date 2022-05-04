@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WC_IfthenPay_Webdados {
 	
 	/* Version */
-	public $version = '5.1.3';
+	public $version = '5.1.4';
 
 	/* IDs */
 	public $multibanco_id = 'multibanco_ifthen_for_woocommerce';
@@ -1587,7 +1587,7 @@ wc_price( $order_total_to_pay )
 	/* Cancel unpaid orders - See WooCommerce wc_cancel_unpaid_orders() */
 	public function multibanco_woocommerce_cancel_unpaid_orders() {
 		$methods = array();
-		//Falta Payshop?
+		//Falta Cartão de crédito?
 		if ( apply_filters( 'multibanco_ifthen_cancel_unpaid_orders', false ) ) {
 			$methods[] = $this->multibanco_id;
 		}
