@@ -91,7 +91,6 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			$this->only_portugal = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
 			$this->only_above = $this->get_option( 'only_above' );
 			$this->only_bellow = $this->get_option( 'only_bellow' );
-			$this->stock_when = $this->get_option( 'stock_when' );
 	 	
 			// Actions and filters
 			if ( self::$instances == 1 ) { //Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
@@ -267,20 +266,6 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									'default' => ''
 								),
 				) );
-				if ( ! $this->order_initial_status_pending ) {
-					$this->form_fields = array_merge( $this->form_fields, array(
-						'stock_when' => array(
-										'title' => __( 'Reduce stock', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-										'type' => 'select', 
-										'description' => __( 'Choose when to reduce stock.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-										'default' => '',
-										'options'	=> array(
-											'order'	=> __( 'when order is placed (before payment, WooCommerce default)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-											''		=> __( 'when order is paid (requires active callback)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										),
-									),
-					) );
-				}
 				if ( WC_IfthenPay_Webdados()->wc_subscriptions_active ) {
 					$this->form_fields = array_merge( $this->form_fields, array(
 						'support_woocommerce_subscriptions' => array(
@@ -939,31 +924,35 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		function process_payment( $order_id ) {
 			//Webservice
 			$order = wc_get_order( $order_id );
-			$phone = isset( $_POST[$this->id.'_phone'] ) ? trim( sanitize_text_field( $_POST[$this->id.'_phone'] ) ) : '';
-			if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
-				if ( ! $this->order_initial_status_pending ) {
-					// Mark as on-hold
-					$order->update_status( 'on-hold', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-					// Reduce stock levels
-					if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
+
+			if ( $order->get_total() > 0 ) {
+				$phone = isset( $_POST[$this->id.'_phone'] ) ? trim( sanitize_text_field( $_POST[$this->id.'_phone'] ) ) : '';
+				if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
+					if ( ! $this->order_initial_status_pending ) {
+						// Mark as on-hold
+						$order->update_status( 'on-hold', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					} else {
+						$order->update_status( 'pending', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					}
 				} else {
-					$order->update_status( 'pending', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					wc_add_notice( __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
+					return;
 				}
-				// Remove cart
-				if ( isset( WC()->cart ) ) {
-					WC()->cart->empty_cart();
-				}
-				// Empty awaiting payment session
-				unset( WC()->session->order_awaiting_payment );
-				// Return thankyou redirect
-				return array(
-					'result' => 'success',
-					'redirect' => $this->get_return_url( $order )
-				);
 			} else {
-				wc_add_notice( __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
+				//Value = 0
+				$order->payment_complete();
 			}
-			return;
+			// Remove cart
+			if ( isset( WC()->cart ) ) {
+				WC()->cart->empty_cart();
+			}
+			// Empty awaiting payment session
+			unset( WC()->session->order_awaiting_payment );
+			// Return thankyou redirect
+			return array(
+				'result' => 'success',
+				'redirect' => $this->get_return_url( $order )
+			);
 		}
 		/*function process_payment_rest_api( $order_id ) {
 			$order = wc_get_order( $order_id );
@@ -1055,7 +1044,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id ) );
 			} else {
 				return $bool;
 			}

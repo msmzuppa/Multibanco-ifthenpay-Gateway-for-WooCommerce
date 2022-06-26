@@ -1678,37 +1678,17 @@ wc_price( $order_total_to_pay )
 	}
 
 	/* Reduce stock - on 'woocommerce_payment_complete_reduce_order_stock' */
-	public function woocommerce_payment_complete_reduce_order_stock( $reduce, $order_id, $payment_method, $stock_when ) {
+	public function woocommerce_payment_complete_reduce_order_stock( $reduce, $order_id, $payment_method ) {
 		if ( $reduce ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $payment_method ) {
-				if ( version_compare( WC_VERSION, '3.4.0', '>=' ) ) { //https://github.com/woocommerce/woocommerce/commit/70c9cff608761fcd48b57f709059e00b1ffeee38#diff-27a48ce67fa604181c90b4bb464164ac
-					//After 3.4.0
-					if ( $this->order_needs_payment( $order ) ) {
-						//Pending payment
-						if ( $stock_when == 'order' ) {
-							//Yes, because we want to reduce on the order
-							return true;
-						} else {
-							return false;
-						}
-					} else {
-						//Payment done
-						if ( $stock_when == '' ) {
-							//Yes, because we want to reduce on payment
-							return true;
-						} else {
-							return false;
-						}
-					}
+				//After 3.4.0
+				if ( $this->order_needs_payment( $order ) ) {
+					//Pending payment
+					return false;
 				} else {
-					//Before 3.4.0 - This only runs for paid orders
-					if ( $stock_when == '' ) {
-						//Yes, because we want to reduce on payment
-						return true;
-					} else {
-						return false;
-					}
+					//Payment done
+					return true;
 				}
 			} else {
 				return $reduce;
@@ -2336,11 +2316,11 @@ wc_price( $order_total_to_pay )
 				)
 			) {
 				$notices = array();
-				//WordPress below 4.6
-				if ( version_compare( get_bloginfo( 'version' ), '4.6', '<' ) ) {
+				//WordPress below 5.0
+				if ( version_compare( get_bloginfo( 'version' ), '5.0', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>WordPress 4.6</strong>',
+						'<strong>WordPress 5.0</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							get_bloginfo( 'version' )
