@@ -85,7 +85,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 			$this->only_portugal      = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
 			$this->only_above         = $this->get_option( 'only_above' );
 			$this->only_bellow        = $this->get_option( 'only_bellow' );
-			$this->stock_when         = $this->get_option( 'stock_when' );
 			$this->validity           = $this->get_option( 'validity' );
 	 	
 			// Actions and filters
@@ -286,16 +285,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 					$validity_options[$i*10] = sprintf( esc_html( _n( '%d day', '%d days', $i*10, 'multibanco-ifthen-software-gateway-for-woocommerce' ) ), $i*10 );
 				}
 				$this->form_fields = array_merge( $this->form_fields, array(
-					'stock_when' => array(
-									'title' => __( 'Reduce stock', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'type' => 'select', 
-									'description' => __( 'Choose when to reduce stock.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-									'default' => '',
-									'options'	=> array(
-										'order'	=> __( 'when order is placed (before payment, WooCommerce default)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										''		=> __( 'when order is paid (requires active callback)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									),
-								),
 					'resend_new_order_when_paid' => array(
 									'title' => __( 'Notify store owner of payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'checkbox', 
@@ -941,9 +930,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 				}
 				// Mark as on-hold
-				if ( apply_filters( 'payshop_ifthen_set_on_hold', true, $order->get_id() ) ) $order->update_status( 'on-hold', __( 'Awaiting Payshop payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-				// Reduce stock levels
-				if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
+				if ( $order->get_total() > 0 ) {
+					if ( apply_filters( 'payshop_ifthen_set_on_hold', true, $order->get_id() ) ) $order->update_status( 'on-hold', __( 'Awaiting Payshop payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				} else {
+					$order->payment_complete();
+				}
 				// Remove cart
 				if ( isset( WC()->cart ) ) {
 					WC()->cart->empty_cart();
@@ -1006,7 +997,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id ) );
 			} else {
 				return $bool;
 			}

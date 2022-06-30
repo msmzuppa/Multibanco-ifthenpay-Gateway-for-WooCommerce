@@ -73,6 +73,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			//Webservice
 			//$this->webservice_url = 'https://www.ifthenpay.com/mbwayWS/IfthenPayMBW.asmx';
 			$this->webservice_url = 'https://mbway.ifthenpay.com/IfthenPayMBW.asmx';
+			$this->refunds_url = 'http://ifthenpay.com/api/endpoint/payments/refund';
 
 			//on hold or pending?
 			$this->order_initial_status_pending = apply_filters( 'mbway_ifthen_order_initial_status_pending', true );
@@ -91,7 +92,12 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			$this->only_portugal = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
 			$this->only_above = $this->get_option( 'only_above' );
 			$this->only_bellow = $this->get_option( 'only_bellow' );
-			$this->stock_when = $this->get_option( 'stock_when' );
+			$this->do_refunds =  ( $this->get_option( 'do_refunds' ) == 'yes' ? true : false );
+			$this->do_refunds_backoffice_key = $this->get_option( 'do_refunds_backoffice_key' );
+
+			if ( $this->do_refunds && trim( $this->do_refunds_backoffice_key ) != '' ) {
+				$this->supports[] = 'refunds';
+			}
 	 	
 			// Actions and filters
 			if ( self::$instances == 1 ) { //Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
@@ -267,20 +273,6 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									'default' => ''
 								),
 				) );
-				if ( ! $this->order_initial_status_pending ) {
-					$this->form_fields = array_merge( $this->form_fields, array(
-						'stock_when' => array(
-										'title' => __( 'Reduce stock', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-										'type' => 'select', 
-										'description' => __( 'Choose when to reduce stock.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-										'default' => '',
-										'options'	=> array(
-											'order'	=> __( 'when order is placed (before payment, WooCommerce default)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-											''		=> __( 'when order is paid (requires active callback)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										),
-									),
-					) );
-				}
 				if ( WC_IfthenPay_Webdados()->wc_subscriptions_active ) {
 					$this->form_fields = array_merge( $this->form_fields, array(
 						'support_woocommerce_subscriptions' => array(
@@ -293,6 +285,17 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 						) );
 				}
 				$this->form_fields = array_merge( $this->form_fields, array(
+					'do_refunds' => array(
+						'title' => __( 'Process refunds?', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' NOT WORKING YET', 
+						'type' => 'checkbox', 
+						'label' => __( 'Automatically refund via MB Way when the order is completely or partially refunded in WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+					),
+					'do_refunds_backoffice_key' => array(
+						'title' => __( 'Backoffice key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'type' => 'text',
+						'default' => '',
+						'description' => __( 'The IfthenPay backoffice key you got after signing the contract is needed to process refunds', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					),
 					'send_to_admin' => array(
 									'title' => __( 'Send instructions to admin?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 									'type' => 'checkbox', 
@@ -939,32 +942,51 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		function process_payment( $order_id ) {
 			//Webservice
 			$order = wc_get_order( $order_id );
-			$phone = isset( $_POST[$this->id.'_phone'] ) ? trim( sanitize_text_field( $_POST[$this->id.'_phone'] ) ) : '';
-			if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
-				if ( ! $this->order_initial_status_pending ) {
-					// Mark as on-hold
-					$order->update_status( 'on-hold', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-					// Reduce stock levels
-					if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
+
+			if ( $order->get_total() > 0 ) {
+				$phone = isset( $_POST[$this->id.'_phone'] ) ? trim( sanitize_text_field( $_POST[$this->id.'_phone'] ) ) : '';
+				if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
+					if ( ! $this->order_initial_status_pending ) {
+						// Mark as on-hold
+						$order->update_status( 'on-hold', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					} else {
+						$order->update_status( 'pending', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					}
 				} else {
-					$order->update_status( 'pending', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					wc_add_notice( __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
+					return;
 				}
-				// Remove cart
-				if ( isset( WC()->cart ) ) {
-					WC()->cart->empty_cart();
-				}
-				// Empty awaiting payment session
-				unset( WC()->session->order_awaiting_payment );
-				// Return thankyou redirect
-				return array(
-					'result' => 'success',
-					'redirect' => $this->get_return_url( $order )
-				);
 			} else {
-				wc_add_notice( __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
+				//Value = 0
+				$order->payment_complete();
 			}
-			return;
+			// Remove cart
+			if ( isset( WC()->cart ) ) {
+				WC()->cart->empty_cart();
+			}
+			// Empty awaiting payment session
+			unset( WC()->session->order_awaiting_payment );
+			// Return thankyou redirect
+			return array(
+				'result' => 'success',
+				'redirect' => $this->get_return_url( $order )
+			);
 		}
+		/*function process_payment_rest_api( $order_id ) {
+			$order = wc_get_order( $order_id );
+			if ( $phone = $order->get_meta( $this->id.'_phone' ) ) {
+				if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
+					$order->update_status( 'pending', '[REST] '.__( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				} else {
+					//https://stackoverflow.com/questions/30922742/woocommerce-rest-api-v2-how-to-process-payment
+					$order->add_order_note( '[REST] '.__( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					wp_update_post(array(
+						'ID' => $id,
+						'post_excerpt' => __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+					));
+				}
+			}
+		}*/
 
 
 		/**
@@ -1040,7 +1062,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id ) );
 			} else {
 				return $bool;
 			}
@@ -1248,6 +1270,60 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				$this->debug_log( '- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') with missing arguments from '.$_SERVER['REMOTE_ADDR'] );
 				do_action( 'mbway_ifthen_callback_payment_failed', 0, $err, $_GET );
 				wp_die( 'Error: Something is missing...', 'WC_MBWAY_IfThen_Webdados', array( 'response' => 500 ) ); //Sends 500
+			}
+		}
+
+		/* Do refunds */
+		public function process_refund( $order_id, $amount = null, $reason = '' ) {
+			$order = wc_get_order( $order_id );
+			$this->debug_log( '-- Processing refund - Order '.$order->get_id(), 'notice', true, 'Processing a MB WAY '.$amount.' refund' );
+			if ( ! $this->can_refund_order( $order ) ) {
+				$this->debug_log( '-- Failed refund - Order '.$order->get_id(), 'error', true, 'Cannot refund order' );
+				return new WP_Error( 'error', __( 'Refund failed.', 'woocommerce' ) );
+			}
+			$order_mbway_details = WC_IfthenPay_Webdados()->get_mbway_order_details( $order->get_id() );
+			$args     = array(
+				'method'   => 'POST',
+				'timeout'  => apply_filters( 'mbway_ifthen_webservice_timeout', 30 ),
+				'blocking' => true,
+				'headers'  => array('Content-Type' => 'application/json; charset=utf-8'),
+				'body'     => array(
+					'backofficekey' => trim( $this->do_refunds_backoffice_key ),
+					'requestId'     => trim( $order_mbway_details['id_pedido'] ),
+					'amount'        => (string) round( floatval( $amount ), 2 ),
+				),
+			);
+			$args['body'] = json_encode( $args['body'] );
+			$response = wp_remote_post( $this->refunds_url, $args );
+			if ( is_wp_error( $response ) ) {
+				$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - '.$response->get_error_message();
+				$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+				$this->debug_log( '-- '.$debug_msg, 'error', true, $debug_msg_email );
+				return new WP_Error( 'error', $response->get_error_message() );
+			} else {
+				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) == 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
+					//error_log($response['body']); 
+					if ( $body = json_decode( $response['body'] ) ) {
+						if ( trim( $body->Status ) == '1' ) {
+							return true;
+						} else {
+							$debug_msg = '- Error from IfthenPay: '.trim( $body->Message ).' - Order '.$order->get_id();
+							$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+							$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+							return new WP_Error( 'error', $debug_msg.' - '.__( 'Do not contact the plugin support. You need to check with IfthenPay why this refund could not be issued.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+						}
+					} else {
+						$debug_msg = '- Response body is not JSON - Order '.$order->get_id();
+						$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+						$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+						return new WP_Error( 'error', $debug_msg );
+					}
+				} else {
+					$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Incorrect response code: '.$response['response']['code'];
+					$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+					$this->debug_log($debug_msg, 'error', true, $debug_msg_email );
+					return new WP_Error( 'error', $debug_msg );
+				}
 			}
 		}
 

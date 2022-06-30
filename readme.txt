@@ -3,9 +3,9 @@ Contributors: webdados, ptwooplugins, ifthenpay
 Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos, gateway, mb way, debit card, mobile, atm, debit card, credit card, bank, ecommerce, e-commerce, ifthen, ifthen software, ifthenpay, webdados, sms, php7, cartão de débito, cartão de crédito, cartões, gdpr
 Author URI: https://ptwooplugins.com
 Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
-Requires at least: 4.6
+Requires at least: 5.0
 Tested up to: 6.1
-Requires PHP: 5.6
+Requires PHP: 7.0
 Stable tag: trunk
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -21,7 +21,7 @@ The MB WAY (using the customer mobile phone number), Credit or debit card and CT
 
 This is the official [IfthenPay](https://ifthenpay.com) plugin, and a contract with this company is required. Technical support is provided by [Webdados](https://www.webdados.pt).
 
-**This plugin will soon require WordPress 5.0, WooCommerce 3.4 and PHP 7.0 or above.**
+**This plugin will soon require WordPress 5.7 and WooCommerce 5.0**
 If you cannot update any of these components, you should check the changelog of this plugin to find out which is the last version you can use in your scenario.
 
 = Are you already issuing automatic invoices on your WooCommerce store? =
@@ -178,6 +178,14 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= ? =
+* You can safely update this plugin if you’re running WooCommece 4.0 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
+* Dev - Removed support for WooCommerce below 4.0 (launched in March 2020)
+* Dev - Removed support for WordPress below 5.0 (launched in December 2018)
+* Dev - Removed support for PHP below 7.0 (launched in December 2015)
+* Remove - The option to reduce stock when the order is created is no longer available as it worked only for WooCommerce below 3.4.0
+* Fix - Set order as pais when order total is 0 and bypass any payments
+
 = 6.0.3 - 2022-06-30 =
 * Fix - Multibanco would not be available on checkout when the new "MB Key" configuration method is active in some scenarios
 * Fix - Check if the checkout block is installed on the page instead of only checking if we are on the checkout page
@@ -206,7 +214,6 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Tested with WordPress 6.0-beta2-53236 and WooCommerce 6.5.0-rc.1
 
 = 5.1.3 - 2022-01-05 =
-* You can safely update this plugin if you’re running WooCommece 3.0 or newer **but we’ll very soon drop support for WooCommerce previous to 3.4 (which was launched in May 2018)**
 * New option to set Payshop reference validity to 15 days
 * Small bug fixes on checking the payment methods key length
 * Tested with WordPress 5.9-RC1-52446 and WooCommerce 6.1.0-rc.2

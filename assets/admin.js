@@ -44,6 +44,10 @@
 				) {
 					hide_extra_fields = false;
 				}
+				ifthen_toogle_mbway_refunds();
+				$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).on('change', function() {
+					ifthen_toogle_mbway_refunds();
+				} );
 				break;
 			case 'creditcard':
 				if (
@@ -159,6 +163,14 @@
 			$( '#woocommerce_multibanco_ifthen_for_woocommerce_subent' ).closest( 'tr' ).show();
 			$( '#woocommerce_multibanco_ifthen_for_woocommerce_mbkey' ).closest( 'tr' ).hide();
 			$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_expiry' ).closest( 'tr' ).hide();
+		}
+	}
+
+	function ifthen_toogle_mbway_refunds() {
+		if ( $( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).is(':checked') ) {
+			$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds_backoffice_key' ).closest( 'tr' ).show();
+		} else {
+			$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds_backoffice_key' ).closest( 'tr' ).hide();
 		}
 	}
 

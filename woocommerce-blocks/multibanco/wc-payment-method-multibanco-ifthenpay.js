@@ -114,7 +114,7 @@
 			};
 		
 		//Our settings on the console
-		console.log(u);
+		//console.log(u);
 		
 		Object(r.registerPaymentMethod)(function (e) {
 			return new e(d);
