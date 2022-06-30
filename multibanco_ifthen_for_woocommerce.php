@@ -8,7 +8,7 @@
  * Author URI: https://ptwooplugins.com
  * Text Domain: multibanco-ifthen-software-gateway-for-woocommerce
  * Domain Path: /lang
- * WC requires at least: 3.0
+ * WC requires at least: 4.0
  * WC tested up to: 6.7
 **/
 
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /* Our own order class and the main classes */
 add_action( 'plugins_loaded', 'mbifthen_init', 1 );
 function mbifthen_init() {
-	if ( class_exists( 'WooCommerce' ) && defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '3.0', '>=' ) ) {
+	if ( class_exists( 'WooCommerce' ) && defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '4.0', '>=' ) ) {
 		require_once( dirname( __FILE__ ) . '/class-wc-ifthen-webdados.php' );
 		require_once( dirname( __FILE__ ) . '/class-wc-multibanco-ifthen-webdados.php' );
 		require_once( dirname( __FILE__ ) . '/class-wc-mbway-ifthen-webdados.php' );

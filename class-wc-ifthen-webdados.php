@@ -2316,35 +2316,35 @@ wc_price( $order_total_to_pay )
 				)
 			) {
 				$notices = array();
-				//WordPress below 5.0
-				if ( version_compare( get_bloginfo( 'version' ), '5.0', '<' ) ) {
+				//WordPress below 5.1
+				if ( version_compare( get_bloginfo( 'version' ), '5.1', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>WordPress 5.0</strong>',
+						'<strong>WordPress 5.1</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							get_bloginfo( 'version' )
 						)
 					);
 				}
-				//WooCommerce below 3.4
-				if ( version_compare( WC_VERSION, '3.4', '<' ) ) {
+				//WooCommerce below 5.0
+				if ( version_compare( WC_VERSION, '5.0', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>WooCommerce 3.4</strong>',
+						'<strong>WooCommerce 5.0</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							WC_VERSION
 						)
 					)
 					.
-					' - <strong>'.__( 'Support for WC &lt; 3.4 will end VERY SOON!', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong>';
+					' - <strong>'.__( 'Support for WC &lt; 5.4 will end VERY SOON!', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong>';
 				}
-				//PHP below 7.0
-				if ( version_compare( phpversion(), '7.0', '<' ) ) {
+				//PHP below 7.3
+				if ( version_compare( phpversion(), '7.3', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>PHP 7.0</strong>',
+						'<strong>PHP 7.3</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							phpversion()
