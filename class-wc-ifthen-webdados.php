@@ -1039,7 +1039,7 @@ final class WC_IfthenPay_Webdados {
 		$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Force change: '.( $force_change ? 'true' : 'false' ).' - Order '.$order->get_id() );
 		if ( $this->wc_deposits_active ) {
 			if ( ! $this->multibanco_deposits_already_forced ) {
-				if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' && is_checkout() && has_action( 'woocommerce_thankyou' ) ) {
+				if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' && ( is_checkout() || has_block( 'woocommerce/checkout' ) ) && has_action( 'woocommerce_thankyou' ) ) {
 					if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) {
 						if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) == 'no' ) {
 							$force_change = true;
@@ -1100,7 +1100,7 @@ final class WC_IfthenPay_Webdados {
 									'headers'  => array('Content-Type' => 'application/json; charset=utf-8'),
 									'body'     => array(
 										'mbKey'          => $mbkey,
-										'orderId'        => 'WC-'.$order->get_id(),
+										'orderId'        => $order->get_id(),
 										'amount'         => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
 										'description'    => $this->mb_webservice_filter_descricao( apply_filters( 'multibanco_ifthen_webservice_desc', $desc, $order->get_id() ) ),
 										//'url'            => '', //??
@@ -1678,17 +1678,37 @@ wc_price( $order_total_to_pay )
 	}
 
 	/* Reduce stock - on 'woocommerce_payment_complete_reduce_order_stock' */
-	public function woocommerce_payment_complete_reduce_order_stock( $reduce, $order_id, $payment_method ) {
+	public function woocommerce_payment_complete_reduce_order_stock( $reduce, $order_id, $payment_method, $stock_when ) {
 		if ( $reduce ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $payment_method ) {
-				//After 3.4.0
-				if ( $this->order_needs_payment( $order ) ) {
-					//Pending payment
-					return false;
+				if ( version_compare( WC_VERSION, '3.4.0', '>=' ) ) { //https://github.com/woocommerce/woocommerce/commit/70c9cff608761fcd48b57f709059e00b1ffeee38#diff-27a48ce67fa604181c90b4bb464164ac
+					//After 3.4.0
+					if ( $this->order_needs_payment( $order ) ) {
+						//Pending payment
+						if ( $stock_when == 'order' ) {
+							//Yes, because we want to reduce on the order
+							return true;
+						} else {
+							return false;
+						}
+					} else {
+						//Payment done
+						if ( $stock_when == '' ) {
+							//Yes, because we want to reduce on payment
+							return true;
+						} else {
+							return false;
+						}
+					}
 				} else {
-					//Payment done
-					return true;
+					//Before 3.4.0 - This only runs for paid orders
+					if ( $stock_when == '' ) {
+						//Yes, because we want to reduce on payment
+						return true;
+					} else {
+						return false;
+					}
 				}
 			} else {
 				return $reduce;
@@ -2316,11 +2336,11 @@ wc_price( $order_total_to_pay )
 				)
 			) {
 				$notices = array();
-				//WordPress below 5.0
-				if ( version_compare( get_bloginfo( 'version' ), '5.0', '<' ) ) {
+				//WordPress below 4.6
+				if ( version_compare( get_bloginfo( 'version' ), '4.6', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>WordPress 5.0</strong>',
+						'<strong>WordPress 4.6</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							get_bloginfo( 'version' )

@@ -84,6 +84,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			$this->only_portugal      = ( $this->get_option( 'only_portugal' )=='yes' ? true : false );
 			$this->only_above         = $this->get_option( 'only_above' );
 			$this->only_bellow        = $this->get_option( 'only_bellow' );
+			$this->stock_when         = $this->get_option( 'stock_when' );
 	 	
 			// Actions and filters
 			if ( self::$instances == 1 ) { //Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
@@ -357,6 +358,16 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 								), 
 								'default' => ''
 							),
+				'stock_when' => array(
+								'title' => __( 'Reduce stock', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+								'type' => 'select',
+								'description' => __( 'Choose when to reduce stock.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+								'default' => '',
+								'options'	=> array(
+									'order'	=> __( 'when order is placed (before payment, WooCommerce default)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									''		=> __( 'when order is paid (requires active callback)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								),
+							)
 			) );
 			if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) {
 				$this->form_fields = array_merge( $this->form_fields, array(
@@ -477,6 +488,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						<li class="mb_hide_extra_fields"><?php printf( __( 'Ask IfthenPay to activate “Multibanco Callback” on your account using this exact URL: %1$s and this Anti-phishing key: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<br/><code><strong>'.WC_IfthenPay_Webdados()->multibanco_notify_url.'</strong></code><br/>', '<br/><code><strong>'.$this->secret_key.'</strong></code>' ); ?></li>
 					</ul>
 					<?php
+					WC_IfthenPay_Webdados()->multibanco_api_mode_enabled = isset( $this->settings['api_mode'] ) && $this->settings['api_mode'] == 'yes';
 					if(
 						(
 							( ! WC_IfthenPay_Webdados()->multibanco_api_mode_enabled )
@@ -1036,11 +1048,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			}
 			
 			// Mark as on-hold
-			if ( $order->get_total() > 0 ) {
-				if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->get_id() ) ) $order->update_status( 'on-hold', __( 'Awaiting Multibanco payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-			} else {
-				$order->payment_complete();
-			}
+			if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->get_id() ) ) $order->update_status( 'on-hold', __( 'Awaiting Multibanco payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+			
+			// Reduce stock levels
+			if ( $this->stock_when == 'order' && version_compare( WC_VERSION, '3.4.0', '<' ) ) wc_reduce_stock_levels( $order->get_id() );
 			
 			// Remove cart
 			if ( isset( WC()->cart ) ) {
@@ -1068,12 +1079,30 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		 */
 		function disable_if_settings_missing( $available_gateways ) {
 			if (
-				strlen( trim( $this->ent ) ) != 5
+				trim( $this->enabled ) == 'yes'
+				&&
+				(
+					( ! WC_IfthenPay_Webdados()->multibanco_api_mode_enabled )
+					&&
+					strlen( trim( $this->ent ) ) == 5
+					&&
+					strlen( trim( $this->subent ) ) <= 3
+					&&
+					intval( $this->ent ) > 0
+					&&
+					intval( $this->subent ) > 0
+				)
 				||
-				( strlen( trim( $this->subent ) ) != 2 && strlen( trim( $this->subent ) ) != 3 )
-				||
-				trim( $this->enabled ) != 'yes'
+				(
+					WC_IfthenPay_Webdados()->multibanco_api_mode_enabled
+					&&
+					strlen( trim( $this->mbkey ) ) == 10
+				)
+				&&
+				trim( $this->secret_key ) != ''
 			) {
+				//OK
+			} else {
 				unset( $available_gateways[$this->id] );
 			}
 			return $available_gateways;
@@ -1110,7 +1139,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() == $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
 			} else {
 				return $bool;
 			}

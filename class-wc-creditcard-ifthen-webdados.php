@@ -590,34 +590,29 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		function process_payment( $order_id ) {
 			//Webservice
 			$order = wc_get_order( $order_id );
-			if ( $order->get_total() > 0 ) {
-				if ( $redirect_url = $this->api_init_payment( $order->get_id() ) ) {
-					//WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
-					if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
-						add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
-						add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
-					}
-					//Mark pending
-					$order->update_status( 'pending', __( 'Awaiting Credit card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
-				} else {
-					wc_add_notice( __( 'Error contacting IfthenPay servers to create Credit card Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
-					return;
+			if ( $redirect_url = $this->api_init_payment( $order->get_id() ) ) {
+				//WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
+				if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
+					add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
+					add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 				}
+				//Mark pending
+				$order->update_status( 'pending', __( 'Awaiting Credit card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				// Remove cart - not now, only after paid
+				//if ( isset( WC()->cart ) ) {
+				//	WC()->cart->empty_cart();
+				//}
+				// Empty awaiting payment session - not now, only after paid
+				//unset( WC()->session->order_awaiting_payment );
+				// Return payment url redirect
+				return array(
+					'result'   => 'success',
+					'redirect' => $redirect_url //Payment gateway URL
+				);
 			} else {
-				//Value = 0
-				$order->payment_complete();
+				wc_add_notice( __( 'Error contacting IfthenPay servers to create Credit card Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
 			}
-			// Remove cart - not now, only after paid
-			//if ( isset( WC()->cart ) ) {
-			//	WC()->cart->empty_cart();
-			//}
-			// Empty awaiting payment session - not now, only after paid
-			//unset( WC()->session->order_awaiting_payment );
-			// Return payment url redirect
-			return array(
-				'result'   => 'success',
-				'redirect' => $redirect_url //Payment gateway URL
-			);
+			return;
 		}
 
 
