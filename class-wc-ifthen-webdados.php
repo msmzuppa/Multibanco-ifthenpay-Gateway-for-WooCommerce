@@ -214,6 +214,8 @@ final class WC_IfthenPay_Webdados {
 		} );
 		//Remove pay button for Multibanco, MB WAY or Payshop
 		add_filter( 'woocommerce_my_account_my_orders_actions', array( $this, 'woocommerce_my_account_my_orders_actions' ), 10, 2 );
+		//REST API - Not needed: https://wordpress.org/support/topic/obter-referencia-multibanco-atraves-da-api/#post-15815758
+		//add_filter( 'woocommerce_api_order_response', array( $this, 'woocommerce_api_order_response', 11, 2 );
 	}
 
 	/* Get version */
@@ -1113,7 +1115,7 @@ final class WC_IfthenPay_Webdados {
 								);
 								$expire_days = apply_filters( 'multibanco_ifthen_webservice_expire_days', trim( $this->multibanco_settings['api_expiry'] ), $order );
 								if ( $expire_days != '' ) {
-									$args['body']['expiryDays'] = trim( $this->multibanco_settings['api_expiry'] );
+									$args['body']['expiryDays'] = trim( $expire_days );
 									//Temos de calcular a data e guardar mais lá à frente
 								}
 								$args['body'] = json_encode( $args['body'] );
