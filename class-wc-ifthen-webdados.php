@@ -2373,7 +2373,7 @@ wc_price( $order_total_to_pay )
 						)
 					)
 					.
-					' - <strong>'.__( 'Support for WC &lt; 5.4 will end VERY SOON!', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong>';
+					' - <strong>'.__( 'Support for WooCommerce &lt; 5.4 will end VERY SOON!', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong>';
 				}
 				//PHP below 7.3
 				if ( version_compare( phpversion(), '7.3', '<' ) ) {

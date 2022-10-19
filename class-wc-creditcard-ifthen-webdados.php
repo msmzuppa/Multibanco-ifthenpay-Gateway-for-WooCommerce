@@ -605,7 +605,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 					}
 					//Mark pending
-					$order->update_status( 'pending', __( 'Awaiting Credit card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					$order->update_status( 'pending', __( 'Awaiting Credit or debit card payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				} else {
 					wc_add_notice( __( 'Error contacting IfthenPay servers to create Credit card Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
 					return;

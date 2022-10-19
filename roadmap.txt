@@ -1,16 +1,13 @@
 PRO ADD-ON PAGO:
-- Depois de expirar o MBWAY, mudar para Multibanco automaticamente e enviar referência ao cliente
+- Depois de expirar o MBWAY, mudar para Multibanco automaticamente e enviar referência ao cliente -> Feito
 	- Ou enviar email para escolher outro método
 	- Ou ambos
-- Cancelamento de encomendas Multibanco e Payshop depois de x tempo
-	- Também pode ter de MBWAY e CC desde que não colida com cancelamento do WooCommerce
-	- Multibanco: Opção para cancelar encomendas cuja expiração da referência já passou (se o plugin principal estiver nesse modo)
-- Integrar o módulo de entidades/ref por categorias
+- WooCommerce Block checkout antes do plugin principal
 - Ter campos em cada método para o cliente inserir o que tem contratado com a IfthenPay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!
 	- Na verdade isto deveria vir no callback (email enviado a 2020-12-10)
 	- Na encomenda, fazer como no Stripe e mostrar o valor pago em comissões
 	- Ter opção de ordenar os métodos de pagamento pela ordem do que fica mais barato
-- Poder definir em que emails não ser quer enviar as instruções de pagamento (ver Toolbox)
+- Email quando há falhas de callback
 - Olhar para outros hooks disponíveis no plugin e "inventar" funcionalidades
 
 
