@@ -186,19 +186,28 @@ This plugin does not collect or send to Webdados (the plugin author) or IfthenPa
 In the MB WAY module, the mobile phone number is collected to request the payment authorization and it can be legitimately processed based on article 6 (1) (b) of the GDPR.
 IfthenPay’s privacy policy can be found at [https://ifthenpay.com/termosCondicoes](https://ifthenpay.com/termosCondicoes)
 
+= Is this plugin compatible with the new WooCommerce High-Performance order storage (COT)? =
+
+Not yet, but we’re working on it.
+
 = Can I contribute with a translation? =
 
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
 
-= 6.4.1 - 2022-10-03 =
+= ? =
+* You can safely update this plugin if you’re running WooCommerce 4.3 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
+* Requires WooCommerce 4.3
+* Fix id stored in Payshop references when order number is being used instead of order id
+* Tested...
+
+= 6.4.1 - 2022-11-03 =
 * Fix bug on MB WAY callback when comparing the incoming reference with the order id and/or number which would cause the order not to be identified
 * Debug tweaks - Stop sending "payment received" emails and only send warning or error emails
 * Tested with WordPress 6.1 and WooCommerce 7.1.0-rc.1
 
 = 6.4.0 - 2022-10-25 =
-* You can safely update this plugin if you’re running WooCommece 4.0 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
 * [PRO add-on 1.1](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/): allow sending order number (for sequential order number plugins) instead of order id to the IfthenPay webservices and backoffice
 * Tested with WordPress 6.1-RC2-54684 and WooCommerce 7.1.0-beta.1
 

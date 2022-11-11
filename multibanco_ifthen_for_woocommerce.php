@@ -8,7 +8,7 @@
  * Author URI: https://ptwooplugins.com
  * Text Domain: multibanco-ifthen-software-gateway-for-woocommerce
  * Domain Path: /lang
- * WC requires at least: 4.0
+ * WC requires at least: 4.3
  * WC tested up to: 7.1
 **/
 
@@ -57,6 +57,13 @@ function mbifthen_woocommerce_not_active_admin_notices() {
 	</div>
 	<?php
 }
+
+/* Still HPOS Incompatible */
+add_action( 'before_woocommerce_init', function() {
+    if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, false );
+    }
+} );
 
 /* If you're reading this you must know what you're doing ;-) Greetings from sunny Portugal! */
 

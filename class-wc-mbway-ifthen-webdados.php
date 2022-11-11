@@ -1186,15 +1186,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 									||
 									$order->get_order_number() == $referencia //because ifthen_webservice_send_order_number_instead_id
 								) {
-									if (
-										floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) )
-										// TEMPORARY - https://github.com/woocommerce/woocommerce/issues/26582
-										||
-										WC_IfthenPay_Webdados()->should_fix_woocommerce_420()
-									) {
-										if ( WC_IfthenPay_Webdados()->should_fix_woocommerce_420() && ( floatval( $val ) != floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) ) {
-											$this->debug_log( '-- MB WAY payment received but value does not match - Order '.$order->get_id().' - Callbak value '.floatval( $val ).' - Order value '.floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 'warning', true );
-										}
+									if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 										$note = __( 'MB WAY payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 										if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] )!='' ) {
 											$note.=' '.trim( $_GET['datahorapag'] );
@@ -1282,6 +1274,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						}
 						if ( $refunds_exist ) {
 							//We're done!
+							header( 'HTTP/1.1 200 OK' );
+							$this->debug_log( '-- MB WAY refund received - Order '.$order->get_id(), 'notice' );
+							echo 'OK - MB WAY refund received';
 						} else {
 							header( 'HTTP/1.1 200 OK' );
 							$err = 'Error: No unprocessed refunds found with these details';

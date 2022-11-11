@@ -1224,15 +1224,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					}
 					if ( $orders_exist ) {
 						if ( $orders_count == 1 ) {
-							if (
-								floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) )
-								// TEMPORARY - https://github.com/woocommerce/woocommerce/issues/26582
-								||
-								WC_IfthenPay_Webdados()->should_fix_woocommerce_420()
-							) {
-								if ( WC_IfthenPay_Webdados()->should_fix_woocommerce_420() && ( floatval( $val ) != floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) ) {
-									$this->debug_log( '-- Multibanco payment received but value does not match - Order '.$order->get_id().' - Callbak value '.floatval( $val ).' - Order value '.floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 'warning', true );
-								}
+							if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 								$note = __( 'Multibanco payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 								if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] )!='' ) {
 									$note.=' '.trim( $_GET['datahorapag'] );

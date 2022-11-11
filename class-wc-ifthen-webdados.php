@@ -1422,9 +1422,6 @@ final class WC_IfthenPay_Webdados {
 	/* Change Ref if order total is changed on wp-admin */
 	public function multibanco_maybe_value_changed( $order ) {
 
-		// TEMPORARY - https://github.com/woocommerce/woocommerce/issues/26582
-		if ( $this->should_fix_woocommerce_420() ) return;
-
 		if ( is_admin() ) {
 			
 			//We only do it for regular orders, not subscriptions or other special types of orders
@@ -2221,24 +2218,6 @@ wc_price( $order_total_to_pay )
 		}
 		return $actions;
 
-	}
-
-	/**
-	* Should fix WooCommerce 4.2.0 rounding
-	*
-	* @since 4.2.3
-	*/
-	public function should_fix_woocommerce_420() {
-		if (
-			version_compare( WC_VERSION, '4.2.0', '>=' )
-			&&
-			version_compare( WC_VERSION, '4.3.0', '<' )
-			&&
-			( 'yes' === get_option( 'woocommerce_prices_include_tax' ) )
-		) {
-			return true;
-		}
-		return false;
 	}
 
 	/**

@@ -844,8 +844,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		 * Webservice SetPedido
 		 */
 		function webservice_set_pedido( $order_id ) {
-
-			$id  = $order_id; //We could randomize this...
 			
 			$date_exp = false;
 			if ( intval( $this->validity ) > 0 ) {
@@ -856,13 +854,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 			$order = wc_get_order( $order_id );
 			$payshopkey = apply_filters( 'multibanco_ifthen_base_payshopkey', $this->payshopkey, $order );
+			$id_for_backoffice = apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id();
 			$args = array(
 				'method'   => 'POST',
 				'timeout'  => apply_filters( 'payshop_ifthen_webservice_timeout', 30 ),
 				'blocking' => true,
 				'body'     => array(
 					'payshopkey' => $payshopkey,
-					'id'         => (string) apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id(),
+					'id'         => (string) $id_for_backoffice,
 					'valor'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
 				),
 			);
@@ -886,7 +885,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 								'payshopkey' => $payshopkey,
 								'ref'        => trim( $response_data->Reference ),
 								'request_id' => trim( $response_data->RequestId ),
-								'id'         => $id,
+								'id'         => $id_for_backoffice,
 								'val'        => WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ),
 							);
 							if ( $date_exp ) {
@@ -1098,15 +1097,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 						if ( $orders_exist ) {
 							if ( $orders_count == 1 ) {
-								if (
-									floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) )
-									// TEMPORARY - https://github.com/woocommerce/woocommerce/issues/26582
-									||
-									WC_IfthenPay_Webdados()->should_fix_woocommerce_420()
-								) {
-									if ( WC_IfthenPay_Webdados()->should_fix_woocommerce_420() && ( floatval( $val ) != floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) ) {
-										$this->debug_log( '-- Payshop payment received but value does not match - Order '.$order->get_id().' - Callbak value '.floatval( $val ).' - Order value '.floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 'warning', true );
-									}
+								if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 									$note=__( 'Payshop payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 									if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] )!='' ) {
 										$note.=' '.trim( $_GET['datahorapag'] );
