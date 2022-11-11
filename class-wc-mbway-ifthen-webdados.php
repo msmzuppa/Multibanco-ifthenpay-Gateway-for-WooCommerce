@@ -292,7 +292,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 										'title' => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' '.__( 'DEPRECATED', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 										'type' => 'checkbox', 
 										'label' => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										'description' => '<strong>'.__( 'Will be removed after set to "no".', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong><br/>'.__( 'Shows “MB WAY” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with MB WAY if the original subscription used this payment method. If this option is not activated, MB WAY will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'description' => '<strong>'.__( 'Will be removed after disabled.', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong><br/>'.__( 'Shows “MB WAY” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with MB WAY if the original subscription used this payment method. If this option is not activated, MB WAY will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 										'default' => 'no'
 									),
 						) );
@@ -302,7 +302,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 						'do_refunds' => array(
 							'title' => __( 'Process refunds?', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' NOT WORKING YET', 
 							'type' => 'checkbox', 
-							'label' => __( 'Automatically refund via MB Way when the order is completely or partially refunded in WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+							'label' => __( 'Allow to refund via MB WAY when the order is completely or partially refunded in WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
 						),
 						'do_refunds_backoffice_key' => array(
 							'title' => __( 'Backoffice key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
@@ -1121,7 +1121,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					$arguments_ok = false;
 					$arguments_error .= ' - Key';
 				}
-				if ( trim( $referencia ) != '' ) { // If using ifthen_webservice_send_order_number_instead_id, this can be a non-numeric value
+				if ( trim( $referencia ) == '' ) { // If using ifthen_webservice_send_order_number_instead_id, this can be a non-numeric value
 					$arguments_ok = false;
 					$arguments_error .= ' - Referencia (numeric)';
 				}
