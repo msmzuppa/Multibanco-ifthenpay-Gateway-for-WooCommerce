@@ -1946,15 +1946,29 @@ wc_price( $order_total_to_pay )
 		return $renewal_order;
 	}
 
-	/* Set email correct language - Stolen from WCML emails.class.php - Not sure if this is still needed */
-	public function change_email_language( $lang ) {
-		global $sitepress;
-		//Unload
-		unload_textdomain( 'multibanco-ifthen-software-gateway-for-woocommerce' );
-		if ( $lang == 'en' ) {
-			//English? Just use plugin default strings
+	/* Maybe change locale */
+	public function maybe_change_locale( $order ) {
+		if ( $this->wpml_active ) {
+			//Just for WPML
+			global $sitepress;
+			if ( $sitepress ) {
+				$lang = $order->get_meta( 'wpml_language' );
+				if ( ! empty( $lang ) ) {
+					$this->locale = $sitepress->get_locale( $lang );
+				}
+			}
 		} else {
-			$this->locale = $sitepress->get_locale( $lang );
+			//Store language != current user/admin language?
+			if ( is_admin() ) {
+				$current_user_lang = get_user_locale( wp_get_current_user() );
+				if ( $current_user_lang != get_locale() ) {
+					$this->locale = get_locale();
+				}
+			}
+		}
+		if ( ! empty ( $this->locale ) ) {
+			//Unload
+			unload_textdomain( 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			add_filter( 'plugin_locale', array( $this, 'set_locale_for_emails' ), 10, 2 );
 			load_plugin_textdomain( 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			remove_filter( 'plugin_locale', array( $this, 'set_locale_for_emails' ), 10, 2 );

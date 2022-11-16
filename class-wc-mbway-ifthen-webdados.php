@@ -769,16 +769,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						}
 					}
 					if ( $show ) {
-						//WPML - Force correct language (?)
-						if ( WC_IfthenPay_Webdados()->wpml_active ) {
-							global $sitepress;
-							if ( $sitepress ) {
-								$lang = $order->get_meta( 'wpml_language' );
-								if( !empty( $lang ) ){
-									WC_IfthenPay_Webdados()->change_email_language( $lang );
-								}
-							}
-						}
+						//Force correct language
+						WC_IfthenPay_Webdados()->maybe_change_locale( $order );
 						//On Hold or pending
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
@@ -1203,7 +1195,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 										}
 										$this->payment_complete( $order, '', $note );
 										do_action( 'mbway_ifthen_callback_payment_complete', $order->get_id() );
-										
 										header( 'HTTP/1.1 200 OK' );
 										$this->debug_log( '-- MB WAY payment received - Order '.$order->get_id(), 'notice' );
 										echo 'OK - MB WAY payment received';
@@ -1238,23 +1229,37 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					//Refunds
 					} elseif ( trim( $estado ) == 'DEVOLVIDO' && $this->do_refunds ) {
 						//Porque não é compatível com o novo filtro ifthen_webservice_send_order_number_instead_id temos de ir buscar primeiro a order através do idPedido que é o mesmo e depois ir buscar os refunds que são childs dessa order
+						$order_exist   = false;
 						$refunds_exist = false;
-						//Find the exact refund
+						//First, find the order, using $id_pedido as $referencia may not be a order id because of ifthen_webservice_send_order_number_instead_id
 						$args = array(
-							'type'    => array( 'shop_order_refund' ), //Refund
-							//'status'  => 'completed',                //Not nedded?
-							'limit'   => -1,
-							'parent'  => intval( $referencia ),        //NEEDS REVIEW - Child of original order - not compatible with the new ifthen_webservice_send_order_number_instead_id filter
-							'orderby' => 'modified',
-							'order'   => 'ASC',                        //Oldest recent refunds first, so we process them in order if there are several
+							'type'                     => array( 'shop_order' ),
+							'limit'                    => -1,
+							'_'.$this->id.'_id_pedido' => $id_pedido, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
 						);
-						$refunds = wc_get_orders( $args );
-						foreach ( $refunds as $refund ) {
-							if ( $refund->get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received' ) == '' ) {
-								if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $refund ) ) ) {
-									//Get parent order and add a note
-									//if ( $order = wc_get_order( intval( $referencia ) ) ) { //NEEDS REVIEW - Not compatible with the new ifthen_webservice_send_order_number_instead_id filter
-									if ( $order = wc_get_order( intval( $refund->get_parent_id() ) ) ) {
+						if ( $orders = wc_get_orders( $args ) ) {
+							if ( count( $orders ) == 1 ) {
+								$order = $orders[0];
+								$order_exist = true;
+							} else {
+								$err = 'Error: More than 1 order found with the same id_pedido';
+							}
+						} else {
+							$err = 'Error: No orders found with this id_pedido';
+						}
+						if ( $order_exist ) {
+							//Find the exact refund
+							$args = array(
+								'type'    => array( 'shop_order_refund' ), //Refund
+								'limit'   => -1,
+								'parent'  => intval( $order->get_id() ),
+								'orderby' => 'modified',
+								'order'   => 'ASC',                        //Oldest recent refunds first, so we process them in order if there are several
+							);
+							$refunds = wc_get_orders( $args );
+							foreach ( $refunds as $refund ) {
+								if ( $refund->get_meta( '_'.WC_IfthenPay_Webdados()->mbway_id.'_callback_received' ) == '' ) {
+									if ( abs( floatval( $val ) ) == abs( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $refund ) ) ) ) {
 										$note = sprintf(
 											__( 'MB WAY callback received for refund #%s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 											$refund->get_id()
@@ -1271,11 +1276,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						if ( $refunds_exist ) {
 							//We're done!
 							header( 'HTTP/1.1 200 OK' );
-							$this->debug_log( '-- MB WAY refund received - Order '.$order->get_id(), 'notice' );
+							$this->debug_log( '-- MB WAY refund received - Order '.$order->get_id().' - Refund '.$refund->get_id(), 'notice' );
 							echo 'OK - MB WAY refund received';
+							do_action( 'mbway_ifthen_callback_refund_complete', $order->get_id() );
 						} else {
 							header( 'HTTP/1.1 200 OK' );
-							$err = 'Error: No unprocessed refunds found with these details';
+							if ( ! isset( $err ) ) $err = 'Error: No unprocessed refunds found with these details';
 							$this->debug_log( '-- '.$err, 'warning', true, 'Callback ('.$_SERVER['HTTP_HOST'].' '.$_SERVER['REQUEST_URI'].') from '.$_SERVER['REMOTE_ADDR'].' - No refunds found with these details' );
 							echo $err;
 							do_action( 'mbway_ifthen_callback_refund_failed', 0, $err, $_GET );

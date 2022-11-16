@@ -477,16 +477,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						}
 					}
 					if ( $show ) {
-						//WPML - Force correct language (?)
-						if ( WC_IfthenPay_Webdados()->wpml_active ) {
-							global $sitepress;
-							if ( $sitepress ) {
-								$lang = $order->get_meta( 'wpml_language' );
-								if( !empty( $lang ) ){
-									WC_IfthenPay_Webdados()->change_email_language( $lang );
-								}
-							}
-						}
+						//Force correct language
+						WC_IfthenPay_Webdados()->maybe_change_locale( $order );
 						//On Hold or pending
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {

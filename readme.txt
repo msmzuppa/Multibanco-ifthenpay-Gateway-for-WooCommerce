@@ -196,14 +196,18 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 6.5.0 - 2022-11-11 =
+= 6.5.1 - 2022-11-11 =
 * You can safely update this plugin if you’re running WooCommerce 4.3 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
 * Requires WooCommerce 4.3
 * Removed MB WAY support for WooCommerce Subscriptions because the customer only have 5 minutes to pay for a renewal he might not be expecting
 * Fix id stored in Payshop references when order number is being used instead of order id
+* Fix a bug on the MB WAY callback introduced in 6.5.0
 * Code cleanup
 * Declare WooCommerce High-Performance Order Storage incompatibility (for now)
 * Tested with WordPress 6.2-alpha-54799 and WooCommerce 7.1.0
+
+= 6.5.0 - 2022-11-11 =
+* Do not use this version
 
 = 6.4.1 - 2022-11-03 =
 * Fix bug on MB WAY callback when comparing the incoming reference with the order id and/or number which would cause the order not to be identified

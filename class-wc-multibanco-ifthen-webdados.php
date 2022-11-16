@@ -859,16 +859,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						}
 					}
 					if ( $show ) {
-						//WPML - Force correct language (?)
-						if ( WC_IfthenPay_Webdados()->wpml_active ) {
-							global $sitepress;
-							if ( $sitepress ) {
-								$lang = $order->get_meta( 'wpml_language' );
-								if( !empty( $lang ) ){
-									WC_IfthenPay_Webdados()->change_email_language( $lang );
-								}
-							}
-						}
+						//Force correct language
+						WC_IfthenPay_Webdados()->maybe_change_locale( $order );
 						//On Hold or pending
 						$this->debug_log_extra( 'Email ('.$email_id.') instructions show: '.( $show ? 'true' : 'false' ).' - Status '.$order->get_status().' - Order '.$order->get_id() );
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
