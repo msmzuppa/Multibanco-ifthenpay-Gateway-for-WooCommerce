@@ -99,17 +99,17 @@
 		$( '#woocommerce_'+ifthenpay.gateway+'_ifthen_for_woocommerce_settings_saved' ).val( '1' );
 
 		//Callback activation
-		$( '#wc_ifthen_callback_open' ).click( function() {
+		$( '#wc_ifthen_callback_open' ).on( 'click', function() {
 			ifthen_callback_open();
 			return false;
 		});
-		$( '#wc_ifthen_callback_cancel' ).click( function() {
+		$( '#wc_ifthen_callback_cancel' ).on( 'click', function() {
 			$( '#wc_ifthen_callback_div' ).toggle();
 			$( '#wc_ifthen_callback_open_p' ).toggle();
 			return false;
 		});
 		//Callback send
-		$( '#wc_ifthen_callback_submit' ).click( function() {
+		$( '#wc_ifthen_callback_submit' ).on( 'click', function() {
 			if ( confirm( ifthenpay.callback_confirm ) ) {
 				$( '#wc_ifthen_callback_send' ).val( 1 );
 				$( '#mainform' ).submit()
@@ -119,7 +119,7 @@
 			}
 		});
 		//Callback webservice
-		$( '#wc_ifthen_callback_submit_webservice' ).click( function() {
+		$( '#wc_ifthen_callback_submit_webservice' ).on( 'click', function() {
 			var bo_key = prompt( ifthenpay.callback_bo_key, '' );
 			if ( bo_key ) {
 				$( '#wc_ifthen_callback_bo_key' ).val( $.trim( bo_key ) );

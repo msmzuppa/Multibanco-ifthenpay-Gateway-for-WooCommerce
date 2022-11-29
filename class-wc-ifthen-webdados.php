@@ -34,6 +34,8 @@ final class WC_IfthenPay_Webdados {
 	public $callback_email          = 'callback@ifthenpay.com';
 	public $callback_webservice     = 'https://www.ifthenpay.com/api/endpoint/callback/activation';
 	public $unpaid_statuses         = array( 'on-hold', 'pending', 'partially-paid' );
+	public $hpos_enabled            = false;
+	public $refunds_url             = 'http://ifthenpay.com/api/endpoint/payments/refund';
 
 	/* Internal variables - For Multibanco */
 	public $multibanco_settings            = null;
@@ -117,6 +119,11 @@ final class WC_IfthenPay_Webdados {
 			&&
 			WC_BLOCKS_IS_FEATURE_PLUGIN;
 		$this->out_link_utm            = '?utm_source='.rawurlencode( esc_url( home_url( '/' ) ) ).'&amp;utm_medium=link&amp;utm_campaign=mb_ifthen_plugin';
+		if ( version_compare( WC_VERSION, '7.1', '>=' ) ) {
+			if ( wc_get_container()->get( \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
+				$this->hpos_enabled = true;
+			}
+		}
 		//Multibanco
 		$this->multibanco_settings     = get_option( 'woocommerce_multibanco_ifthen_for_woocommerce_settings', '' );
 		$this->multibanco_notify_url   = (
@@ -172,10 +179,10 @@ final class WC_IfthenPay_Webdados {
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'woocommerce_add_payment_gateways' ) );
 		add_filter( 'woocommerce_blocks_payment_method_type_registration', array( $this, 'woocommerce_add_payment_gateways_woocommerce_blocks' ) ); // WooCommerce Blocks - https://github.com/woocommerce/woocommerce-gutenberg-products-block/issues/2858
 		add_action( 'add_meta_boxes', array( $this, 'multibanco_order_metabox' ) );
-		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'multibanco_shop_order_search' ) );
-		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'payshop_shop_order_search' ) );
+		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'shop_order_search' ) );
+		add_filter( 'woocommerce_order_table_search_query_meta_keys', array( $this, 'shop_order_search' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'multibanco_woocommerce_checkout_update_order_meta' ) ); 	//Frontend
-		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', array( $this, 'multibanco_woocommerce_order_data_store_cpt_get_orders_query' ), 10, 2 );
+		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', array( $this, 'multibanco_woocommerce_order_data_store_cpt_get_orders_query' ), 10, 3 );
 		add_action( 'woocommerce_cancel_unpaid_orders', array( $this, 'multibanco_woocommerce_cancel_unpaid_orders' ), 99 );
 		add_filter( 'apg_sms_message', array( $this, 'multibanco_apg_sms_message' ), 10, 2 );
 		add_filter( 'apg_sms_message', array( $this, 'payshop_apg_sms_message' ), 10, 2 );
@@ -506,17 +513,18 @@ final class WC_IfthenPay_Webdados {
 
 	/* Order metabox to show Multibanco payment details - This will need to change when the order is no longer a WP post */
 	public function multibanco_order_metabox() {
+		$screen = $this->hpos_enabled ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
 		add_meta_box(
 			$this->multibanco_id,
 			'IfthenPay',
 			array( $this, 'multibanco_order_metabox_html' ),
-			'shop_order',
+			$screen,
 			'side',
 			'core'
 		);
 	}
-	public function multibanco_order_metabox_html( $post ) {
-		$order = wc_get_order( $post->ID );
+	public function multibanco_order_metabox_html( $post_or_order_object ) {
+		$order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
 		if ( $date_paid = $order->get_date_paid() ) {
 			$date_paid = sprintf(
 				'%1$s %2$s',
@@ -565,7 +573,7 @@ final class WC_IfthenPay_Webdados {
 							</p>
 							<script type="text/javascript">
 							jQuery( document ).ready( function() {
-								jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).click( function() {
+								jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).on( 'click', function() {
 									if ( confirm( '<?php _e( 'This is a testing tool and will set the order as paid. Are you sure you want to proceed?', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' ) ) {
 										jQuery.get( '<?php echo $callback_url; ?>', '', function( response ) {
 											alert( '<?php _e( 'This page will now reload. If the order is not set as paid and processing (or completed, if it only contains virtual and downloadable products) please check the debug logs.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' );
@@ -626,7 +634,7 @@ final class WC_IfthenPay_Webdados {
 									</p>
 									<script type="text/javascript">
 									jQuery( document ).ready( function() {
-										jQuery( '#mbway_ifthen_request_payment_again' ).click( function() {
+										jQuery( '#mbway_ifthen_request_payment_again' ).on( 'click', function() {
 											if ( confirm( '<?php echo __( "Are you sure you want to request the payment again? Don’t do it unless your client asks you to.", 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' ) ) {
 												jQuery( '#mbway_ifthen_request_payment_again' ).val( '<?php _e( 'Wait...', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' );
 												var phone = '<?php echo $order->get_meta( '_'.$this->mbway_id.'_phone' ); ?>';
@@ -677,7 +685,7 @@ final class WC_IfthenPay_Webdados {
 								</p>
 								<script type="text/javascript">
 								jQuery( document ).ready( function() {
-									jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).click( function() {
+									jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).on( 'click', function() {
 										if ( confirm( '<?php _e( 'This is a testing tool and will set the order as paid. Are you sure you want to proceed?', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' ) ) {
 											jQuery.get( '<?php echo $callback_url; ?>', '', function( response ) {
 												alert( '<?php _e( 'This page will now reload. If the order is not set as paid and processing (or completed, if it only contains virtual and downloadable products) please check the debug logs.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' );
@@ -747,7 +755,7 @@ final class WC_IfthenPay_Webdados {
 							</p>
 							<script type="text/javascript">
 							jQuery( document ).ready( function() {
-								jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).click( function() {
+								jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).on( 'click', function() {
 									if ( confirm( '<?php _e( 'This is a testing tool and will set the order as paid. Are you sure you want to proceed?', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' ) ) {
 										jQuery.get( '<?php echo $callback_url; ?>', '', function( response ) {
 											alert( '<?php _e( 'This page will now reload. If the order is not set as paid and processing (or completed, if it only contains virtual and downloadable products) please check the debug logs.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' );
@@ -821,7 +829,7 @@ final class WC_IfthenPay_Webdados {
 							</p>
 							<script type="text/javascript">
 							jQuery( document ).ready( function() {
-								jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).click( function() {
+								jQuery( '#multibanco_ifthen_for_woocommerce_simulate_callback' ).on( 'click', function() {
 									if ( confirm( '<?php _e( 'This is a testing tool and will set the order as paid. Are you sure you want to proceed?', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' ) ) {
 										jQuery.get( '<?php echo $callback_url; ?>', '', function( response ) {
 											alert( '<?php _e( 'This page will now reload. If the order is not set as paid and processing (or completed, if it only contains virtual and downloadable products) please check the debug logs.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>' );
@@ -891,14 +899,9 @@ final class WC_IfthenPay_Webdados {
 
 	}
 
-	/* Allow searching orders by Multibanco reference */
-	public function multibanco_shop_order_search( $search_fields ) {
+	/* Allow searching orders by Multibanco or Payshop reference - CPT and HPOS compatible */
+	public function shop_order_search( $search_fields ) {
 		$search_fields[] = '_'.$this->multibanco_id.'_ref';
-		return $search_fields;
-	}
-
-	/* Allow searching orders by Payshop reference */
-	public function payshop_shop_order_search( $search_fields ) {
 		$search_fields[] = '_'.$this->payshop_id.'_ref';
 		return $search_fields;
 	}
@@ -1284,25 +1287,25 @@ final class WC_IfthenPay_Webdados {
 		//Does it exists already? Let's browse the database!
 		if ( ! $just_create_no_check ) {
 			$exists = false;
-			$orders = wc_get_orders( array(
+			$orders = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( array(
 				'type'	=> array( 'shop_order' ),
 				'limit'	=> 1, //If there's one, it's enough
-				'_'.$this->multibanco_id.'_ent' => $ent, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
-				'_'.$this->multibanco_id.'_ref' => $ref, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
+				'_'.$this->multibanco_id.'_ent' => $ent,
+				'_'.$this->multibanco_id.'_ref' => $ref,
 				'status' => array( 'wc-on-hold', 'wc-pending' ), //Should we be checking for our valid statuses?
-			) );
+			) ) );
 			if ( count($orders) > 0 ) {
 				$exists = true;
 			} else {
 				//No open orders but also check for special entities that do not allow references to be repeated on x days
 				if ( intval( $no_repeat_days ) > 0 ) {
-					$orders = wc_get_orders( array(
+					$orders = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( array(
 						'type'	=> array( 'shop_order' ),
 						'limit'	=> 1, //If there's one, it's enough
-						'_'.$this->multibanco_id.'_ent' => $ent, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
-						'_'.$this->multibanco_id.'_ref' => $ref, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
+						'_'.$this->multibanco_id.'_ent' => $ent,
+						'_'.$this->multibanco_id.'_ref' => $ref,
 						'date_after' => date_i18n( 'Y-m-d', strtotime( '-'.intval( $no_repeat_days ).' days ') ),
-					) );
+					) ) );
 					if ( count($orders) > 0 ) $exists = true;
 				}
 			}
@@ -1595,8 +1598,47 @@ wc_price( $order_total_to_pay )
 	}
 
 	/* Filter to be able to use wc_get_orders with our Multibanco and MB WAY references */
-	//HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
-	public function multibanco_woocommerce_order_data_store_cpt_get_orders_query( $query, $query_vars ) {
+	//HPOS compatibility via the maybe_translate_order_query_args function
+	public function multibanco_woocommerce_order_data_store_cpt_get_orders_query( $query, $query_vars, $object, $clear_key = false ) {
+		if ( ! isset( $query['meta_query'] ) ) $query['meta_query'] = array();
+
+		foreach( $query_vars as $key => $value ) {
+			switch( $key ) {
+				// =
+				case '_'.$this->multibanco_id.'_ent':
+				case '_'.$this->multibanco_id.'_ref':
+				case '_'.$this->mbway_id.'_mbwaykey':
+				case '_'.$this->mbway_id.'_id_pedido':
+				case '_'.$this->payshop_id.'_request_id':
+				case '_'.$this->payshop_id.'_ref':
+				case '_'.$this->payshop_id.'_id':
+				case '_'.$this->creditcard_id.'_id':
+				case '_'.$this->creditcard_id.'_request_id':
+				case '_'.$this->creditcard_id.'_wd_secret':
+					$query['meta_query'][] = array(
+						'key'   => $key,
+						'value' => esc_attr( $value ), //WHY esc_attr?
+					);
+					//Translation for HPOS
+					if ( $clear_key ) unset( $query[$key] );
+					break;
+				// <
+				case '_'.$this->multibanco_id.'_exp':
+				case '_'.$this->mbway_id.'_exp':
+				case '_'.$this->payshop_id.'_exp':
+					unset( $args[$key] );
+					$query['meta_query'][] = array(
+						'key'     => $key,
+						'value'   => esc_attr( $value ), //WHY esc_attr?
+						'compare' => '<',
+					);
+					//Translation for HPOS
+					if ( $clear_key ) unset( $query[$key] );
+					break;
+			}
+		}
+
+/*
 		//Multibanco - Entity
 		if ( ! empty( $query_vars['_'.$this->multibanco_id.'_ent'] ) ) {
 			$query['meta_query'][] = array(
@@ -1610,6 +1652,7 @@ wc_price( $order_total_to_pay )
 				'key' => '_'.$this->multibanco_id.'_ref',
 				'value' => esc_attr( $query_vars['_'.$this->multibanco_id.'_ref'] ),
 			);
+			if ( $clear_key ) unset( $query_vars['_'.$this->multibanco_id.'_ent'] ); 
 		}
 		//Multibanco - Already expired
 		if ( ! empty( $query_vars['_'.$this->multibanco_id.'_exp'] ) ) {
@@ -1691,7 +1734,21 @@ wc_price( $order_total_to_pay )
 				'value' => esc_attr( $query_vars['_'.$this->creditcard_id.'_wd_secret'] ),
 			);
 		}
+*/
 		return $query;
+	}
+
+	/**
+	 * Maybe translate query args for HPOS 
+	 *
+	 * @since 7.0.0
+	 */
+	public function maybe_translate_order_query_args( $args ) {
+		if ( $this->hpos_enabled ) {
+			if ( ! isset( $args['meta_query'] ) ) $args['meta_query'] = array();
+			$args = $this->multibanco_woocommerce_order_data_store_cpt_get_orders_query( $args, $args, null, true );
+		}
+		return $args;
 	}
 
 	/* Reduce stock - on 'woocommerce_payment_complete_reduce_order_stock' */
@@ -1746,13 +1803,13 @@ wc_price( $order_total_to_pay )
 			if ( $held_duration < 1 || 'yes' !== get_option( 'woocommerce_manage_stock' ) ) return;
 			$date_before = '-' . absint( $held_duration ) . ' MINUTES';
 			foreach ( $methods as $method ) {
-				$unpaid_orders = wc_get_orders( array( // https://github.com/woocommerce/woocommerce/wiki/wc_get_orders-and-WC_Order_Query
+				$unpaid_orders = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( array(
 					'status'			=> array( 'on-hold', 'pending' ), //Aqui não usamos os unpaid statuses porque podemos entrar num loop se alguém adicionar o estado cancelada e também porque não faz sentido para parcialmente pagas
 					'type'				=> array( 'shop_order' ),
 					'limit'				=> -1,
 					'date_modified'		=> '<' . strtotime( $date_before ),
 					'payment_method'	=> $method,
-				) );
+				) ) );
 				if ( $unpaid_orders ) {
 					foreach ( $unpaid_orders as $unpaid_order ) {
 						if ( apply_filters( 'woocommerce_cancel_unpaid_order', 'checkout' === $unpaid_order->get_created_via(), $unpaid_order ) ) {
@@ -1791,14 +1848,14 @@ wc_price( $order_total_to_pay )
 
 	public function cancel_expired_orders( $method_id ) {
 		// We are not doing this on the gateway itself because the cron doesn't always load the gateways
-		$args = array( // https://github.com/woocommerce/woocommerce/wiki/wc_get_orders-and-WC_Order_Query
+		$args = array(
 			'status'              => array( 'on-hold', 'pending' ), //Aqui não usamos os unpaid statuses porque podemos entrar num loop se alguém adicionar o estado cancelada e também porque não faz sentido para parcialmente pagas
 			'type'                => array( 'shop_order' ),
 			'limit'               => -1,
 			'payment_method'      => $method_id,
 			'_'.$method_id.'_exp' => date_i18n( 'Y-m-d H:i:s' ), //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
 		);
-		$expired_orders = wc_get_orders( $args );
+		$expired_orders = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
 		if ( $expired_orders ) {
 			foreach ( $expired_orders as $expired_order ) {
 				$expired_order->update_status( 'cancelled', __( 'Unpaid order cancelled - Payment reference expired.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
@@ -2274,6 +2331,74 @@ wc_price( $order_total_to_pay )
 	}
 
 	/**
+	 * Process MBWAY and CC refunds
+	 *
+	 * @since 7.0
+	 */
+	public function process_refund( $order_id, $amount, $reason, $method_id ) {
+			$order = wc_get_order( $order_id );
+			$this->debug_log( $method_id, '-- Processing refund - Order '.$order->get_id(), 'notice' );
+			/*if ( ! $this->can_refund_order( $order ) ) {
+				$this->debug_log( $method_id, '-- Failed refund - Order '.$order->get_id(), 'error', true, 'Cannot refund order' );
+				return new WP_Error( 'error', __( 'Refund failed.', 'woocommerce' ) );
+			}*/ //Only works at method level
+			switch( $method_id ) {
+				case $this->mbway_id:
+					$order_details  = WC_IfthenPay_Webdados()->get_mbway_order_details( $order->get_id() );
+					$request_id     = trim( $order_details['id_pedido'] );
+					$backoffice_key = trim( $this->mbway_settings['do_refunds_backoffice_key'] );
+					break;
+				case $this->creditcard_id:
+					$order_details  = WC_IfthenPay_Webdados()->get_creditcard_order_details( $order->get_id() );
+					$request_id     = trim( $order_details['request_id'] );
+					$backoffice_key = trim( $this->creditcard_settings['do_refunds_backoffice_key'] );
+					break;
+			}
+			$args     = array(
+				'method'   => 'POST',
+				'timeout'  => apply_filters( 'mbway_ifthen_webservice_timeout', 30 ), //Should use the method own filter, but this will do...
+				'blocking' => true,
+				'headers'  => array('Content-Type' => 'application/json; charset=utf-8'),
+				'body'     => array(
+					'backofficekey' => $backoffice_key,
+					'requestId'     => $request_id,
+					'amount'        => (string) round( floatval( $amount ), 2 ),
+				),
+			);
+			$args['body'] = json_encode( $args['body'] );
+			$response = wp_remote_post( $this->refunds_url, $args );
+			if ( is_wp_error( $response ) ) {
+				$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - '.$response->get_error_message();
+				$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+				$this->debug_log( $method_id, '-- '.$debug_msg, 'error', true, $debug_msg_email );
+				return new WP_Error( 'error', $response->get_error_message() );
+			} else {
+				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) == 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
+					if ( $body = json_decode( $response['body'] ) ) {
+						if ( trim( $body->Code ) == '1' ) {
+							return true;
+						} else {
+							$debug_msg = '- Error from IfthenPay: '.trim( $body->Message ).' - Order '.$order->get_id();
+							$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+							$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
+							return new WP_Error( 'error', $debug_msg.' - '.__( 'Do not contact the plugin support. You need to check with IfthenPay why this refund could not be issued.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+						}
+					} else {
+						$debug_msg = '- Response body is not JSON - Order '.$order->get_id();
+						$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+						$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
+						return new WP_Error( 'error', $debug_msg );
+					}
+				} else {
+					$debug_msg = '- Error contacting the IfthenPay servers - Order '.$order->get_id().' - Incorrect response code: '.$response['response']['code'];
+					$debug_msg_email = $debug_msg.' - Args: '.serialize( $args ).' - Response: '.serialize( $response );
+					$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
+					return new WP_Error( 'error', $debug_msg );
+				}
+			}
+		}
+
+	/**
 	 * Load admin scripts.
 	 *
 	 * @since 4.0.0
@@ -2320,7 +2445,7 @@ wc_price( $order_total_to_pay )
 					'wc-status',
 					'wc-admin',
 					'wc-reports',
-					'wc-addons'
+					'wc-addons',
 				) )
 				||
 				in_array( $screen_id, 
@@ -2328,27 +2453,28 @@ wc_price( $order_total_to_pay )
 						'dashboard',
 						'plugins',
 						'edit-shop_order',
-						'edit-product'
+						'edit-product',
+						'woocommerce_page_wc-orders',
 					)
 				)
 			) {
 				$notices = array();
-				//WordPress below 5.1
-				if ( version_compare( get_bloginfo( 'version' ), '5.1', '<' ) ) {
+				//WordPress below 6.0
+				if ( version_compare( get_bloginfo( 'version' ), '6.0', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>WordPress 5.1</strong>',
+						'<strong>WordPress 6.0</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							get_bloginfo( 'version' )
 						)
 					);
 				}
-				//WooCommerce below 5.0
-				if ( version_compare( WC_VERSION, '5.0', '<' ) ) {
+				//WooCommerce below 6.0
+				if ( version_compare( WC_VERSION, '6.0', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>WooCommerce 5.0</strong>',
+						'<strong>WooCommerce 6.0</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							WC_VERSION
@@ -2357,11 +2483,11 @@ wc_price( $order_total_to_pay )
 					.
 					' - <strong>'.__( 'Support for WooCommerce &lt; 5.4 will end VERY SOON!', 'multibanco-ifthen-software-gateway-for-woocommerce' ).'</strong>';
 				}
-				//PHP below 7.3
-				if ( version_compare( phpversion(), '7.3', '<' ) ) {
+				//PHP below 8
+				if ( version_compare( phpversion(), '7.4', '<' ) ) {
 					$notices[] = sprintf(
 						__( '%1$s - Your version: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'<strong>PHP 7.3</strong>',
+						'<strong>PHP 7.4</strong>',
 						sprintf( 
 							'<strong style="color:red;">%s</strong>',
 							phpversion()

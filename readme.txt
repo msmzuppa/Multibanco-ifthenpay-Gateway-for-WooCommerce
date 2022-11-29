@@ -6,7 +6,7 @@ Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software
 Requires at least: 5.0
 Tested up to: 6.1
 Requires PHP: 7.0
-Stable tag: 6.5.1
+Stable tag: 7.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -37,9 +37,11 @@ If not, get to know our new plugin: [Invoicing with InvoiceXpress for WooCommerc
 * Generates a Payshop Reference for simple payment on the [Payshop agents network](https://www.payshop.pt/fepsapl/app/open/showSearchAgent.jspx), CTT stores or post offices available all over Portugal;
 * Automatically changes the order status to “Processing” (or “Completed” if the order only contains virtual downloadable products) and notifies both the customer and the store owner, if the automatic “Callback” upon payment is activated;
 * Automatic “Callback” can be activated upon request to IfthenPay, via the plugin settings screen for each payment method;
+* Refunds for MB WAY and Credit or debit card - [read this carefully](https://helpdesk.ifthenpay.com/pt-PT/support/solutions/articles/79000130517-devoluc%C3%B5es-de-pagamentos-aos-ordenantes);
 * Shop owner can set minimum and maximum order totals for each payment gateway to be available;
 * Ability to reduce stock when the order is created or paid;
 * Allows searching orders (in the admin area) by Multibanco or Payshop reference;
+* WooCommerce 7.1 and above High-Performance Order Storage compatible (in beta);
 * Integration for 3rd party SMS notification plugins (only Multibanco and Payshop):
 	* [WooCommerce - APG SMS Notifications](https://wordpress.org/plugins/woocommerce-apg-sms-notifications/)
 	* [Twilio SMS Notifications](https://woocommerce.com/products/twilio-sms-notifications/);
@@ -96,14 +98,17 @@ No. IfthenPay only provides this service to registered businesses and equivalent
 = The generated Multibanco reference does not contain the order number. How do I know which order was paid? =
 
 IfthenPay will send you an email each time a reference is paid, but the reference does not contain the order number. By design, our plugin does not include the order number in the reference due to the way WooCommerce/WordPress set orders/posts IDs.
-
 Anyway, you do not need the order number in the reference, because our plugin uses a callback mechanism. IfthenPay automatically notifies WooCommerce when a specific Multibanco reference is used for payment. The order is linked to the reference in the database and, also automatically, will be set as paid.
-
 If you still need to know to which order a reference is linked to, use the search box in the WooCommerce Orders administration screen.
 
 = Can I test the callback call to simulate a payment and foresee what happens when a real payment is made by a customer? =
 
 Yes, you can. Edit your wp-config.php file and set WP_DEBUG to true. Then, place a test order in the frontend using Multibanco, MB WAY or PayShop. Go to the order edit screen and click the “Simulate callback payment” button.
+
+= How to issue an MB WAY or Credit or debit card refund within WooCommerce? =
+
+Just like in any other WooCommerce payment gateway that supports refunds.
+Check out the instructions carefully [here (Automatic refunds, step 4)](https://woocommerce.com/document/woocommerce-refunds/) and [here (WooCommerce specific instructions)](https://helpdesk.ifthenpay.com/pt-PT/support/solutions/articles/79000130517-devoluc%C3%B5es-de-pagamentos-aos-ordenantes).
 
 = Can I use this plugin / IfthenPay service on more than one website? =
 
@@ -188,7 +193,7 @@ IfthenPay’s privacy policy can be found at [https://ifthenpay.com/termosCondic
 
 = Is this plugin compatible with the new WooCommerce High-Performance order storage (COT)? =
 
-Not yet, but we’re working on it.
+Yes, in beta, from version 7.0 onwards.
 
 = Can I contribute with a translation? =
 
@@ -196,8 +201,20 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= 7.0.0 - ??? =
+* You can safely update to this version if you’re running WooCommerce 5.0 or newer
+* Direct and automatic MB WAY and Credit or debit card refunds via the order admin screen
+* High-Performance Order Storage compatible (in beta and only on WooCommerce 7.1 and above)
+* Fix a bug on emails when the shop language is not the same as the user managing the orders
+* Fix jQuery deprecations
+* Requires WooCommerce 5.0
+* Tested with WordPress 6.2-alpha-54888 and WooCommerce 7.2.0-beta.1
+
+= 6.5.2 - 2022-11-29 =
+* Fix trailing comma that was causing a fatal error on PHP below 7.3
+
 = 6.5.1 - 2022-11-11 =
-* You can safely update this plugin if you’re running WooCommerce 4.3 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
+* You can safely update to this version if you’re running WooCommerce 4.3 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
 * Requires WooCommerce 4.3
 * Removed MB WAY support for WooCommerce Subscriptions because the customer only have 5 minutes to pay for a renewal he might not be expecting
 * Fix id stored in Payshop references when order number is being used instead of order id

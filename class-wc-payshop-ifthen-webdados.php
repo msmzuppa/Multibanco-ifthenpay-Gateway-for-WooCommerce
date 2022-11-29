@@ -1066,11 +1066,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							'type'                      => array( 'shop_order' ),
 							'status'                    => $pending_status,
 							'limit'                     => -1,
-							'_'.$this->id.'_request_id' => $id_transacao, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
-							'_'.$this->id.'_ref'        => $referencia,   //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
-							'_'.$this->id.'_id'         => $id_cliente,   //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
+							'_'.$this->id.'_request_id' => $id_transacao,
+							'_'.$this->id.'_ref'        => $referencia,
+							'_'.$this->id.'_id'         => $id_cliente,
 						);
-						$orders = wc_get_orders( $args );
+						$orders = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
 						if ( count($orders)>0 ) {
 							$orders_exist = true;
 							$orders_count = count($orders);

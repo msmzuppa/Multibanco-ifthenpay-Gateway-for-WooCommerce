@@ -1195,10 +1195,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						'type'               => array( 'shop_order' ),
 						'status'             => $pending_status,
 						'limit'              => -1,
-						'_'.$this->id.'_ent' => $ent, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
-						'_'.$this->id.'_ref' => $ref, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
+						'_'.$this->id.'_ent' => $ent,
+						'_'.$this->id.'_ref' => $ref,
 					);
-					$orders = wc_get_orders( $args );
+					$orders = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
 					if ( count($orders)>0 ) {
 						$orders_exist = true;
 						$orders_count = count($orders);

@@ -37,11 +37,11 @@ MB WAY e MULTIBANCO:
 MULTIBANCO:
 
 MB WAY:
-- Processar refunds e pedir pelo webservice (callback já está)
-	- Verificar condições e para quem pode ou não ser activado
+- Processar refunds e pedir pelo webservice (callback já está - testar de novo)
 - Implementar WooCommerce Blocks Checkout
 
 CARTÃO DE CRÉDITO:
+- Processar refunds e pedir pelo webservice
 - Implementar os vários filtros já existentes nos outros métodos de pagamento
 - Implementar WooCommerce Blocks Checkout
 

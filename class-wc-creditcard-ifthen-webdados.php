@@ -69,6 +69,11 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$this->only_portugal  = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
 			$this->only_above     = $this->get_option( 'only_above' );
 			$this->only_bellow    = $this->get_option( 'only_bellow' );
+			$this->do_refunds =  ( $this->get_option( 'do_refunds' ) == 'yes' ? true : false );
+			$this->do_refunds_backoffice_key = $this->get_option( 'do_refunds_backoffice_key' );
+			if ( $this->do_refunds && trim( $this->do_refunds_backoffice_key ) != '' ) {
+				$this->supports[] = 'refunds';
+			}
 	 	
 			// Actions and filters
 			if ( self::$instances == 1 ) { //Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
@@ -252,6 +257,19 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 									),
 					) );
 				}*/
+				$this->form_fields = array_merge( $this->form_fields, array(
+					'do_refunds' => array(
+						'title' => __( 'Process refunds?', 'multibanco-ifthen-software-gateway-for-woocommerce' ).' NOT WORKING YET', 
+						'type' => 'checkbox', 
+						'label' => __( 'Allow to refund via Credit or debit card when the order is completely or partially refunded in WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
+					),
+					'do_refunds_backoffice_key' => array(
+						'title' => __( 'Backoffice key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'type' => 'text',
+						'default' => '',
+						'description' => __( 'The IfthenPay backoffice key you got after signing the contract is needed to process refunds', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					),
+				) );
 				$this->form_fields = array_merge( $this->form_fields, array(
 					'debug' => array(
 									'title' => __( 'Debug Log', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
@@ -790,6 +808,17 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		}
 
+		/* Do refunds */
+		public function process_refund( $order_id, $amount = null, $reason = '' ) {
+			$result = WC_IfthenPay_Webdados()->process_refund( $order_id, $amount, $reason, $this->id );
+			if ( $result === true ) {
+				//Add note because there will be no callback
+				$order = wc_get_order( $order_id );
+				$order->add_order_note( __( 'Credit or debit card refund successfully processed by IfthenPay.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+			}
+			return $result;
+		}
+
 		function callback_helper_get_pending_order( $request_id, $id, $val, $wd_secret = null ) {
 			$return = array(
 				'success' => false,
@@ -801,14 +830,14 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				'type'                      => array( 'shop_order' ),
 				'status'                    => $pending_status,
 				'limit'                     => -1,
-				'_'.$this->id.'_request_id' => $request_id, //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
-				'_'.$this->id.'_id'         => $id,         //HPOS not compatible yet - https://github.com/woocommerce/woocommerce/issues/33879
+				'_'.$this->id.'_request_id' => $request_id,
+				'_'.$this->id.'_id'         => $id,
 			);
 			if ( ! is_null( $wd_secret ) ) {
 				$args['_'.$this->id.'_wd_secret'] = $wd_secret;
 			}
 			$orders_exist = false;
-			$orders       = wc_get_orders( $args );
+			$orders       = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
 			if ( count( $orders ) > 0 ) {
 				$orders_exist = true;
 				$orders_count = count( $orders );

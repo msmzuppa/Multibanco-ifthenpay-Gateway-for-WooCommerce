@@ -3,20 +3,20 @@
  * Plugin Name: Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce
  * Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
  * Description: This plugin allows customers with a Portuguese bank account to pay WooCommerce orders using Multibanco (Pag. Serviços), MB WAY, Credit card and Payshop through IfthenPay’s payment gateway.
- * Version: 6.5.1
+ * Version: 7.0.0
  * Author: PT Woo Plugins (by Webdados)
  * Author URI: https://ptwooplugins.com
  * Text Domain: multibanco-ifthen-software-gateway-for-woocommerce
  * Domain Path: /lang
- * WC requires at least: 4.3
- * WC tested up to: 7.1
+ * WC requires at least: 5.0
+ * WC tested up to: 7.2
 **/
 
 /* WooCommerce CRUD ready */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define( 'WC_IFTHENPAY_WEBDADOS_REQUIRED_WC_VERSION', '4.3' );
+define( 'WC_IFTHENPAY_WEBDADOS_REQUIRED_WC_VERSION', '5.0' );
 
 /* Our own order class and the main classes */
 add_action( 'plugins_loaded', 'mbifthen_init', 1 );
@@ -50,6 +50,7 @@ function mbifthen_format_ref( $ref ) {
 	return class_exists( 'WC_IfthenPay_Webdados' ) ? WC_IfthenPay_Webdados()->format_multibanco_ref( $ref ) : $ref;
 }
 
+/* Admin notice if not active */
 function mbifthen_woocommerce_not_active_admin_notices() {
 	?>
 	<div class="notice notice-error is-dismissible">
@@ -57,7 +58,7 @@ function mbifthen_woocommerce_not_active_admin_notices() {
 			<?php 
 			printf(
 				__( '<strong>Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce</strong> is installed and active but <strong>WooCommerce (%s or above)</strong> is not.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-				WC_IFTHENPAY_WEBDADOS_REQUIRED_WC_VERSION,
+				WC_IFTHENPAY_WEBDADOS_REQUIRED_WC_VERSION
 			);
 			?>
 		</p>
@@ -65,12 +66,11 @@ function mbifthen_woocommerce_not_active_admin_notices() {
 	<?php
 }
 
-/* Still HPOS Incompatible */
+/* HPOS Compatible - beta */
 add_action( 'before_woocommerce_init', function() {
-    if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, false );
-    }
+	if ( version_compare( WC_VERSION, '7.1', '>=' ) && class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	}
 } );
 
 /* If you're reading this you must know what you're doing ;-) Greetings from sunny Portugal! */
-
