@@ -53,11 +53,12 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 				); //products is by default
 			}
 			$this->secret_key = $this->get_option( 'secret_key' );
-			if ( trim( $this->secret_key )=='' ) {
+			if ( trim( $this->secret_key ) == '' ) {
 				//First load?
-				$this->secret_key = md5( home_url().time().rand(0,999) );
+				$this->secret_key = md5( home_url().time().rand( 0, 999 ) );
 				//Save
 				$this->update_option( 'secret_key', $this->secret_key );
+				$this->update_option( 'debug', 'yes' );
 				//Let's set the callback activation email as NOT sent
 				update_option( $this->id . '_callback_email_sent', 'no' );
 			}
@@ -326,7 +327,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									'title' => __( 'Debug Log', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'type' => 'checkbox',
 									'label' => __( 'Enable logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									'default' => 'no',
+									'default' => 'yes',
 									'description' => sprintf(
 														__( 'Log plugin events, such as callback requests, in %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 														( defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )

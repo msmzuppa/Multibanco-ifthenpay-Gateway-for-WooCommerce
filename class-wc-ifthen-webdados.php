@@ -1211,7 +1211,7 @@ final class WC_IfthenPay_Webdados {
 									$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - will create reference (No repeat in x days) - Order '.$order->get_id() );
 									$ref = $this->multibanco_create_ref( $base['ent'], $base['subent'], $this->get_multibanco_ref_seed(), $this->get_order_total_to_pay( $order ), intval( $this->multibanco_ents_no_repeat[ $base['ent'] ] ) );
 								} else {
-									if ( in_array( intval( $base['ent'] ), $this->multibanco_ents_no_check_digit ) && ( $this->multibanco_settings['use_order_id'] =='yes' ) ) {
+									if ( in_array( intval( $base['ent'] ), $this->multibanco_ents_no_check_digit ) && ( $this->multibanco_settings['use_order_id'] == 'yes' ) ) {
 										//Special entities with no check digit and (eventually) expiration date - We can use the order ID
 										$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Will create reference (Special entities with no check digit and (eventually) expiration date) - Order '.$order->get_id() );
 										$ref = $this->multibanco_create_ref_no_check_digit( $base['ent'], $base['subent'], $order->get_id(), $this->get_order_total_to_pay( $order ) );

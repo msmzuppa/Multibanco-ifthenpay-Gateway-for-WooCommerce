@@ -201,8 +201,13 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 7.0.0 - 2022-12-05 =
+= 7.1.0 - 2022-12-09 =
 * You can safely update to this version if you’re running WooCommerce 5.0 or newer
+* Set debug to true by default on new installs
+* Fix the callback instructions when using the new MB Key instead of Entity / Subentity
+* Tested with WordPress 6.2-alpha-54951 and WooCommerce 7.2.0-rc.1
+
+= 7.0.0 - 2022-12-05 =
 * Direct and automatic MB WAY and Credit or debit card refunds via the order admin screen
 * High-Performance Order Storage compatible (in beta and only on WooCommerce 7.1 and above)
 * Fix a bug on emails when the shop language is not the same as the user managing the orders
@@ -211,10 +216,10 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * Tested with WordPress 6.2-alpha-54888 and WooCommerce 7.2.0-beta.1
 
 = 6.5.2 - 2022-11-29 =
+* You can safely update to this version if you’re running WooCommerce 4.3 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
 * Fix trailing comma that was causing a fatal error on PHP below 7.3
 
 = 6.5.1 - 2022-11-11 =
-* You can safely update to this version if you’re running WooCommerce 4.3 or newer **but we’ll very soon drop support for WooCommerce previous to 5.0**
 * Requires WooCommerce 4.3
 * Removed MB WAY support for WooCommerce Subscriptions because the customer only have 5 minutes to pay for a renewal he might not be expecting
 * Fix id stored in Payshop references when order number is being used instead of order id

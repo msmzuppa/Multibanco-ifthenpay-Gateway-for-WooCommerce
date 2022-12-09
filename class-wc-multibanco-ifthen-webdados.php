@@ -29,7 +29,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			$this->id = WC_IfthenPay_Webdados()->multibanco_id;
 	
 			// Logs
-			$this->debug = ( $this->get_option( 'debug' )=='yes' ? true : false );
+			$this->debug = ( $this->get_option( 'debug' ) == 'yes' ? true : false );
 			$this->debug_email = $this->get_option( 'debug_email' );
 			
 			//Check version and upgrade
@@ -51,11 +51,12 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				); //products is by default
 			}
 			$this->secret_key = $this->get_option( 'secret_key' );
-			if ( trim( $this->secret_key )=='' ) {
+			if ( trim( $this->secret_key ) == '' ) {
 				//First load?
 				$this->secret_key = md5( home_url().time().rand(0,999) );
 				//Save
 				$this->update_option( 'secret_key', $this->secret_key );
+				$this->update_option( 'debug', 'yes' );
 				//Let's set the callback activation email as NOT sent
 				update_option( $this->id . '_callback_email_sent', 'no' );
 			}
@@ -72,8 +73,8 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			$this->subent             = $this->get_option( 'subent' );
 			$this->mbkey              = $this->get_option( 'mbkey' );
 			$this->settings_saved     = $this->get_option( 'settings_saved' );
-			$this->send_to_admin      = ( $this->get_option( 'send_to_admin' )=='yes' ? true : false );
-			$this->only_portugal      = ( $this->get_option( 'only_portugal' )=='yes' ? true : false );
+			$this->send_to_admin      = ( $this->get_option( 'send_to_admin' ) == 'yes' ? true : false );
+			$this->only_portugal      = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
 			$this->only_above         = $this->get_option( 'only_above' );
 			$this->only_bellow        = $this->get_option( 'only_bellow' );
 			$this->stock_when         = $this->get_option( 'stock_when' );
@@ -430,7 +431,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 								'title' => __( 'Debug Log', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								'type' => 'checkbox',
 								'label' => __( 'Enable logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'default' => 'no',
+								'default' => 'yes',
 								'description' => sprintf(
 													__( 'Log plugin events, such as callback requests, in %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 													( defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )
@@ -538,7 +539,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 								<tr valign="top">
 									<th scope="row" class="titledesc"><?php _e( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> / <?php _e( 'Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
 									<td class="forminp">
-										<?php echo $this->ent; ?> / <?php echo $this->subent; ?>
+										<?php echo WC_IfthenPay_Webdados()->multibanco_api_mode_enabled ? 'MB / '.$this->mbkey : $this->ent.' / '.$this->subent; ?>
 									</td>
 								</tr>
 								<tr valign="top">

@@ -29,7 +29,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$this->id = WC_IfthenPay_Webdados()->creditcard_id;
 	
 			// Logs
-			$this->debug       = ( $this->get_option( 'debug' )=='yes' ? true : false );
+			$this->debug       = ( $this->get_option( 'debug' ) == 'yes' ? true : false );
 			$this->debug_email = $this->get_option( 'debug_email' );
 			
 			//Check version and upgrade
@@ -275,7 +275,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 									'title' => __( 'Debug Log', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'type' => 'checkbox',
 									'label' => __( 'Enable logging', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									'default' => 'no',
+									'default' => 'yes',
 									'description' => sprintf(
 														__( 'Log plugin events in %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 														( defined( 'WC_LOG_HANDLER' ) && 'WC_Log_Handler_DB' === WC_LOG_HANDLER )
