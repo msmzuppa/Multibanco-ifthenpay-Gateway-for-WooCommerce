@@ -4,15 +4,15 @@ namespace Automattic\WooCommerce\Blocks\Payments\Integrations;
 use Automattic\WooCommerce\Blocks\Assets\Api;
 
 /**
- * Multibanco payment method integration
+ * Payshop payment method integration
  */
-final class MultibancoIfthenPay extends AbstractPaymentMethodType {
+final class PayshopIfthenPay extends AbstractPaymentMethodType {
 	/**
 	 * Payment method name defined by payment methods extending this class.
 	 *
 	 * @var string
 	 */
-	protected $name = 'multibanco_ifthen_for_woocommerce';
+	protected $name = 'payshop_ifthen_for_woocommerce';
 
 	/**
 	 * Constructor
@@ -24,7 +24,7 @@ final class MultibancoIfthenPay extends AbstractPaymentMethodType {
 	 * Initializes the payment method type.
 	 */
 	public function initialize() {
-		$this->settings = WC_IfthenPay_Webdados()->multibanco_settings;
+		$this->settings = WC_IfthenPay_Webdados()->payshop_settings;
 	}
 
 	/**
@@ -42,8 +42,8 @@ final class MultibancoIfthenPay extends AbstractPaymentMethodType {
 	 * @return array
 	 */
 	public function get_payment_method_script_handles() {
-		wp_register_script( 'wc-payment-method-multibanco-ifthenpay', plugins_url( 'wc-payment-method-multibanco-ifthenpay.js', __FILE__ ), array(), WC_IfthenPay_Webdados()->get_version(), true );
-		return [ 'wc-payment-method-multibanco-ifthenpay' ];
+		wp_register_script( 'wc-payment-method-payshop-ifthenpay', plugins_url( 'wc-payment-method-payshop-ifthenpay.js', __FILE__ ), array(), WC_IfthenPay_Webdados()->get_version(), true );
+		return [ 'wc-payment-method-payshop-ifthenpay' ];
 	}
 
 	/**
@@ -55,11 +55,11 @@ final class MultibancoIfthenPay extends AbstractPaymentMethodType {
 		return [
 			'title'                             => isset( $this->settings['title'] ) ? $this->settings['title'] : '',
 			'description'                       => isset( $this->settings['description'] ) ? $this->settings['description'] : '',
-			'icon'                              => WC_IfthenPay_Webdados()->multibanco_icon,
+			'icon'                              => WC_IfthenPay_Webdados()->payshop_icon,
 			'only_portugal'                     => $this->settings['only_portugal'] == 'yes',
 			'only_above'                        => floatval( $this->settings['only_above'] ) > 0 ? floatval( $this->settings['only_above'] ) : null,
 			'only_bellow'                       => floatval( $this->settings['only_bellow'] ) > 0 ? floatval( $this->settings['only_bellow'] ) : null,
-			'support_woocommerce_subscriptions' => isset( $this->settings['support_woocommerce_subscriptions'] ) && ( 'yes' === $this->settings['support_woocommerce_subscriptions'] ),
+			//'support_woocommerce_subscriptions' => isset( $this->settings['support_woocommerce_subscriptions'] ) && ( 'yes' === $this->settings['support_woocommerce_subscriptions'] ), //Not on payshop
 			//More settings needed?
 		];
 	}

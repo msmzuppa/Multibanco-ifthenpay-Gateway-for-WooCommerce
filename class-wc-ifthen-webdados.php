@@ -280,14 +280,20 @@ final class WC_IfthenPay_Webdados {
 	/* Add to WooCommerce Blocks */
 	public function woocommerce_add_payment_gateways_woocommerce_blocks( \Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
 		//Multibanco
-		if ( WC_IfthenPay_Webdados()->wc_blocks_active && isset( $this->multibanco_settings['support_woocommerce_blocks'] ) && $this->multibanco_settings['support_woocommerce_blocks'] == 'yes' ) {
-			require_once( 'woocommerce-blocks/multibanco/MultibancoIfthenPay.php' );
-			$payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\MultibancoIfthenPay;
-  			$payment_method_registry->register( $payment_method_instance );
+		if ( WC_IfthenPay_Webdados()->wc_blocks_active ) {
+			if ( isset( $this->multibanco_settings['support_woocommerce_blocks'] ) && $this->multibanco_settings['support_woocommerce_blocks'] == 'yes' ) {
+				require_once( 'woocommerce-blocks/multibanco/MultibancoIfthenPay.php' );
+				$multibanco_payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\MultibancoIfthenPay;
+  				$payment_method_registry->register( $multibanco_payment_method_instance );
+  			}
+			if ( isset( $this->payshop_settings['support_woocommerce_blocks'] ) && $this->payshop_settings['support_woocommerce_blocks'] == 'yes' ) {
+				require_once( 'woocommerce-blocks/payshop/PayshopIfthenPay.php' );
+				$multibanco_payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\PayshopIfthenPay;
+  				$payment_method_registry->register( $multibanco_payment_method_instance );
+  			}
   		}
   		//MB WAY - soon
   		//Credit card - soon
-  		//Payshop - soon
 	}
 
 	/* Debug / Log */
