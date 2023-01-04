@@ -108,16 +108,7 @@ final class WC_IfthenPay_Webdados {
 		$this->wpml_active             = function_exists( 'icl_object_id' ) && function_exists( 'icl_register_string' );
 		$this->wc_deposits_active      = function_exists( 'wc_deposits_woocommerce_is_active' );
 		$this->wc_subscriptions_active = function_exists( 'wcs_get_subscription' );
-		$this->wc_blocks_active        =
-			class_exists( '\Automattic\WooCommerce\Blocks\Package' )
-			&&
-			//Only above 3.0
-			version_compare( \Automattic\WooCommerce\Blocks\Package::get_version(), '3.0.0', '>=' )
-			&&
-			//And only if the featured plugin is installed
-			defined( 'WC_BLOCKS_IS_FEATURE_PLUGIN' )
-			&&
-			WC_BLOCKS_IS_FEATURE_PLUGIN;
+		$this->wc_blocks_active        = class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' );
 		$this->out_link_utm            = '?utm_source='.rawurlencode( esc_url( home_url( '/' ) ) ).'&amp;utm_medium=link&amp;utm_campaign=mb_ifthen_plugin';
 		if ( version_compare( WC_VERSION, '7.1', '>=' ) ) {
 			if ( wc_get_container()->get( \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
@@ -177,7 +168,8 @@ final class WC_IfthenPay_Webdados {
 	/* Hooks */
 	private function init_hooks() {
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'woocommerce_add_payment_gateways' ) );
-		add_filter( 'woocommerce_blocks_payment_method_type_registration', array( $this, 'woocommerce_add_payment_gateways_woocommerce_blocks' ) ); // WooCommerce Blocks - https://github.com/woocommerce/woocommerce-gutenberg-products-block/issues/2858
+		add_action( 'woocommerce_blocks_loaded', array( $this, 'woocommerce_add_payment_gateways_woocommerce_blocks' ) ); // WooCommerce Blocks
+		//add_filter( 'woocommerce_blocks_payment_method_type_registration', array( $this, 'woocommerce_add_payment_gateways_woocommerce_blocks' ) ); 
 		add_action( 'add_meta_boxes', array( $this, 'multibanco_order_metabox' ) );
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'shop_order_search' ) );
 		add_filter( 'woocommerce_order_table_search_query_meta_keys', array( $this, 'shop_order_search' ) );
@@ -278,27 +270,50 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/* Add to WooCommerce Blocks */
-	public function woocommerce_add_payment_gateways_woocommerce_blocks( \Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
-		//Multibanco
+	public function woocommerce_add_payment_gateways_woocommerce_blocks() {
 		if ( WC_IfthenPay_Webdados()->wc_blocks_active ) {
+			//Multibanco
 			if ( isset( $this->multibanco_settings['support_woocommerce_blocks'] ) && $this->multibanco_settings['support_woocommerce_blocks'] == 'yes' ) {
 				require_once( 'woocommerce-blocks/multibanco/MultibancoIfthenPay.php' );
-				$multibanco_payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\MultibancoIfthenPay;
-				$payment_method_registry->register( $multibanco_payment_method_instance );
+				add_action(
+					'woocommerce_blocks_payment_method_type_registration',
+					function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+						$payment_method_registry->register( new \Automattic\WooCommerce\Blocks\Payments\Integrations\MultibancoIfthenPay() );
+					}
+				);
 			}
+			//Payshop
 			if ( isset( $this->payshop_settings['support_woocommerce_blocks'] ) && $this->payshop_settings['support_woocommerce_blocks'] == 'yes' ) {
 				require_once( 'woocommerce-blocks/payshop/PayshopIfthenPay.php' );
-				$payshop_payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\PayshopIfthenPay;
-				$payment_method_registry->register( $payshop_payment_method_instance );
+				add_action(
+					'woocommerce_blocks_payment_method_type_registration',
+					function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+						$payment_method_registry->register( new \Automattic\WooCommerce\Blocks\Payments\Integrations\PayshopIfthenPay() );
+					}
+				);
 			}
+			//Credit card
 			if ( isset( $this->creditcard_settings['support_woocommerce_blocks'] ) && $this->creditcard_settings['support_woocommerce_blocks'] == 'yes' ) {
 				require_once( 'woocommerce-blocks/creditcard/CreditCardIfthenPay.php' );
-				$creditcard_payment_method_instance = new \Automattic\WooCommerce\Blocks\Payments\Integrations\CreditCardIfthenPay;
-				$payment_method_registry->register( $creditcard_payment_method_instance );
+				add_action(
+					'woocommerce_blocks_payment_method_type_registration',
+					function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+						$payment_method_registry->register( new \Automattic\WooCommerce\Blocks\Payments\Integrations\CreditCardIfthenPay() );
+					}
+				);
 			}
+			//MB WAY - Phone number not passed to the checkout yet
+			if ( isset( $this->mbway_settings['support_woocommerce_blocks'] ) && $this->mbway_settings['support_woocommerce_blocks'] == 'yes' ) {
+				require_once( 'woocommerce-blocks/mbway/MBWayIfthenPay.php' );
+				add_action(
+					'woocommerce_blocks_payment_method_type_registration',
+					function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+						$payment_method_registry->register( new \Automattic\WooCommerce\Blocks\Payments\Integrations\MBWayIfthenPay() );
+					}
+				);
+			}
+
 		}
-		//MB WAY - soon
-		//Credit card - soon
 	}
 
 	/* Debug / Log */

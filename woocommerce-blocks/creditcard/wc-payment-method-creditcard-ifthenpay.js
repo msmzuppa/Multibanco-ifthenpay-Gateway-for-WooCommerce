@@ -109,13 +109,7 @@
 				},
 				ariaLabel: a,
 			};
-		
-		//Our settings on the console
-		//console.log(u);
-		
-		Object(r.registerPaymentMethod)(function (e) {
-			return new e(d);
-		});
+		Object(r.registerPaymentMethod)(d);
 	},
 	5: function (e, t) {
 		!(function () {

@@ -57,21 +57,35 @@
 			c = n(1),
 			o = n(5),
 			i = n(7),
-			u = Object(o.getSetting)("payshop_ifthen_for_woocommerce_data", {}),
-			l = Object(c.__)( 'Payshop (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+			u = Object(o.getSetting)("mbway_ifthen_for_woocommerce_data", {}),
+			l = Object(c.__)( 'MB WAY (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 			a = Object(i.decodeEntities)(u.title) || l,
 			f = function () {
-				return React.createElement("div", null, Object(i.decodeEntities)(u.description || ""));
+				var desc = React.createElement( 'p', null, Object( i.decodeEntities )( u.description || '' ) );
+				var phonenumberinput = React.createElement( 'input', {
+					type:         'tel',
+					name:         u.id+'_phone',
+					id:           u.id+'_phone',
+					placeholder:  '9xxxxxxxx',
+					autoComplete: 'off',
+					maxLength:    '9',
+					required:     true
+				} );
+				var phonenumberlabel = React.createElement( 'label', {
+					htmlFor: u.id+'_phone'
+				}, Object( i.decodeEntities )( u.phonenumbertext || '' ) );
+				var phonenumber = React.createElement( 'div', {
+					className: 'wc-block-components-text-input is-active'
+				}, '', phonenumberinput, phonenumberlabel );
+				return React.createElement( 'div', null, desc, phonenumber );
 			},
 			s = function (e) {
-
 				var icon = React.createElement( 'img', { src: u.icon, width: 28, height: 24, style: { display: 'inline' } } );
 				var span = React.createElement( 'span', { className: 'wc-block-components-payment-method-label wc-block-components-payment-method-label--with-icon' }, icon, a );
 				return span;
-
 			},
 			d = {
-				name: "payshop_ifthen_for_woocommerce",
+				name: "mbway_ifthen_for_woocommerce",
 				label: React.createElement(s, null),
 				//label: <span>{ a }</span>,
 				content: React.createElement(f, null),
