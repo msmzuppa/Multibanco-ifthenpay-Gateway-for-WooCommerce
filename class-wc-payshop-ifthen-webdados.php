@@ -327,20 +327,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 									),
 					) );
 				}*/
-				if ( WC_IfthenPay_Webdados()->wc_blocks_active ) {
-					$this->form_fields = array_merge( $this->form_fields, array(
-						'support_woocommerce_blocks'  => array(
-							'title'       => __( 'WooCommerce Blocks Checkout', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 
-							'type'        => 'checkbox',
-							'label'       => __( 'Enable WooCommerce Blocks Checkout (experimental)  support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'description' => sprintf(
-								__( 'Shows “%s” (using IfthenPay) as a supported payment gateway on the new WooCommerce Blocks Checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'Payshop'
-							),
-							'default'     => 'no'
-						),
-					) );
-				}
 				$this->form_fields = array_merge( $this->form_fields, array(
 					'send_to_admin' => array(
 									'title' => __( 'Send instructions to admin?', 'multibanco-ifthen-software-gateway-for-woocommerce' ), 

@@ -6,7 +6,7 @@ Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software
 Requires at least: 5.0
 Tested up to: 6.1
 Requires PHP: 7.0
-Stable tag: 7.1.1
+Stable tag: 8.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -20,13 +20,6 @@ This plugin will allow you to generate a payment Reference the customer can then
 The MB WAY (using the customer mobile phone number), Credit or debit card and CTT Payshop payment methods are also available.
 
 This is the official [IfthenPay](https://ifthenpay.com) plugin, and a contract with this company is required. Technical support is provided by [Webdados](https://www.webdados.pt).
-
-**This plugin will soon require WordPress 5.7 and WooCommerce 5.0**
-If you cannot update any of these components, you should check the changelog of this plugin to find out which is the last version you can use in your scenario.
-
-= Are you already issuing automatic invoices on your WooCommerce store? =
-
-If not, get to know our new plugin: [Invoicing with InvoiceXpress for WooCommerce](https://wordpress.org/plugins/woo-billing-with-invoicexpress/)
 
 = Features: =
 
@@ -52,7 +45,7 @@ If not, get to know our new plugin: [Invoicing with InvoiceXpress for WooCommerc
 * Polylang tested;
 * [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) (experimental) integration (only Multibanco);
 * [WooCommerce Deposits by webtomizer](https://woocommerce-deposits.com/) (experimental) integration (not for Credit cards at the moment);
-* [WooCommerce Blocks](https://wordpress.org/plugins/woo-gutenberg-products-block/) checkout block (experimental) integration (only Multibanco);
+* [WooCommerce Blocks](https://wordpress.org/plugins/woo-gutenberg-products-block/) checkout block integration (in beta);
 * PHP7 tested and compatible;
 
 = PRO add-on =
@@ -75,13 +68,18 @@ Get the [PRO add-on](https://ptwooplugins.com/product/multibanco-mbway-credit-ca
 
 Attention: The PRO add-on is a product of PT Woo Plugins / Webdados, and IfthenPay has no responsibility for it.
 
+= Are you already issuing automatic invoices on your WooCommerce store? =
+
+If not, get to know our new plugin: [Invoicing with InvoiceXpress for WooCommerce](https://wordpress.org/plugins/woo-billing-with-invoicexpress/)
+
 == Installation ==
 
+* Make sure you already have a contract with [IfthenPay](https://ifthenpay.com)
 * Use the included automatic install feature on your WordPress admin panel and search for “Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce”.
-* Multibanco: Go to WooCoomerce > Settings > Checkout > Pagamento de Serviços no Multibanco and fill in the data provided by IfthenPay (Entity and Subentity) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
-* MB WAY: Go to WooCoomerce > Settings > Checkout > Pagamento MB WAY no telemóvel and fill in the data provided by IfthenPay (MB WAY Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
-* Credit or debit card: Go to WooCoomerce > Settings > Checkout > Credit or debit card and fill in the data provided by IfthenPay (Credit card Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
-* Payshop: Go to WooCoomerce > Settings > Checkout > Pagamento na rede de agentes Payshop and fill in the data provided by IfthenPay (Payshop Key) in order to use this payment method. A contract with IfthenPay is mandatory to receive this data.
+* Multibanco: Go to WooCoomerce > Settings > Checkout > Pagamento de Serviços no Multibanco and fill in the data provided by IfthenPay (Entity and Subentity or MB Key) in order to use this payment method.
+* MB WAY: Go to WooCoomerce > Settings > Checkout > Pagamento MB WAY no telemóvel and fill in the data provided by IfthenPay (MB WAY Key) in order to use this payment method.
+* Credit or debit card: Go to WooCoomerce > Settings > Checkout > Credit or debit card and fill in the data provided by IfthenPay (Credit card Key) in order to use this payment method.
+* Payshop: Go to WooCoomerce > Settings > Checkout > Pagamento na rede de agentes Payshop and fill in the data provided by IfthenPay (Payshop Key) in order to use this payment method.
 * Make sure you ask IfthenPay to activate the “Callback” on their side with the URL and Anti-phishing key provided in the settings screen. There is a feature in each payment method screen that allows you to make this request via a webservice, except on Credit card where this is not needed.
 * Start receiving payments :-)
 
@@ -201,8 +199,12 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 7.1.1 - 2022-12-18 =
+= 8.0.0 - 2023-02-03 =
 * You can safely update to this version if you’re running WooCommerce 5.0 or newer
+* Support for the new WooCommerce block based checkout (in beta) for all payment methods;
+* Tested with WordPress 6.2-alpha-55198, WooCommerce 7.4.0-beta.2 and WooCommerce Blocks 9.5.0
+
+= 7.1.1 - 2022-12-18 =
 * Set debug to true by default on new installs
 * Fix the callback instructions when using the new MB Key instead of Entity / Subentity
 * Fix version number on 7.1.0
