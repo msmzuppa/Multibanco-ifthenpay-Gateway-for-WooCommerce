@@ -2,7 +2,6 @@ PRO ADD-ON PAGO:
 - Depois de expirar o MBWAY, mudar para Multibanco automaticamente e enviar referência ao cliente -> Feito
 	- Ou enviar email para escolher outro método
 	- Ou ambos
-- WooCommerce Block checkout antes do plugin principal
 - Ter campos em cada método para o cliente inserir o que tem contratado com a IfthenPay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!
 	- Na verdade isto deveria vir no callback (email enviado a 2020-12-10)
 	- Na encomenda, fazer como no Stripe e mostrar o valor pago em comissões
@@ -10,8 +9,6 @@ PRO ADD-ON PAGO:
 - Email quando há falhas de callback
 - Olhar para outros hooks disponíveis no plugin e "inventar" funcionalidades
 
-
-- Verificar compatibilidade com HPOS, nomeadamente nas wc_get_orders() - https://github.com/woocommerce/woocommerce/issues/33879
 
 5.0.0:
 
