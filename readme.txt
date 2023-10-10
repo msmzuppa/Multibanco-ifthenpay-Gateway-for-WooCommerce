@@ -6,7 +6,7 @@ Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.0
-Stable tag: 8.5.0
+Stable tag: 8.6.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -217,6 +217,11 @@ You can report any security bugs found in the source code of this plugin through
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
+= 8.6.0 - 2023-08-31 =
+* Pass $_GET to the `*_ifthen_callback_payment_complete` hooks
+* Update hooks-examples.php with an example on how to use the payment complete hook with the new parameter
+* Tested wit WordPress 6.4-beta2-56771 and WooCommerce 8.2.0-rc.2
 
 = 8.5.0 - 2023-08-31 =
 * Fix a PHP notice

@@ -743,7 +743,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 								}
 								$url = $this->get_return_url( $order );
 								$this->payment_complete( $order, '', $note );
-								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id() );
+								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id(), $_GET );
 								$debug_order = wc_get_order( $order->get_id() );
 								$this->debug_log( '-- Credit card payment received - Order '.$order->get_id(), 'notice' );
 								$this->debug_log_extra( 'payment_complete - Redirect to thank you page: '.$url.' - Order '.$order->get_id().' - Status: '.$debug_order->get_status() );

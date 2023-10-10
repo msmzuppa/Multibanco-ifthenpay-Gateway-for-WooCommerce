@@ -1182,7 +1182,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 											}
 										}
 										$this->payment_complete( $order, '', $note );
-										do_action( 'mbway_ifthen_callback_payment_complete', $order->get_id() );
+										do_action( 'mbway_ifthen_callback_payment_complete', $order->get_id(), $_GET );
 										header( 'HTTP/1.1 200 OK' );
 										$this->debug_log( '-- MB WAY payment received - Order '.$order->get_id(), 'notice' );
 										echo 'OK - MB WAY payment received';

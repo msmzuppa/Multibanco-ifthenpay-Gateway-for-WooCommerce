@@ -153,14 +153,18 @@ function my_multibanco_ifthen_sms_instructions( $message, $ent, $ref, $order_tot
 }
 
 
-// Multibanco - Action when payment complete via callback
-add_action( 'multibanco_ifthen_callback_payment_complete', 'my_multibanco_ifthen_callback_payment_complete', 10, 1 );
-function my_multibanco_ifthen_callback_payment_complete( $order_id ) {
-	wp_mail( 'email@your.domain', 'Multibanco order '.$order_id.' paid', 'Multibanco order '.$order_id.' paid' );
+// Multibanco - Action when payment complete via callback - Store a custom parameter
+add_action( 'multibanco_ifthen_callback_payment_complete', 'my_multibanco_ifthen_callback_payment_complete', 10, 2 );
+function my_multibanco_ifthen_callback_payment_complete( $order_id, $get ) {
+	if ( isset( $get['valor_liquido'] ) ) {
+		$order = wc_get_order( $order_id );
+		$order->update_meta_data( '_'.WC_IfthenPay_Webdados()->multibanco_id.'_valor_liquido', $get['valor_liquido'] );
+		$order->save();
+	}
 }
 
 
-// MB WAY - Action when payment complete via callback
+// MB WAY - Action when payment complete via callback - Send an email
 add_action( 'mbway_ifthen_callback_payment_complete', 'my_mbway_ifthen_callback_payment_complete', 10, 1 );
 function my_mbway_ifthen_callback_payment_complete( $order_id ) {
 	wp_mail( 'email@your.domain', 'MB WAY order '.$order_id.' paid', 'MB WAY order '.$order_id.' paid' );

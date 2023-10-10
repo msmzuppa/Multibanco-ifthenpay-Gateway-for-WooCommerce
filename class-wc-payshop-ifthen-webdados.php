@@ -1118,7 +1118,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 											remove_filter( 'woocommerce_new_order_email_allows_resend', '__return_true' );
 										}
 									}
-									do_action( 'payshop_ifthen_callback_payment_complete', $order->get_id() );
+									do_action( 'payshop_ifthen_callback_payment_complete', $order->get_id(), $_GET );
 									
 									header( 'HTTP/1.1 200 OK' );
 									$this->debug_log( '-- Payshop payment received - Order '.$order->get_id(), 'notice' );
