@@ -561,6 +561,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						//Not expired
 						$expired = false;
 						echo $this->thankyou_instructions_table_html( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); //Missing MB WAY email or phone number?
+						if ( is_wc_endpoint_url( 'order-received' ) ) {
+							do_action( 'mbway_ifthen_after_thankyou_instructions_table', $order );
+						}
 					}
 					//Another payment option
 					if ( $expired || apply_filters( 'mbway_ifthen_enable_pay_another_method_thankyou', true, $order->get_id() ) ) {
@@ -570,7 +573,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						</p>
 						<?php
 					}
-					if ( is_wc_endpoint_url( 'order-received' ) ) {
+					if ( is_wc_endpoint_url( 'order-received' ) && ! $expired ) {
 						if ( apply_filters( 'mbway_ifthen_enable_check_order_status_thankyou', true, $order->get_id() ) ) { // return false to mbway_ifthen_enable_check_order_status_thankyou in order to stop the ajax checking
 							//Check order status
 							?>
@@ -636,6 +639,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					text-align: center;
 					margin-top: 0px;
 					margin-bottom: 3em;
+				}
+				p#<?php echo $this->id; ?>_counter {
+					text-align: center;
+					font-size: 1.25em;
+					margin: 2em;
+				}
+				p#<?php echo $this->id; ?>_counter #<?php echo WC_IfthenPay_Webdados()->mbway_id; ?>_counter_time {
+					font-weight: bold;
 				}
 				table.<?php echo $this->id; ?>_table td.extra_instructions {
 					font-size: small;

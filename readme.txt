@@ -4,9 +4,9 @@ Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos,
 Author URI: https://ptwooplugins.com
 Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
 Requires at least: 5.0
-Tested up to: 6.5
+Tested up to: 6.4
 Requires PHP: 7.0
-Stable tag: 8.7.0
+Stable tag: 8.8.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -56,6 +56,7 @@ Get the [PRO add-on](https://ptwooplugins.com/product/multibanco-mbway-credit-ca
 
 * Recover unpaid MB WAY orders by converting them to Multibanco and notify the customer via email.
 * Automatic cancellation of orders when Multibanco, Payshop or MB WAY references expire.
+* Countdown timer on the “thank you” page for MB WAY payments
 * Remove payment instructions from specific emails, for example “order completed”, to avoid customer confusion when they are no longer necessary.
 * Set a payment entity for Multibanco, MB WAY, Payshop and Credit Card, at the product category level, so that you can receive payment in different accounts based on the order products. Lock the cart so you can only have products from a single account in the same order. (Replaces previously available specific extension).
 * Change the default timeout for calls to IfthenPay webservices if your website is experiencing communication difficulties.
@@ -219,6 +220,10 @@ You can report any security bugs found in the source code of this plugin through
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
+= 8.8.0 - 2023-11-15 =
+* [PRO add-on 1.6](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/): Countdown timer on the thank you page for MB WAY payments
+* Tested with WordPress 6.5-alpha-57110, WooCommerce 8.3.0-rc.2 and WooCommerce Blocks 11.5.4
 
 = 8.7.0 - 2023-10-30 =
 * Remove beta status from the HPOS and Blocks Checkout compatibility
