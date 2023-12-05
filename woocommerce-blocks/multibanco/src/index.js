@@ -6,19 +6,19 @@ import { __ } from '@wordpress/i18n';
 import { getSetting } from '@woocommerce/settings';
 import { decodeEntities } from '@wordpress/html-entities';
 
-const settings = getSetting( 'multibanco_ifthen_for_woocommerce_data', {} );
+const settings     = getSetting( 'multibanco_ifthen_for_woocommerce_data', {} );
 const defaultLabel = __(
 	'Pagamento de Serviços no Multibanco (IfthenPay)',
 	'multibanco-ifthen-software-gateway-for-woocommerce'
 );
-const label = decodeEntities( settings.title ) || defaultLabel;
+const label        = decodeEntities( settings.title ) || defaultLabel;
 
 /**
  * Content component
  *
  * @param {*} props Props from payment API.
  */
-const Content = ( props ) => {
+const Content       = ( props ) => {
 	var description = React.createElement( 'div', null, decodeEntities( settings.description || '' ) );
 	return description;
 };
@@ -28,7 +28,7 @@ const Content = ( props ) => {
  *
  * @param {*} props Props from payment API.
  */
-const Label = ( props ) => {
+const Label  = ( props ) => {
 	var icon = React.createElement( 'img', { src: settings.icon, width: 28, height: 24, style: { display: 'inline' } } );
 	var span = React.createElement( 'span', { className: 'wc-block-components-payment-method-label wc-block-components-payment-method-label--with-icon' }, icon, decodeEntities( settings.title ) || defaultLabel );
 	return span;
@@ -41,18 +41,18 @@ const Label = ( props ) => {
  * @param checkoutData Checkout details.
  */
 const CanMakePayment = ( checkoutData ) => {
-	//Euro?
+	// Euro?
 	if ( checkoutData.cartTotals.currency_code != 'EUR' ) {
 		return false;
 	}
-	//Portugal?
+	// Portugal?
 	if ( settings.only_portugal ) {
 		if ( checkoutData.billingData.country != 'PT' && checkoutData.shippingAddress.country != 'PT' ) {
 			return false;
 		}
 	}
-	//Minimum and maximum value
-	var cart_total = checkoutData.cartTotals.total_price / 100; //It's return in cents (?)
+	// Minimum and maximum value
+	var cart_total = checkoutData.cartTotals.total_price / 100; // It's return in cents (?)
 	if ( settings.only_above ) {
 		if ( cart_total < settings.only_above ) {
 			return false;

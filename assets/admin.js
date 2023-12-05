@@ -4,12 +4,14 @@
 
 		var hide_extra_fields = true;
 
-		switch( ifthenpay.gateway ) {
+		switch ( ifthenpay.gateway ) {
 			case 'multibanco':
 				ifthen_toogle_mb_api_mode();
-				$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).change( function() {
-					ifthen_toogle_mb_api_mode();
-				});
+				$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).change(
+					function() {
+						ifthen_toogle_mb_api_mode();
+					}
+				);
 				if (
 					(
 						( $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() == '' || $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() == 'no' )
@@ -45,9 +47,12 @@
 					hide_extra_fields = false;
 				}
 				ifthen_toogle_mbway_refunds();
-				$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).on('change', function() {
-					ifthen_toogle_mbway_refunds();
-				} );
+				$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).on(
+					'change',
+					function() {
+						ifthen_toogle_mbway_refunds();
+					}
+				);
 				break;
 			case 'creditcard':
 				if (
@@ -72,15 +77,15 @@
 				break;
 		}
 
-		//Hide extra fields if there are errors on required fields
+		// Hide extra fields if there are errors on required fields
 		if ( hide_extra_fields ) {
-			switch( ifthenpay.gateway ) {
+			switch ( ifthenpay.gateway ) {
 				case 'multibanco':
 					var number_fields = 6;
 					if ( $( '#wc_ifthen_mb_mode' ).length ) {
 						number_fields++;
 					}
-					$( '#wc_ifthen_settings table.form-table tr:nth-child(n+'+number_fields+')' ).hide();
+					$( '#wc_ifthen_settings table.form-table tr:nth-child(n+' + number_fields + ')' ).hide();
 					$( '#wc_ifthen_settings .mb_hide_extra_fields' ).hide();
 					break;
 				case 'mbway':
@@ -95,55 +100,76 @@
 			}
 		}
 
-		//Settings saved (??)
-		$( '#woocommerce_'+ifthenpay.gateway+'_ifthen_for_woocommerce_settings_saved' ).val( '1' );
+		// Settings saved (??)
+		$( '#woocommerce_' + ifthenpay.gateway + '_ifthen_for_woocommerce_settings_saved' ).val( '1' );
 
-		//Callback activation
-		$( '#wc_ifthen_callback_open' ).on( 'click', function() {
-			ifthen_callback_open();
-			return false;
-		});
-		$( '#wc_ifthen_callback_cancel' ).on( 'click', function() {
-			$( '#wc_ifthen_callback_div' ).toggle();
-			$( '#wc_ifthen_callback_open_p' ).toggle();
-			return false;
-		});
-		//Callback send
-		$( '#wc_ifthen_callback_submit' ).on( 'click', function() {
-			if ( confirm( ifthenpay.callback_confirm ) ) {
-				$( '#wc_ifthen_callback_send' ).val( 1 );
-				$( '#mainform' ).submit()
-				return true;
-			} else {
-				return false;
-			}
-		});
-		//Callback webservice
-		$( '#wc_ifthen_callback_submit_webservice' ).on( 'click', function() {
-			var bo_key = prompt( ifthenpay.callback_bo_key, '' );
-			if ( bo_key ) {
-				$( '#wc_ifthen_callback_bo_key' ).val( $.trim( bo_key ) );
-				$( '#wc_ifthen_callback_send' ).val( 2 );
-				$( '#mainform' ).submit()
-				return true;
-			} else {
-				return false;
-			}
-		});
-		setTimeout( function() {
-			if ( ifthenpay.callback_email_sent == 'no' ) {
-				$( '#wc_ifthen_callback_open' ).addClass('button-link-delete');
+		// Callback activation
+		$( '#wc_ifthen_callback_open' ).on(
+			'click',
+			function() {
 				ifthen_callback_open();
-				if ( ifthenpay.callback_auto_open == '1' ) { 
-					setTimeout( function() {
-						$( '#wc_ifthen_callback_div' ).addClass('focus' );
-					}, 250 );
-					setTimeout( function() {
-						$( '#wc_ifthen_callback_div' ).removeClass('focus' );
-					}, 1500 );
+				return false;
+			}
+		);
+		$( '#wc_ifthen_callback_cancel' ).on(
+			'click',
+			function() {
+				$( '#wc_ifthen_callback_div' ).toggle();
+				$( '#wc_ifthen_callback_open_p' ).toggle();
+				return false;
+			}
+		);
+		// Callback send
+		$( '#wc_ifthen_callback_submit' ).on(
+			'click',
+			function() {
+				if ( confirm( ifthenpay.callback_confirm ) ) {
+					$( '#wc_ifthen_callback_send' ).val( 1 );
+					$( '#mainform' ).submit()
+					return true;
+				} else {
+					return false;
 				}
 			}
-		}, 500 );
+		);
+		// Callback webservice
+		$( '#wc_ifthen_callback_submit_webservice' ).on(
+			'click',
+			function() {
+				var bo_key = prompt( ifthenpay.callback_bo_key, '' );
+				if ( bo_key ) {
+					$( '#wc_ifthen_callback_bo_key' ).val( $.trim( bo_key ) );
+					$( '#wc_ifthen_callback_send' ).val( 2 );
+					$( '#mainform' ).submit()
+					return true;
+				} else {
+					return false;
+				}
+			}
+		);
+		setTimeout(
+			function() {
+				if ( ifthenpay.callback_email_sent == 'no' ) {
+					  $( '#wc_ifthen_callback_open' ).addClass( 'button-link-delete' );
+					  ifthen_callback_open();
+					if ( ifthenpay.callback_auto_open == '1' ) {
+						setTimeout(
+							function() {
+								$( '#wc_ifthen_callback_div' ).addClass( 'focus' );
+							},
+							250
+						);
+						setTimeout(
+							function() {
+								$( '#wc_ifthen_callback_div' ).removeClass( 'focus' );
+							},
+							1500
+						);
+					}
+				}
+			},
+			500
+		);
 
 	}
 
@@ -167,7 +193,7 @@
 	}
 
 	function ifthen_toogle_mbway_refunds() {
-		if ( $( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).is(':checked') ) {
+		if ( $( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).is( ':checked' ) ) {
 			$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds_backoffice_key' ).closest( 'tr' ).show();
 		} else {
 			$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds_backoffice_key' ).closest( 'tr' ).hide();

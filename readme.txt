@@ -223,6 +223,8 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 = 8.9.0 - 2023-12-05 =
 * `wc_get_orders` wrapper to remove Polylang language filters and apply conversions for HPOS
 * Better explanation of value limits on each gateway
+* Fix credit card API refund URL from HTTP to HTTPS
+* Start applying WordPress Coding Standards
 * Tested with WordPress 6.5-alpha-57150, WooCommerce 8.4.0-beta.1
 
 = 8.8.0 - 2023-11-15 =

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ruleset name="IfthenPay">
+	<config name="testVersion" value="7.0-"/>
+	<exclude-pattern type="relative">^/woocommerce-blocks/_build/*</exclude-pattern>
+	<rule ref="PHPCompatibilityWP"/>
+	<rule ref="WordPress">
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="Squiz.Commenting.VariableComment.WrongStyle"/>
+		<exclude name="Squiz.Commenting.VariableComment.Missing"/>
+		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+		<!-- No Yoda conditions! -->
+		<exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+	</rule>
+</ruleset>
