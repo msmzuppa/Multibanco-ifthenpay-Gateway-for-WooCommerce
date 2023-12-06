@@ -100,9 +100,17 @@ final class WC_IfthenPay_Webdados {
 
 	/* Constructor */
 	public function __construct( $version ) {
-		$this->version                 = $version;
-		$this->pro_add_on_active       = function_exists( 'WC_IfthenPay_Pro' );
-		$this->wpml_active             = function_exists( 'icl_object_id' ) && function_exists( 'icl_register_string' );
+		$this->version           = $version;
+		$this->pro_add_on_active = function_exists( 'WC_IfthenPay_Pro' );
+		$this->wpml_active       = function_exists( 'icl_object_id' ) && function_exists( 'icl_register_string' );
+		if ( $this->wpml_active ) {
+			$this->wpml_translation_info = sprintf(
+				/* translators: %1$s: link opening tag, %2$s: link closing tag */
+				__( 'You should translate this string in %1$sWPML - String Translation%2$s after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+				'<a href="admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php">',
+				'</a>'
+			);
+		}
 		$this->wc_deposits_active      = function_exists( 'wc_deposits_woocommerce_is_active' ) || function_exists( '\Webtomizer\WCDP\wc_deposits_woocommerce_is_active' );
 		$this->wc_subscriptions_active = function_exists( 'wcs_get_subscription' );
 		$this->wc_blocks_active        = class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' );
@@ -115,20 +123,20 @@ final class WC_IfthenPay_Webdados {
 		// Multibanco
 		$this->multibanco_settings         = get_option( 'woocommerce_multibanco_ifthen_for_woocommerce_settings', '' );
 		$this->multibanco_notify_url       = (
-			get_option( 'permalink_structure' ) == ''
+			get_option( 'permalink_structure' ) === ''
 			?
 			home_url( '/?wc-api=WC_Multibanco_IfThen_Webdados&chave=[CHAVE_ANTI_PHISHING]&entidade=[ENTIDADE]&referencia=[REFERENCIA]&valor=[VALOR]&datahorapag=[DATA_HORA_PAGAMENTO]&terminal=[TERMINAL]' )
 			:
 			home_url( '/wc-api/WC_Multibanco_IfThen_Webdados/?chave=[CHAVE_ANTI_PHISHING]&entidade=[ENTIDADE]&referencia=[REFERENCIA]&valor=[VALOR]&datahorapag=[DATA_HORA_PAGAMENTO]&terminal=[TERMINAL]' )
 		);
-		$this->multibanco_api_mode_enabled = isset( $this->multibanco_settings['api_mode'] ) && $this->multibanco_settings['api_mode'] == 'yes';
-		if ( $this->multibanco_api_mode_enabled && $this->multibanco_settings['mbkey'] == 'YAK-504589' ) {
+		$this->multibanco_api_mode_enabled = isset( $this->multibanco_settings['api_mode'] ) && $this->multibanco_settings['api_mode'] === 'yes';
+		if ( $this->multibanco_api_mode_enabled && $this->multibanco_settings['mbkey'] === 'YAK-504589' ) {
 			$this->multibanco_api_url = 'https://ifthenpay.com/api/multibanco/reference/sandbox'; // Sandbox
 		}
 		// MB WAY
 		$this->mbway_settings   = get_option( 'woocommerce_mbway_ifthen_for_woocommerce_settings', '' );
 		$this->mbway_notify_url = (
-			get_option( 'permalink_structure' ) == ''
+			get_option( 'permalink_structure' ) === ''
 			?
 			home_url( '/?wc-api=WC_MBWAY_IfThen_Webdados&chave=[CHAVE_ANTI_PHISHING]&referencia=[REFERENCIA]&idpedido=[ID_TRANSACAO]&valor=[VALOR]&datahorapag=[DATA_HORA_PAGAMENTO]&estado=[ESTADO]' )
 			:
@@ -137,7 +145,7 @@ final class WC_IfthenPay_Webdados {
 		// Payshop
 		$this->payshop_settings   = get_option( 'woocommerce_payshop_ifthen_for_woocommerce_settings', '' );
 		$this->payshop_notify_url = (
-			get_option( 'permalink_structure' ) == ''
+			get_option( 'permalink_structure' ) === ''
 			?
 			home_url( '/?wc-api=WC_Payshop_IfThen_Webdados&chave=[CHAVE_ANTI_PHISHING]&id_cliente=[ID_CLIENTE]&id_transacao=[ID_TRANSACAO]&referencia=[REFERENCIA]&valor=[VALOR]&estado=[ESTADO]&datahorapag=[DATA_HORA_PAGAMENTO]' )
 			:
@@ -146,7 +154,7 @@ final class WC_IfthenPay_Webdados {
 		// Credit card
 		$this->creditcard_settings   = get_option( 'woocommerce_creditcard_ifthen_for_woocommerce_settings', '' );
 		$this->creditcard_notify_url = (
-			get_option( 'permalink_structure' ) == ''
+			get_option( 'permalink_structure' ) === ''
 			?
 			home_url( '/?wc-api=WC_CreditCard_IfThen_Webdados' )
 			:
@@ -207,7 +215,13 @@ final class WC_IfthenPay_Webdados {
 		add_action(
 			'after_setup_theme',
 			function() {
-				if ( $this->get_multibanco_ref_mode() == 'incremental_expire' && isset( $this->multibanco_settings['cancel_expired'] ) && ( $this->multibanco_settings['cancel_expired'] == 'yes' ) ) {
+				if (
+					( $this->get_multibanco_ref_mode() === 'incremental_expire' )
+					&&
+					isset( $this->multibanco_settings['cancel_expired'] )
+					&&
+					( $this->multibanco_settings['cancel_expired'] === 'yes' )
+				) {
 					add_action( 'wc_ifthen_hourly_cron', array( $this, 'multibanco_cancel_expired_orders' ) );
 				}
 			}
@@ -338,7 +352,7 @@ final class WC_IfthenPay_Webdados {
 	/* Debug / Log - Extra */
 	public function debug_log_extra( $gateway_id, $message, $level = 'debug', $debug_email = '', $email_message = '' ) {
 		if ( apply_filters( 'ifthen_debug_log_extra', false ) ) {
-			$url = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : 'Unknown request URI';
+			$url = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : 'Unknown request URI';
 			$this->debug_log( $gateway_id, 'EXTRA (' . $url . ') - ' . $message, $level, $debug_email, $email_message );
 		}
 	}
@@ -350,13 +364,13 @@ final class WC_IfthenPay_Webdados {
 
 	/* Get Multibanco reference seed */
 	public function get_multibanco_ref_seed( $first = true ) {
-		switch ( $this->get_multibanco_ref_mode() ) {
-			case 'incremental_expire':
-				return $this->get_multibanco_incremental_expire_next_seed( $first );
-				break;
+		if ( $this->get_multibanco_ref_mode() === 'incremental_expire' ) {
+			return $this->get_multibanco_incremental_expire_next_seed( $first );
 		}
 		return wp_rand( 0, 9999 );
 	}
+
+	/* Get Multibanco incremental reference seed */
 	public function get_multibanco_incremental_expire_next_seed( $first ) {
 		if ( is_null( $this->multibanco_last_incremental_expire_ref ) ) {
 			$multibanco_last_incremental_expire_ref = intval( get_option( 'multibanco_last_incremental_expire_ref', 0 ) );
@@ -386,7 +400,7 @@ final class WC_IfthenPay_Webdados {
 	/* Disable payment gateway if not € */
 	public function disable_if_currency_not_euro( $available_gateways, $gateway_id ) {
 		if ( isset( $available_gateways[ $gateway_id ] ) ) {
-			if ( trim( get_woocommerce_currency() ) != 'EUR' ) {
+			if ( trim( get_woocommerce_currency() ) !== 'EUR' ) {
 				unset( $available_gateways[ $gateway_id ] );
 			}
 		}
@@ -406,7 +420,15 @@ final class WC_IfthenPay_Webdados {
 	/* Disable unless Portugal */
 	public function disable_unless_portugal( $available_gateways, $gateway_id ) {
 		if ( isset( $available_gateways[ $gateway_id ] ) ) {
-			if ( $available_gateways[ $gateway_id ]->only_portugal && WC()->customer && $this->get_customer_billing_country() != 'PT' && $this->get_customer_shipping_country() != 'PT' ) {
+			if (
+				$available_gateways[ $gateway_id ]->only_portugal
+				&&
+				WC()->customer
+				&&
+				$this->get_customer_billing_country() !== 'PT'
+				&&
+				$this->get_customer_shipping_country() !== 'PT'
+			) {
 				unset( $available_gateways[ $gateway_id ] );
 			}
 		}
@@ -427,7 +449,7 @@ final class WC_IfthenPay_Webdados {
 			// Checkout?
 			if ( ! is_null( WC()->cart ) ) {
 				$value_to_pay = WC()->cart->total; // We're not checking if we're paying just a deposit...
-			} else {
+			} else { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedElse
 				// No cart? Where are we? We shouldn't unset our payment gateway
 			}
 		}
@@ -488,15 +510,15 @@ final class WC_IfthenPay_Webdados {
 		$order     = wc_get_order( $order_id );
 		$mbwaykey  = $order->get_meta( '_' . $this->mbway_id . '_mbwaykey' );
 		$id_pedido = $order->get_meta( '_' . $this->mbway_id . '_id_pedido' );
-		// $phone   = $order->get_meta( '_' . $this->mbway_id . '_phone' ); // GDPR 2018-06-18
-		$val  = $order->get_meta( '_' . $this->mbway_id . '_val' );
-		$time = $order->get_meta( '_' . $this->mbway_id . '_time' );
-		$exp  = $order->get_meta( '_' . $this->mbway_id . '_exp' );
+		$phone     = $order->get_meta( '_' . $this->mbway_id . '_phone' );
+		$val       = $order->get_meta( '_' . $this->mbway_id . '_val' );
+		$time      = $order->get_meta( '_' . $this->mbway_id . '_time' );
+		$exp       = $order->get_meta( '_' . $this->mbway_id . '_exp' );
 		if ( ! empty( $mbwaykey ) && ! empty( $id_pedido ) && ! empty( $val ) ) {
 			return array(
 				'mbwaykey'  => $mbwaykey,
 				'id_pedido' => $id_pedido,
-				// 'phone'   => $phone, // GDPR 2018-06-18
+				'phone'     => $phone,
 				'val'       => $val,
 				'time'      => $time,
 				'exp'       => $exp,
@@ -553,7 +575,7 @@ final class WC_IfthenPay_Webdados {
 		return false;
 	}
 
-	/* Order metabox to show Multibanco payment details - HPOS compatible */
+	/* Order metabox registration to show IfthenPay payment details - HPOS compatible */
 	public function multibanco_order_metabox() {
 		$screen = $this->hpos_enabled ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
 		add_meta_box(
@@ -576,9 +598,11 @@ final class WC_IfthenPay_Webdados {
 			);
 		}
 	}
+
+	/* Order metabox HTML output to show IfthenPay payment details - HPOS compatible */
 	public function multibanco_order_metabox_html( $post_or_order_object ) {
 		$order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
-		if ( $date_paid = $order->get_date_paid() ) {
+		if ( $date_paid = $order->get_date_paid() ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 			$date_paid = sprintf(
 				'%1$s %2$s',
 				wc_format_datetime( $date_paid, 'Y-m-d' ),
@@ -588,9 +612,7 @@ final class WC_IfthenPay_Webdados {
 		switch ( $order->get_payment_method() ) {
 			// Multibanco
 			case $this->multibanco_id:
-				if (
-					$order_mb_details = $this->get_multibanco_order_details( $order->get_id() )
-				) {
+				if ( $order_mb_details = $this->get_multibanco_order_details( $order->get_id() ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 					echo '<p><img src="' . esc_url( $this->multibanco_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Multibanco" title="Multibanco"/></p>';
 					echo '<p>' . __( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . trim( $order_mb_details['ent'] ) . '<br/>';
 					echo __( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . $this->format_multibanco_ref( $order_mb_details['ref'] ) . '<br/>';
@@ -658,9 +680,7 @@ final class WC_IfthenPay_Webdados {
 				break;
 			// MB WAY
 			case $this->mbway_id:
-				if (
-						$order_mbway_details = $this->get_mbway_order_details( $order->get_id() )
-					) {
+				if ( $order_mbway_details = $this->get_mbway_order_details( $order->get_id() ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 					echo '<p><img src="' . esc_url( $this->mbway_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="MB WAY" title="MB WAY"/></p>';
 					echo '<p>' . __( 'MB WAY Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . trim( $order_mbway_details['mbwaykey'] ) . '<br/>';
 					echo __( 'Request ID', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . trim( $order_mbway_details['id_pedido'] ) . '<br/>';
@@ -770,9 +790,7 @@ final class WC_IfthenPay_Webdados {
 				break;
 			// Payshop
 			case $this->payshop_id:
-				if (
-					$order_mb_details = $this->get_payshop_order_details( $order->get_id() )
-				) {
+				if ( $order_mb_details = $this->get_payshop_order_details( $order->get_id() ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 					echo '<p><img src="' . esc_url( $this->payshop_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Payshop" title="Payshop"/></p>';
 					echo '<p>' . __( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . $this->format_payshop_ref( $order_mb_details['ref'] ) . '<br/>';
 					echo __( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . wc_price( $order_mb_details['val'], array( 'currency' => $order->get_currency() ) ) . '</p>';
@@ -840,9 +858,7 @@ final class WC_IfthenPay_Webdados {
 				break;
 			// Credit card
 			case $this->creditcard_id:
-				if (
-					$order_mb_details = $this->get_creditcard_order_details( $order->get_id() )
-				) {
+				if ( $order_mb_details = $this->get_creditcard_order_details( $order->get_id() ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.Found, Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 					echo '<p><img src="' . esc_url( $this->creditcard_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 48px;" alt="Credit or debit card" title="Credit or debit card"/></p>';
 					echo '<p>' . __( 'Credit card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . trim( $order_mb_details['creditcardkey'] ) . '<br/>';
 					echo __( 'Request ID', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . trim( $order_mb_details['request_id'] ) . '<br/>';
@@ -984,7 +1000,7 @@ final class WC_IfthenPay_Webdados {
 			$order->update_meta_data( '_' . $this->multibanco_id . '_RequestId', $order_mb_details['RequestId'] );
 		}
 		$order->save();
-		$this->debug_log_extra( $this->multibanco_id, 'multibanco_set_order_mb_details - Details updated on the database: ' . serialize( $order_mb_details ) . ' - Order: ' . $order->get_id() );
+		$this->debug_log_extra( $this->multibanco_id, 'multibanco_set_order_mb_details - Details updated on the database: ' . wp_json_encode( $order_mb_details ) . ' - Order: ' . $order->get_id() );
 	}
 
 	/* Clear Multibanco Entity/Reference/Value on meta */
@@ -1123,7 +1139,7 @@ final class WC_IfthenPay_Webdados {
 				&&
 				$order_mb_details = $this->get_multibanco_order_details( $order->get_id() )
 			) {
-				$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Got reference from database ' . serialize( $order_mb_details ) . ' - Order ' . $order->get_id() );
+				$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Got reference from database ' . wp_json_encode( $order_mb_details ) . ' - Order ' . $order->get_id() );
 				// Already created, return it!
 				return array(
 					'ent' => $order_mb_details['ent'],
@@ -1180,7 +1196,7 @@ final class WC_IfthenPay_Webdados {
 								$response     = wp_remote_post( $url, $args );
 								if ( is_wp_error( $response ) ) {
 									$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
-									$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+									$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 									$this->debug_log( $this->multibanco_id, $debug_msg, 'error', true, $debug_msg_email );
 									return false;
 								} else {
@@ -1220,19 +1236,19 @@ final class WC_IfthenPay_Webdados {
 												return $details;
 											} else {
 												$debug_msg       = '- Error: ' . trim( $body->Message ) . ' - Order ' . $order->get_id();
-												$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+												$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 												$this->debug_log( $this->multibanco_id, $debug_msg, 'error', true, $debug_msg_email );
 												return false;
 											}
 										} else {
 											$debug_msg       = '- Response body is not JSON - Order ' . $order->get_id();
-											$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+											$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 											$this->debug_log( $this->multibanco_id, $debug_msg, 'error', true, $debug_msg_email );
 											return false;
 										}
 									} else {
 										$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
-										$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+										$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 										$this->debug_log( $this->multibanco_id, $debug_msg, 'error', true, $debug_msg_email );
 										return false;
 									}
@@ -1463,7 +1479,7 @@ final class WC_IfthenPay_Webdados {
 			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Force ref generation before anything - Order ' . $order->get_id() );
 			$ref = $this->multibanco_get_ref( $order->get_id() );
 			// That should do it...
-			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Ref: ' . serialize( $ref ) . ' - Order ' . $order->get_id() );
+			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Ref: ' . wp_json_encode( $ref ) . ' - Order ' . $order->get_id() );
 		}
 	}
 
@@ -2414,7 +2430,7 @@ final class WC_IfthenPay_Webdados {
 		$response     = wp_remote_post( $this->refunds_url, $args );
 		if ( is_wp_error( $response ) ) {
 			$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
-			$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+			$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 			$this->debug_log( $method_id, '-- ' . $debug_msg, 'error', true, $debug_msg_email );
 			return new WP_Error( 'error', $response->get_error_message() );
 		} else {
@@ -2424,19 +2440,19 @@ final class WC_IfthenPay_Webdados {
 						return true;
 					} else {
 						$debug_msg       = '- Error from IfthenPay: ' . trim( $body->Message ) . ' - Order ' . $order->get_id();
-						$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 						$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
 						return new WP_Error( 'error', $debug_msg . ' - ' . __( 'Do not contact the plugin support. You need to check with IfthenPay why this refund could not be issued.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 					}
 				} else {
 					$debug_msg       = '- Response body is not JSON - Order ' . $order->get_id();
-					$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+					$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 					$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
 					return new WP_Error( 'error', $debug_msg );
 				}
 			} else {
 				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
-				$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 				$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
 				return new WP_Error( 'error', $debug_msg );
 			}

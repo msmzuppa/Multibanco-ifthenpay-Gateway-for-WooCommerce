@@ -185,21 +185,21 @@ function my_mbway_ifthen_callback_payment_complete( $order_id ) {
 // Multibanco - Callback call failed
 add_action( 'multibanco_ifthen_callback_payment_failed', 'my_multibanco_ifthen_callback_payment_failed', 10, 3 );
 function my_multibanco_ifthen_callback_payment_failed( $order_id, $error, $get ) {
-	wp_mail( 'email@your.domain', 'Multibanco callback for order ' . $order_id . ' failed', 'Multibanco callback for order ' . $order_id . ' failed - ' . $error . ' - ' . serialize( $get ) );
+	wp_mail( 'email@your.domain', 'Multibanco callback for order ' . $order_id . ' failed', 'Multibanco callback for order ' . $order_id . ' failed - ' . $error . ' - ' . wp_json_encode( $get ) );
 }
 
 
 // MB WAY - Callback call failed
 add_action( 'mbway_ifthen_callback_payment_failed', 'my_mbway_ifthen_callback_payment_failed', 10, 3 );
 function my_mbway_ifthen_callback_payment_failed( $order_id, $error, $get ) {
-	wp_mail( 'email@your.domain', 'MB WAY callback for order ' . $order_id . ' failed', 'MB WAY callback for order ' . $order_id . ' failed - ' . $error . ' - ' . serialize( $get ) );
+	wp_mail( 'email@your.domain', 'MB WAY callback for order ' . $order_id . ' failed', 'MB WAY callback for order ' . $order_id . ' failed - ' . $error . ' - ' . wp_json_encode( $get ) );
 }
 
 
 // Payshop - Callback call failed
 add_action( 'payshop_ifthen_callback_payment_failed', 'my_payshop_ifthen_callback_payment_failed', 10, 3 );
 function my_payshop_ifthen_callback_payment_failed( $order_id, $error, $get ) {
-	wp_mail( 'email@your.domain', 'Payshop callback for order ' . $order_id . ' failed', 'Payshop callback for order ' . $order_id . ' failed - ' . $error . ' - ' . serialize( $get ) );
+	wp_mail( 'email@your.domain', 'Payshop callback for order ' . $order_id . ' failed', 'Payshop callback for order ' . $order_id . ' failed - ' . $error . ' - ' . wp_json_encode( $get ) );
 }
 
 

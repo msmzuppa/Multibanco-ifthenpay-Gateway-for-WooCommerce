@@ -223,6 +223,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 = 8.9.1 - 2023-12-06 =
 * Fix Credit Card Callback testing when WP_DEBUG = true
 * Better debug on the new `wc_get_orders` wrapper
+* Apply additional WordPress Coding Standards
 * Tested with WordPress 6.5-alpha-57159 and WooCommerce 8.4.0-rc.1
 
 = 8.9.0 - 2023-12-05 =

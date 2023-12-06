@@ -235,21 +235,21 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 							'title'       => __( 'Title', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'type'        => 'text',
 							'description' => __( 'This controls the title which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-											. ( WC_IfthenPay_Webdados()->wpml_active ? ' ' . __( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%1$2Fmenu%2$2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ),
+											. ( WC_IfthenPay_Webdados()->wpml_active ? '<br/>' . WC_IfthenPay_Webdados()->wpml_translation_info : '' ),
 							'default'     => 'MB WAY',
 						),
 						'description'        => array(
 							'title'       => __( 'Description', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'type'        => 'textarea',
 							'description' => __( 'This controls the description which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-											. ( WC_IfthenPay_Webdados()->wpml_active ? ' ' . __( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%1$2Fmenu%2$2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ),
+											. ( WC_IfthenPay_Webdados()->wpml_active ? '<br/>' . WC_IfthenPay_Webdados()->wpml_translation_info : '' ),
 							'default'     => $this->get_method_description(),
 						),
 						'extra_instructions' => array(
 							'title'       => __( 'Extra instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'type'        => 'textarea',
 							'description' => __( 'This controls the text which the user sees below the payment details on the “Thank you” page and “New order” email.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-											. ( WC_IfthenPay_Webdados()->wpml_active ? ' ' . __( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%1$2Fmenu%2$2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ),
+											. ( WC_IfthenPay_Webdados()->wpml_active ? '<br/>' . WC_IfthenPay_Webdados()->wpml_translation_info : '' ),
 							'default'     => __( 'Use the MB WAY app on your phone to approve the payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						),
 						'only_portugal'      => array(
@@ -960,11 +960,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					'descricao'  => $this->webservice_filter_descricao( apply_filters( 'mbway_ifthen_webservice_desc', $desc, $order->get_id() ) ),
 				),
 			);
-			$this->debug_log_extra( '- Request payment with args: ' . serialize( $args ) );
+			$this->debug_log_extra( '- Request payment with args: ' . wp_json_encode( $args ) );
 			$response = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
 				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
-				$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
 			} else {
@@ -992,19 +992,19 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 									return true;
 								} else {
 									$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect "Valor"';
-									$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+									$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 									$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 									return false;
 								}
 							} else {
 								$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Missing "IdPedido" or "Valor"';
-								$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+								$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 								$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 								return false;
 							}
 						} else {
 							$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . trim( $xmlData->Estado ) . ' ' . trim( $xmlData->MsgDescricao );
-							$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+							$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 							$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 							return false;
 						}
@@ -1015,7 +1015,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					}
 				} else {
 					$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
-					$debug_msg_email = $debug_msg . ' - Args: ' . serialize( $args ) . ' - Response: ' . serialize( $response );
+					$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 					$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 					return false;
 				}

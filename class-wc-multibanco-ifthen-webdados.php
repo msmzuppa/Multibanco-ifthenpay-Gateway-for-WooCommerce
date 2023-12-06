@@ -337,21 +337,21 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						'title'       => __( 'Title', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'type'        => 'text',
 						'description' => __( 'This controls the title which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-										. ( WC_IfthenPay_Webdados()->wpml_active ? ' ' . __( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%1$2Fmenu%2$2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ),
+										. ( WC_IfthenPay_Webdados()->wpml_active ? '<br/>' . WC_IfthenPay_Webdados()->wpml_translation_info : '' ),
 						'default'     => 'Multibanco',
 					),
 					'description'        => array(
 						'title'       => __( 'Description', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'type'        => 'textarea',
 						'description' => __( 'This controls the description which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-										. ( WC_IfthenPay_Webdados()->wpml_active ? ' ' . __( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%1$2Fmenu%2$2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ),
+										. ( WC_IfthenPay_Webdados()->wpml_active ? '<br/>' . WC_IfthenPay_Webdados()->wpml_translation_info : '' ),
 						'default'     => $this->get_method_description(),
 					),
 					'extra_instructions' => array(
 						'title'       => __( 'Extra instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'type'        => 'textarea',
 						'description' => __( 'This controls the text which the user sees below the payment details on the “Thank you” page and “New order” email.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
-										. ( WC_IfthenPay_Webdados()->wpml_active ? ' ' . __( 'You should translate this string in <a href="admin.php?page=wpml-string-translation%1$2Fmenu%2$2Fstring-translation.php">WPML - String Translation</a> after saving the settings', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' ),
+										. ( WC_IfthenPay_Webdados()->wpml_active ? '<br/>' . WC_IfthenPay_Webdados()->wpml_translation_info : '' ),
 						'default'     => __( 'The receipt issued by the ATM machine is a proof of payment. Keep it.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					),
 					'api_expiry'         => array(
@@ -925,7 +925,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 								// WooCommerce deposits - No instructions
 							} else {
 								$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order->get_id() );
-								$this->debug_log_extra( 'Email (' . $email_id . ') instructions - Got reference ' . serialize( $ref ) . ' - Order ' . $order->get_id() );
+								$this->debug_log_extra( 'Email (' . $email_id . ') instructions - Got reference ' . wp_json_encode( $ref ) . ' - Order ' . $order->get_id() );
 								if ( is_array( $ref ) ) {
 									if ( apply_filters( 'multibanco_ifthen_email_instructions_pending_send', true, $order->get_id() ) ) {
 										echo $this->email_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order->get_id() );
@@ -1266,9 +1266,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						'_' . $this->id . '_ent' => $ent,
 						'_' . $this->id . '_ref' => $ref,
 					);
-					$this->debug_log_extra( '-- Searching for orders with args: ' . serialize( $args ) );
+					$this->debug_log_extra( '-- Searching for orders with args: ' . wp_json_encode( $args ) );
 					$orders = WC_IfthenPay_Webdados()->wc_get_orders( $args, $this->id );
-					$this->debug_log_extra( '-- Searching for orders with args (after maybe_translate_order_query_args): ' . serialize( $args ) );
+					$this->debug_log_extra( '-- Searching for orders with args (after maybe_translate_order_query_args): ' . wp_json_encode( $args ) );
 					if ( count( $orders ) > 0 ) {
 						$orders_exist = true;
 						$orders_count = count( $orders );
