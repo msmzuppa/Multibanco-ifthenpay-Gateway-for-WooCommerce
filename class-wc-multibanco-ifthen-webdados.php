@@ -1106,6 +1106,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				} else {
 					$this->debug_log_extra( 'process_payment - Is pay form, details from database NOT cleared - Order ' . $order->get_id() );
 				}
+			} else {
+				$this->debug_log( 'process_payment - Is not pay form, most probably checkout - Order ' . $order->get_id() );
 			}
 
 			// Mark as on-hold

@@ -67,7 +67,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 
 			// Webservice
 			// $this->webservice_url = 'https://www.ifthenpay.com/mbwayWS/IfthenPayMBW.asmx';
-			$this->webservice_url = 'https://mbway.ifthenpay.com/IfthenPayMBW.asmx';
+			//$this->webservice_url = 'https://mbway.ifthenpay.com/IfthenPayMBW.asmx';
 
 			// on hold or pending?
 			$this->order_initial_status_pending = apply_filters( 'mbway_ifthen_order_initial_status_pending', true );
@@ -926,7 +926,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/**
 		 * Webservice SetPedido
 		 */
-		private function webservice_filter_descricao( $desc ) {
+		/*private function webservice_filter_descricao( $desc ) {
 			// Trim and decode
 			$desc = htmlspecialchars_decode( trim( $desc ), ENT_QUOTES );
 			// Remove '
@@ -937,9 +937,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			$desc = trim( $desc );
 			$desc = substr( $desc, 0, MBWAY_IFTHEN_DESC_LEN );
 			return $desc;
-		}
+		}*/
 		function webservice_set_pedido( $order_id, $phone ) {
-			$url               = $this->webservice_url . '/SetPedido';
+			return WC_IfthenPay_Webdados()->mbway_webservice_set_pedido( $order_id, $phone );
+		/*	$url               = $this->webservice_url . '/SetPedido';
 			$order             = wc_get_order( $order_id );
 			$mbwaykey          = apply_filters( 'multibanco_ifthen_base_mbwaykey', $this->mbwaykey, $order );
 			$id_for_backoffice = apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id();
@@ -1021,6 +1022,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				}
 			}
 			return false;
+			*/
+
 		}
 
 		/**

@@ -72,6 +72,7 @@ final class WC_IfthenPay_Webdados {
 	public $mbway_banner_email           = '';
 	public $mbway_banner                 = '';
 	public $mbway_icon                   = '';
+	public $mbway_webservice_url         = 'https://mbway.ifthenpay.com/IfthenPayMBW.asmx';
 
 
 	/* Internal variables - For Payshop */
@@ -1469,6 +1470,96 @@ final class WC_IfthenPay_Webdados {
 		} else {
 			return __( 'Configuration error. This order currency is not Euros (&euro;).', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 		}
+	}
+
+	public function mbway_webservice_set_pedido( $order_id, $phone ) {
+		$debug       = $this->mbway_settings['debug'] == 'yes';
+		$debug_email = false;
+		if ( $debug ) {
+			$debug_email = trim( $this->mbway_settings['debug_email'] ) != '' ? trim( $this->mbway_settings['debug_email'] ) : false;
+		}
+		$url               = $this->mbway_webservice_url . '/SetPedido';
+		$order             = wc_get_order( $order_id );
+		$mbwaykey          = apply_filters( 'multibanco_ifthen_base_mbwaykey', $this->mbway_settings['mbwaykey'], $order );
+		$id_for_backoffice = apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id();
+		$desc              = trim( get_bloginfo( 'name' ) );
+		$desc              = substr( $desc, 0, MBWAY_IFTHEN_DESC_LEN - strlen( ' #' . $id_for_backoffice ) );
+		$desc             .= ' #' . $id_for_backoffice;
+		$args              = array(
+			'method'   => 'POST',
+			'timeout'  => apply_filters( 'mbway_ifthen_webservice_timeout', 30 ),
+			'blocking' => true,
+			'body'     => array(
+				'MbWayKey'   => $mbwaykey,
+				'canal'      => '03', // Online
+				'referencia' => (string) $id_for_backoffice,
+				'valor'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
+				'nrtlm'      => $phone,
+				'email'      => '', // Não usamos
+				'descricao'  => $this->mb_webservice_filter_descricao( apply_filters( 'mbway_ifthen_webservice_desc', $desc, $order->get_id() ) ),
+			),
+		);
+		$this->debug_log_extra( $this->mbway_id, '- Request payment with args: ' . wp_json_encode( $args ) );
+		$response = wp_remote_post( $url, $args );
+		if ( is_wp_error( $response ) ) {
+			$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
+			$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+			$this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
+			return false;
+		} else {
+			if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) == 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
+				if ( function_exists( 'simplexml_load_string' ) ) {
+					$xmlData = simplexml_load_string( $response['body'] );
+					// if ( $debug ) $this->debug_log( $this->mbway_id, '- MB WAY payment request response - Order '.$order->get_id().' - '.$xmlData->asXML() ); //Desnecessário - vai para o email
+					// Verificar primeiro se temos o Estado correcto ou não
+					if ( trim( $xmlData->Estado ) == '000' ) {
+						if ( trim( $xmlData->IdPedido ) != '' && floatval( $xmlData->Valor ) > 0 ) {
+							$id_pedido = trim( $xmlData->IdPedido );
+							$valor     = floatval( $xmlData->Valor );
+							if ( $valor == round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ) ) {
+								WC_IfthenPay_Webdados()->multibanco_set_order_mbway_details(
+									$order->get_id(),
+									array(
+										'mbwaykey'  => $mbwaykey,
+										'id_pedido' => $id_pedido,
+										'phone'     => $phone,
+										'val'       => $valor,
+									)
+								);
+								if ( $debug ) $this->debug_log( $this->mbway_id, '- MB WAY payment request created on IfthenPay servers - Order ' . $order->get_id() . ' - id_pedido: ' . $id_pedido );
+								do_action( 'mbway_ifthen_created_reference', $id_pedido, $order->get_id(), $phone );
+								return true;
+							} else {
+								$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect "Valor"';
+								$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+								if ( $debug ) $this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
+								return false;
+							}
+						} else {
+							$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Missing "IdPedido" or "Valor"';
+							$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+							if ( $debug ) $this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
+							return false;
+						}
+					} else {
+						$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . trim( $xmlData->Estado ) . ' ' . trim( $xmlData->MsgDescricao );
+						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+						if ( $debug ) $this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
+						return false;
+					}
+				} else {
+					$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - "simplexml_load_string" function does not exist';
+					if ( $debug ) $this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email );
+					return false;
+				}
+			} else {
+				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
+				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+				if ( $debug ) $this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
+				return false;
+			}
+		}
+		return false;
 	}
 
 	/* Force Reference creation on New Order (not the British Synthpop band) */

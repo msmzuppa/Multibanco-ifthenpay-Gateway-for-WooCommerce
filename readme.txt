@@ -6,7 +6,7 @@ Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.0
-Stable tag: 8.9.1
+Stable tag: 8.9.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,16 +53,18 @@ This is the official [IfthenPay](https://ifthenpay.com) plugin, and a contract w
 
 Get the [PRO add-on](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/) and unlock extra features:
 
-* Recover unpaid MB WAY orders by converting them to Multibanco and notify the customer via email.
-* Automatic cancellation of orders when Multibanco, Payshop or MB WAY references expire.
-* Countdown timer on the “thank you” page for MB WAY payments
-* Remove payment instructions from specific emails, for example “order completed”, to avoid customer confusion when they are no longer necessary.
-* Set a payment entity for Multibanco, MB WAY, Payshop and Credit Card, at the product category level, so that you can receive payment in different accounts based on the order products. Lock the cart so you can only have products from a single account in the same order. (Replaces previously available specific extension).
-* Change the default timeout for calls to IfthenPay webservices if your website is experiencing communication difficulties.
-* Hide notices of new available payment methods.
-* Hide notices of pending callback activation requests.
-* Hide sidebar in payment method settings screen.
-* More features coming soon.
+* Recover unpaid MB WAY orders by converting them to Multibanco and notify the customer via email;
+* Automatic cancellation of orders when Multibanco, Payshop or MB WAY references expire;
+* Countdown timer on the “thank you” page for MB WAY payments;
+* Trigger Multibanco and MB WAY payments when creating orders via the REST API;
+* Set a payment entity for Multibanco, MB WAY, Payshop and Credit Card, at the product category level, so that you can receive payment in different accounts based on the order products. Lock the cart so you can only have products from a single account in the same order. (Replaces previously available specific extension);
+	* Simplified marketplace;
+* Remove payment instructions from specific emails, for example “order completed”, to avoid customer confusion when they are no longer necessary;
+* Change the default timeout for calls to IfthenPay webservices if your website is experiencing communication difficulties;
+* Hide notices of new available payment methods;
+* Hide notices of pending callback activation requests;
+* Hide sidebar in payment method settings screen;
+* More features coming soon;
 * By purchasing the PRO add-on you get:
 	* Technical support (conditions apply);
 	* All the features described above;
@@ -219,6 +221,9 @@ You can report any security bugs found in the source code of this plugin through
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
+= 8.9.2 - 2023-12-07 =
+* [PRO add-on 2.0](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/): Trigger Multibanco and MB WAY payments when creating orders via the REST API
 
 = 8.9.1 - 2023-12-07 =
 * Fix Credit Card Callback testing when WP_DEBUG = true
