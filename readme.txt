@@ -1,12 +1,12 @@
 === Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce ===
 Contributors: webdados, ptwooplugins, ifthenpay
-Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos, mb way, debit card, credit card, ifthenpay, unicre, sibs, easypay
+Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos, mb way, debit card, credit card, ifthenpay, unicre, sibs, easypay, eupago
 Author URI: https://ptwooplugins.com
 Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.0
-Stable tag: 8.9.0
+Stable tag: 8.9.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -220,7 +220,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 8.9.1 - 2023-12-06 =
+= 8.9.1 - 2023-12-07 =
 * Fix Credit Card Callback testing when WP_DEBUG = true
 * Better debug on the new `wc_get_orders` wrapper
 * Apply additional WordPress Coding Standards
