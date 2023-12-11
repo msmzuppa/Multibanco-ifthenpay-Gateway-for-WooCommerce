@@ -7,7 +7,7 @@
 		switch ( ifthenpay.gateway ) {
 			case 'multibanco':
 				ifthen_toogle_mb_api_mode();
-				$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).change(
+				$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).on( 'change',
 					function() {
 						ifthen_toogle_mb_api_mode();
 					}

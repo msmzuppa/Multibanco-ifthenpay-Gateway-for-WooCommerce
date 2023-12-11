@@ -43,7 +43,7 @@ This is the official [IfthenPay](https://ifthenpay.com) plugin, and a contract w
 * [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) (experimental) integration (only Multibanco);
 * [WooCommerce Deposits by webtomizer](https://woocommerce-deposits.com/) (experimental) integration;
 * Integration for 3rd party SMS notification plugins (only Multibanco and Payshop):
-	* [WooCommerce - APG SMS Notifications](https://wordpress.org/plugins/woocommerce-apg-sms-notifications/)
+	* [WooCommerce - APG SMS Notifications](https://wordpress.org/plugins/woocommerce-apg-sms-notifications/);
 	* [Twilio SMS Notifications](https://woocommerce.com/products/twilio-sms-notifications/);
 	* [YITH WooCommerce SMS Notification](https://yithemes.com/themes/plugins/yith-woocommerce-sms-notifications/);
 	* [E-goi SMS Orders Alert/Notifications for WooCommerce](https://pt.wordpress.org/plugins/sms-orders-alertnotifications-for-woocommerce/) (integration implemented on their plugin)
@@ -57,8 +57,9 @@ Get the [PRO add-on](https://ptwooplugins.com/product/multibanco-mbway-credit-ca
 * Automatic cancellation of orders when Multibanco, Payshop or MB WAY references expire;
 * Countdown timer on the “thank you” page for MB WAY payments;
 * Trigger Multibanco and MB WAY payments when creating orders via the REST API;
-* Set a payment entity for Multibanco, MB WAY, Payshop and Credit Card, at the product category level, so that you can receive payment in different accounts based on the order products. Lock the cart so you can only have products from a single account in the same order. (Replaces previously available specific extension);
+* Set a payment entity for Multibanco, MB WAY, Payshop and Credit Card, at the product category level, so that you can receive payment in different accounts based on the order products (replaces previously available specific extension);
 	* Simplified marketplace;
+	* Lock the cart so you can only have products from a single account in the same order;
 * Remove payment instructions from specific emails, for example “order completed”, to avoid customer confusion when they are no longer necessary;
 * Change the default timeout for calls to IfthenPay webservices if your website is experiencing communication difficulties;
 * Hide notices of new available payment methods;
