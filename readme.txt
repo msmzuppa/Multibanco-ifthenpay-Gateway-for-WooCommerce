@@ -1,12 +1,10 @@
 === Multibanco, MB WAY, Credit card and Payshop (IfthenPay) for WooCommerce ===
 Contributors: webdados, ptwooplugins, ifthenpay
 Tags: woocommerce, multibanco, mbway, payshop, credit card, payment, pagamentos, mb way, debit card, credit card, ifthenpay, unicre, sibs, easypay, eupago
-Author URI: https://ptwooplugins.com
-Plugin URI: https://www.webdados.pt/wordpress/plugins/multibanco-ifthen-software-gateway-woocommerce-wordpress/
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.0
-Stable tag: 8.9.2
+Stable tag: 8.9.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -203,7 +201,11 @@ IfthenPay’s privacy policy can be found at [https://ifthenpay.com/termosCondic
 
 = Is this plugin compatible with the new WooCommerce High-Performance Order Storage? =
 
-Yes, from WooCommerce version 7.1 onwards.
+Yes.
+
+= Is this plugin compatible with the new WooCommerce block-based Cart and Checkout? =
+
+Yes.
 
 = I need technical support. Who should I contact, IfthenPay or Webdados? =
 
@@ -222,6 +224,9 @@ You can report any security bugs found in the source code of this plugin through
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
+= 8.9.3 - 2023-12-12 =
+* Declare WooCommerce block-based Cart and Checkout compatibility
 
 = 8.9.2 - 2023-12-07 =
 * [PRO add-on 2.0](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/): Trigger Multibanco and MB WAY payments when creating orders via the REST API
