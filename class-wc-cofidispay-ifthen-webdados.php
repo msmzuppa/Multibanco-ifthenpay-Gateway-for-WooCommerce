@@ -44,7 +44,6 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 
 			$this->method_title       = __( 'Cofidis Pay (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			$this->method_description = __( 'Pay for your order in 3 to 12 interest-free and fee-free installments using your debit or credit card.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			//PT: Pague a sua encomenda em 3 a 12 prestações sem juros nem encargos através do seu cartão de débito ou crédito.
 			/*
 			if ( $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
 				$this->supports = array(
@@ -142,9 +141,7 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 					'%1$s<br/><small>%2$s<br/>%3$s</small>',
 					$this->description,
 					__( 'You will be redirected to a secure page to make the payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					//PT: Será redireccionado para uma página segura a fim de efectuar o pagamento.
 					__( 'Payment of installments will be made to the customer’s debit or credit card through a payment solution based on a factoring contract between Cofidis and the Merchant. Find out more at Cofidis, registered with Banco de Portugal under number 921.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					//PT: O pagamento das prestações será efectuado no cartão de débito ou crédito do cliente através de solução de pagamento assente em contrato de factoring entre a Cofidis e o Comerciante. Informe-se na Cofidis, registada no Banco de Portugal com o nº 921.
 
 				);
 			}

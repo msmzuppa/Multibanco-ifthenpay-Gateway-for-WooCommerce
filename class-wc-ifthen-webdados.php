@@ -1013,7 +1013,7 @@ final class WC_IfthenPay_Webdados {
 						if ( $this->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
 							echo '<p><strong>' . __( 'Partially paid.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
 							if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' && floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $order_mb_details['val'] ) ) {
-								echo '<p><strong>' . __( 'Awaiting second Cofidis Pay  payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
+								echo '<p><strong>' . __( 'Awaiting second Cofidis Pay payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
 							} else {
 								$show_debug = false;
 							}

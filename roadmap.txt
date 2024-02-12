@@ -10,6 +10,16 @@ PRO ADD-ON PAGO:
 - Olhar para outros hooks disponíveis no plugin e "inventar" funcionalidades
 
 
+FREE:
+- Passar strings repetidas a únicas com placeholders:
+	- Fill out all the details (Cofidis Pay Key) provided by <strong>IfthenPay</strong> in the fields below.
+	- Set the Cofidis Pay Key and Save changes to set other plugin options.
+	- Awaiting Cofidis Pay payment.
+	- Cofidis Pay Key provided by IfthenPay when signing the contract.
+	- Enable “Cofidis Pay” (using IfthenPay)
+	- 
+
+
 5.0.0:
 
 - Credit Card

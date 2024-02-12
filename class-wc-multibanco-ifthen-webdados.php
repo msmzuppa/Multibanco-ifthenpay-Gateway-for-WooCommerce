@@ -160,7 +160,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				if ( $this->version == '1.0.1' ) {
 					// Only change is to set the version on the database. It's done below
 				}
-				if ( $this->get_option( 'version' ) < '1.7.9.2' && $this->version >= '1.7.9.2' ) {
+				if ( $this->get_option( 'version' ) < '1.7.9.2' && $this->version >= '1.7.9.2' && ! WC_IfthenPay_Webdados()->hpos_enabled ) {
 					/*
 					 THIS SHOULD BE ABSTRACTED FROM POST / POST META - START - Not really because on these versions orders will always be posts */
 					/*
@@ -183,8 +183,10 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					/* THIS SHOULD BE ABSTRACTED FROM POST / POST META - END - Not really because on these versions orders will always be posts */
 					foreach ( $orders as $orderpost ) {
 						$order = wc_get_order( $orderpost->ID );
-						$order->update_meta_data( '_' . $this->id . '_val', $order->get_total() );
-						$order->save();
+						if ( $order ) {
+							$order->update_meta_data( '_' . $this->id . '_val', $order->get_total() );
+							$order->save();
+						}
 					}
 				}
 				if ( $this->version >= '3.4.3' ) {
