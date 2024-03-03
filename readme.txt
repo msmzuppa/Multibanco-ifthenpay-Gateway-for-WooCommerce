@@ -4,7 +4,7 @@ Tags: woocommerce, multibanco, mbway, payshop, credit card, cofidis, payment, pa
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 9.1.1
+Stable tag: 9.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -229,7 +229,12 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 9.1.1 - 2024-03-022 =
+= 9.1.2 - 2024-03-03 =
+* [DEV] Store Mutibanco Key used to generate reference
+* [DEV] Return Multibanco Key and requestId on the `get_multibanco_order_details()` method
+* [NEW] [PRO add-on 3.3](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/): Get IfthenPay fee on order screen if Backoffice Key is set and fee not yet set from the callback
+
+= 9.1.1 - 2024-03-03 =
 * [DEV] Allow filtering backoffice key
 
 = 9.1.0 - 2024-03-02 =
