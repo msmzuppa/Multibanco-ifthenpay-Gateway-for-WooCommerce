@@ -1,10 +1,10 @@
 === Multibanco, MB WAY, Credit card, Payshop and Cofidis Pay (IfthenPay) for WooCommerce ===
 Contributors: webdados, ptwooplugins, ifthenpay
-Tags: woocommerce, multibanco, mbway, payshop, credit card, cofidis, payment, pagamentos, mb way, debit card, credit card, ifthenpay, unicre, sibs, easypay, eupago
+Tags: multibanco, mbway, payshop, card, cofidis
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 9.1.2
+Stable tag: 9.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -228,6 +228,13 @@ You can report any security bugs found in the source code of this plugin through
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
+= 9.2.0 - 2024-03-18 =
+* [FIX] Avoid loading payment gateways more than once
+* [FIX] Typo on the Cofidis Pay settings
+* [DEV] Set WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE for usage on the Pro Add-on
+* [DEV] Set `Requires Plugins` tag to `woocommerce`
+* [DEV] Tested with WordPress 6.5-RC2-57846 and WooCommerce 8.7.0-rc.1
 
 = 9.1.2 - 2024-03-03 =
 * [DEV] Store Mutibanco Key used to generate reference
