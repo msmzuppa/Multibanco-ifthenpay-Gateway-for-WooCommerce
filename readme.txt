@@ -4,7 +4,7 @@ Tags: multibanco, mbway, payshop, card, cofidis
 Requires at least: 5.6
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 9.2.1
+Stable tag: 9.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -230,8 +230,9 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 9.2.1 - 2024-03-26 =
+= 9.2.2 - 2024-03-26 =
 * [FIX] Deprecation notices "Creation of dynamic property" on PHP 8.2 and above
+* [FIX] Typo
 * [DEV] Tested with WordPress 6.5-RC3-57875 and WooCommerce 8.7.0
 
 = 9.2.0 - 2024-03-18 =
