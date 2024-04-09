@@ -382,6 +382,40 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 					)
 				);
 			// }
+			// PRO fake fields
+			$pro_fake_fields = array(
+				// Cancel upaid
+				'_pro_mbway_cancel_expired' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Cancel or Recover unpaid orders', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Cancel MB WAY unpaid orders after the reference expires or set them to Multibanco and send new payment details to customer', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
+				// Enable countdown
+				'_mbway_thankyou_enable_countdown' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Enable payment countdown', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Enable a MB WAY payment countdown on the "Thank you" page to create urgency and get paid faster', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
+			);
+			foreach( $pro_fake_fields as $key => $temp ) {
+				$pro_fake_fields[$key]['title'] = '⭐️ ' . $pro_fake_fields[$key]['title'];
+				if ( isset( $pro_fake_fields[$key]['description'] ) ) {
+					$pro_fake_fields[$key]['description'] .= '<br/>';
+				} else {
+					$pro_fake_fields[$key]['description'] = '';
+				}
+				$pro_fake_fields[$key]['description'] .= sprintf(
+					__( 'Available on the %sPRO Add-on%s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">',
+					'</a>'
+				);
+			}
+			$this->form_fields = array_merge(
+				$this->form_fields,
+				$pro_fake_fields
+			);
 			$this->form_fields = array_merge(
 				$this->form_fields,
 				array(
@@ -395,6 +429,8 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 
 			// Allow other plugins to add settings fields
 			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_mbway_settings_fields', array() ) );
+			// And to manipulate them
+			$this->form_fields = apply_filters( 'multibanco_ifthen_mbway_settings_fields_all', $this->form_fields );
 
 		}
 		public function admin_options() {

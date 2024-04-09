@@ -500,6 +500,61 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					),
 				)
 			);
+			// PRO fake fields
+			$pro_fake_fields = array(
+				// Cancel upaid
+				'_pro_mb_cancel_unpaid' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Cancel unpaid orders', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Cancel Multibanco unpaid orders after the reference expires', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
+				// Remove from email
+				'_pro_remove_emails' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Remove from email', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Remove IfthenPay payment methods information from the selected email notifications', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
+				// Entities per category
+				'_pro_ent_cat_enabled' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Enable the "Entities per category" mode', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Simplified marketplace - Set different payment entities per category and get paid in different accounts based on the cart contents', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
+				// REST API
+				'_pro_rest_trigger' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Trigger payments for REST API orders', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Trigger the payment for Multibanco and MB WAY for orders created with the REST API', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
+				// Fees
+				'_pro_fees_save' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Store/show fees on order', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Get the charged IfthenPay fee from the callback (Multibanco, MB WAY and Payshop) and show it on the backend', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
+			);
+			foreach( $pro_fake_fields as $key => $temp ) {
+				$pro_fake_fields[$key]['title'] = '⭐️ ' . $pro_fake_fields[$key]['title'];
+				if ( isset( $pro_fake_fields[$key]['description'] ) ) {
+					$pro_fake_fields[$key]['description'] .= '<br/>';
+				} else {
+					$pro_fake_fields[$key]['description'] = '';
+				}
+				$pro_fake_fields[$key]['description'] .= sprintf(
+					__( 'Available on the %sPRO Add-on%s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">',
+					'</a>'
+				);
+			}
+			$this->form_fields = array_merge(
+				$this->form_fields,
+				$pro_fake_fields
+			);
 			$this->form_fields = array_merge(
 				$this->form_fields,
 				array(

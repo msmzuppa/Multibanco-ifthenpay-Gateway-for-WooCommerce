@@ -342,6 +342,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 			// Allow other plugins to add settings fields
 			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_creditcard_settings_fields', array() ) );
+			// And to manipulate them
+			$this->form_fields = apply_filters( 'multibanco_ifthen_creditcard_settings_fields_all', $this->form_fields );
 
 		}
 		public function admin_options() {

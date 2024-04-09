@@ -232,6 +232,9 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= 9.2.4 - 2024-04-09 =
+* [TWEAK] Show [PRO add-on 3.5](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/) blurred options 
+
 = 9.2.3 - 2024-04-08 =
 * [NEW] [PRO add-on 3.5](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/): Codifis payment information banner, with the price to pay month, on the product page (simple product for now)
 * [DEV] Tested with WordPress 6.6-alpha-57928 and WooCommerce 8.8.0-rc.1
