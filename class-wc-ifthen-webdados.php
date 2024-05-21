@@ -298,7 +298,7 @@ final class WC_IfthenPay_Webdados {
 
 		$this->cofidispay_banner_email = plugins_url( 'images/cofidispay_banner.png', __FILE__ );
 		$this->cofidispay_banner       = plugins_url( 'images/cofidispay_banner.svg', __FILE__ );
-		$this->cofidispay_icon         = plugins_url( 'images/cofidispay_icon.png', __FILE__ ); // SVG missing
+		$this->cofidispay_icon         = plugins_url( 'images/cofidispay_icon.svg', __FILE__ );
 	}
 
 	/* Add settings link to plugin actions */
