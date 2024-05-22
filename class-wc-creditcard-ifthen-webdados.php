@@ -410,7 +410,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					?>
 					<hr/>
 					<?php
-					if ( trim( get_woocommerce_currency() ) == 'EUR' ) {
+					if ( trim( get_woocommerce_currency() ) === 'EUR' || apply_filters( 'ifthen_allow_settings_woocommerce_not_euro', false ) ) {
 						?>
 						<table class="form-table">
 							<?php $this->generate_settings_html(); ?>

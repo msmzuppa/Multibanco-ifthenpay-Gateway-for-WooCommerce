@@ -719,7 +719,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					?>
 					<hr/>
 					<?php
-					if ( trim( get_woocommerce_currency() ) == 'EUR' ) {
+					if ( trim( get_woocommerce_currency() ) === 'EUR' || apply_filters( 'ifthen_allow_settings_woocommerce_not_euro', false ) ) {
 						?>
 						<table class="form-table">
 							<?php if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) { ?>

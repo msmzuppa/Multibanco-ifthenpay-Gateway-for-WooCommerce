@@ -232,6 +232,10 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= 9.2.5 - ... =
+* [FIX] Deprecation notices "Creation of dynamic property" on PHP 8.2 and above
+* [TWEAK] Cofidis Pay icon in SVG format
+
 = 9.2.4 - 2024-04-09 =
 * [TWEAK] Show [PRO add-on 3.5](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/) blurred options 
 

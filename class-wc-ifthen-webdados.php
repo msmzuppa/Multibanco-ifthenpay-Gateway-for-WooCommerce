@@ -1308,7 +1308,7 @@ final class WC_IfthenPay_Webdados {
 			}
 		}
 		$order_currency = $order->get_currency();
-		if ( trim( $order_currency ) == 'EUR' ) {
+		if ( trim( $order_currency ) === 'EUR' ) {
 			if (
 				! $force_change
 				&&
@@ -1607,7 +1607,7 @@ final class WC_IfthenPay_Webdados {
 	public function payshop_get_ref( $order_id, $force_change = false ) {
 		$order          = wc_get_order( $order_id );
 		$order_currency = $order->get_currency();
-		if ( trim( $order_currency ) == 'EUR' ) {
+		if ( trim( $order_currency ) === 'EUR' ) {
 			if (
 				! $force_change
 				&&
