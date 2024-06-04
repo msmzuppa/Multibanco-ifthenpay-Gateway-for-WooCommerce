@@ -348,7 +348,7 @@ final class WC_IfthenPay_Webdados {
 	public function woocommerce_add_payment_gateways_woocommerce_blocks() {
 		if ( WC_IfthenPay_Webdados()->wc_blocks_active ) {
 			// Multibanco
-			require_once 'woocommerce-blocks/multibanco/MultibancoIfthenPay.php';
+			require_once 'woocommerce-blocks/MultibancoIfthenPay.php';
 			add_action(
 				'woocommerce_blocks_payment_method_type_registration',
 				function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
@@ -356,7 +356,7 @@ final class WC_IfthenPay_Webdados {
 				}
 			);
 			// MB WAY
-			require_once 'woocommerce-blocks/mbway/MBWayIfthenPay.php';
+			require_once 'woocommerce-blocks/MBWayIfthenPay.php';
 			add_action(
 				'woocommerce_blocks_payment_method_type_registration',
 				function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
@@ -364,7 +364,7 @@ final class WC_IfthenPay_Webdados {
 				}
 			);
 			// Credit card
-			require_once 'woocommerce-blocks/creditcard/CreditCardIfthenPay.php';
+			require_once 'woocommerce-blocks/CreditCardIfthenPay.php';
 			add_action(
 				'woocommerce_blocks_payment_method_type_registration',
 				function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
@@ -372,7 +372,7 @@ final class WC_IfthenPay_Webdados {
 				}
 			);
 			// Payshop
-			require_once 'woocommerce-blocks/payshop/PayshopIfthenPay.php';
+			require_once 'woocommerce-blocks/PayshopIfthenPay.php';
 			add_action(
 				'woocommerce_blocks_payment_method_type_registration',
 				function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
@@ -380,7 +380,7 @@ final class WC_IfthenPay_Webdados {
 				}
 			);
 			// Cofidis Pay
-			require_once 'woocommerce-blocks/cofidispay/CofidisPayIfthenPay.php';
+			require_once 'woocommerce-blocks/CofidisPayIfthenPay.php';
 			add_action(
 				'woocommerce_blocks_payment_method_type_registration',
 				function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {

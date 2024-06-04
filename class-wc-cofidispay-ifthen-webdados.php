@@ -1021,6 +1021,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							$debug_order = wc_get_order( $order->get_id() );
 							$this->debug_log( '-- Cofidis Pay payment pre-approval received - Order ' . $order->get_id(), 'notice' );
 							$this->debug_log_extra( 'Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
+							$order->delete_meta_data( '_' . $this->id . '_checkouterror' );
+							$order->save();
 							wp_redirect( $url );
 							exit;
 						} else {
@@ -1036,11 +1038,21 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							$order_id = $order->get_id();
 							$error    = __( 'Payment failed on the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 							$order->update_status( 'failed', $error );
+							switch( $order->get_created_via() ) {
+								case 'store-api':
+									// Blocks checkout - Store the error and show it later, as the block based checkout does not have wc_add_notice();
+									//wc_add_notice( $error, 'error' );
+									break;
+								case 'checkout':
+								default:
+									// Classic checkout - Directly show the error - OK!
+									wc_add_notice( $error, 'error' );
+									break;
+							}
 						} else {
 							$error = __( 'Payment failed on the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - ' . $get_order['error'];
 						}
-						wc_add_notice( $error, 'error' );
-						$redirect_url = add_query_arg( 'cofidispay_ifthen_failed', '1', wc_get_checkout_url() );
+						$redirect_url = wc_get_checkout_url();
 						break;
 
 				}
@@ -1050,6 +1062,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 			// Error and redirect
 			if ( $error ) {
+				$order->update_meta_data( '_' . $this->id . '_checkouterror', $error ); // To show error on blocks checkout
+				$order->save();
 				$this->debug_log( '- ' . $error, 'warning', true, $error );
 				do_action( 'cofidispay_ifthen_callback_payment_failed', $order_id, $error, $_GET );
 				if ( $redirect_url ) {
@@ -1191,7 +1205,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			}
 			if ( $orders_exist ) {
 				if ( $orders_count == 1 ) {
-					//var_dump( $order );
 					if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 						$return['success'] = true;
 						$return['order']   = $order;
