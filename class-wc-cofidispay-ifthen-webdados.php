@@ -1027,7 +1027,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							exit;
 						} else {
 							$error = $get_order['error'];
-							// We should set a $redirect_url
+							$redirect_url = wc_get_checkout_url();
 						}
 						break;
 
