@@ -835,6 +835,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						break;
 
 					case 'cancel':
+						// This is called also when the user clicks the "Back" button on the gateway.
+						// Maybe we can make this an option to cancel or just go back to the checkout.
 						$get_order = $this->callback_helper_get_pending_order( $request_id, $id, $val );
 						if ( $get_order['success'] && $get_order['order'] ) {
 							$order    = $get_order['order'];
