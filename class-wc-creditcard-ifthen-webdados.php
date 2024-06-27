@@ -847,7 +847,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 								$redirect_url = $order->get_cancel_order_url_raw();
 								wc_add_notice( $error, 'error' ); // Notice OK, not block based page
 							} else {
-								// We got the order but are not going to cancel it - Deafult behavior since 9.4.1
+								// We got the order but are not going to cancel it - Default behavior since 9.4.1
 								$error = __( 'Payment cancelled by the customer at the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - ' . $get_order['error'];
 								$redirect_url = wc_get_checkout_url();
 								wc_add_notice( $error, 'error' ); // Not working on the blocks checkout, we need to check how we did it on the Cofidis gateway
