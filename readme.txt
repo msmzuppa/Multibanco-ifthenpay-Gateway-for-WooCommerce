@@ -232,8 +232,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 9.4.2 - 2024-06-26 =
-* [FIX] Tag the last changes correcly
+= 9.4.2 - 2024-06-27 =
 * [TWEAK] Add the order as second argument for the `creditcard_ifthen_cancel_order_on_back` filter
 
 = 9.4.1 - 2024-06-26 =
