@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { getSetting } from '@woocommerce/settings';
 import { decodeEntities } from '@wordpress/html-entities';
 import { useEffect, useState } from 'react';
-import { applyFilters, doAction } from '../../common/src/hooks.js';
+import { applyFilters } from '@wordpress/hooks';
 
 const settings = getSetting( 'mbway_ifthen_for_woocommerce_data', {} );
 const defaultLabel = __(
@@ -38,9 +38,9 @@ const Content = ( props ) => {
 				return {
 					type: emitResponse.responseTypes.SUCCESS,
 					meta: {
-						paymentMethodData: {
+						paymentMethodData: applyFilters( 'mbway_ifthen_blocks_checkout_payment_data', {
 							mbway_ifthen_for_woocommerce_phone,
-						},
+						} ),
 					},
 				};
 			}
@@ -85,7 +85,7 @@ const Content = ( props ) => {
 	} );
 	// Label inside field
 	var phonenumberlabel = React.createElement( 'label', {
-		htmlFor: settings.id+'_phone'
+		htmlFor: settings.id + '_phone'
 	}, decodeEntities( settings.phonenumbertext || '' ) );
 	// Extend before phone number
 	var beforePhoneNumber = applyFilters( 'mbway_ifthen_blocks_checkout_before_phone_number', null );
