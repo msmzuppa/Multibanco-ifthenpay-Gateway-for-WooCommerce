@@ -391,6 +391,13 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 					'label'    => __( 'Cancel MB WAY unpaid orders after the reference expires or set them to Multibanco and send new payment details to customer', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
+				// Save number
+				'_pro_checkout_save_number' => array(
+					'type'     => 'checkbox',
+					'title'    => __( 'Save number to user profile', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Offer the option to save the MB WAY mobile number to the user profile for future orders', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'disabled' => true,
+				),
 				// Enable countdown
 				'_mbway_thankyou_enable_countdown' => array(
 					'type'     => 'checkbox',
