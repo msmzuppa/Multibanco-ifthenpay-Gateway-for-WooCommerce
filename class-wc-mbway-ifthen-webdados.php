@@ -1073,7 +1073,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					<?php _e( 'Your phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					<abbr class="required" title="<?php _e( 'required', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>">*</abbr>
 				</label>
-				<input type="tel" autocomplete="off" class="input-text" name="<?php echo $this->id; ?>_phone" id="<?php echo $this->id; ?>_phone" placeholder="9xxxxxxxx" maxlength="9" style="display: inline-block !important;"/>
+				<?php do_action( 'mbway_ifthen_checkout_before_phone_number' ); ?>
+				<input type="tel" autocomplete="off" class="input-text" name="<?php echo $this->id; ?>_phone" id="<?php echo $this->id; ?>_phone" placeholder="9xxxxxxxx" maxlength="9" style="display: inline-block !important;" value="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_default_phone_number', '' ) ); ?>"/>
+				<?php do_action( 'mbway_ifthen_checkout_after_phone_number' ); ?>
 			</p>
 			<?php
 		}

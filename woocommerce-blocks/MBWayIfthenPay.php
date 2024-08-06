@@ -67,6 +67,7 @@ final class MBWayIfthenPay extends AbstractPaymentMethodType {
 			'only_bellow'     => floatval( $this->settings['only_bellow'] ) > 0 ? floatval( $this->settings['only_bellow'] ) : null,
 			'phonenumbertext' => __( 'Your phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 			'id'              => $this->name,
+			'default_number'  => apply_filters( 'mbway_ifthen_checkout_default_phone_number', '' ),
 			// 'support_woocommerce_subscriptions' => isset( $this->settings['support_woocommerce_subscriptions'] ) && ( 'yes' === $this->settings['support_woocommerce_subscriptions'] ), //Not on MB WAY
 			// More settings needed?
 		);

@@ -1,11 +1,18 @@
 PRO ADD-ON PAGO:
+- Opção de guardar nº MBWAY:
+	- Checkbox junto ao campo de telefone, inactiva por omissão
+	- Se activada guarda em user meta que pode ser editada na área de cliente
+	- O que fazer se for removido a checkbox e houver um nº guardado? Manter o mesmo em user meta ou remover?
+	- Workflow opção 1:
+		- Primeira vez: campo normal e opção de gravar
+		- Já tem número gravado: aparece select com o nº gravado e opção "outro número"
+			- Se escolher o gravado usa e não faz mais nada
+			- Se escolher outro, aparece campo e dá opção de usar este nº a partir de agora
+	- Workflow opção 2:
+		- Só checkbox "Guardar este número para futuras compras. Será associado à sua conta e substituirá outro, se existir. Pode gerir o número associado à sua conta aqui."
 - Depois de expirar o MBWAY, mudar para Multibanco automaticamente e enviar referência ao cliente -> Feito
 	- Ou enviar email para escolher outro método
 	- Ou ambos
-- Ter campos em cada método para o cliente inserir o que tem contratado com a IfthenPay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!
-	- Na verdade isto deveria vir no callback (email enviado a 2020-12-10)
-	- Na encomenda, fazer como no Stripe e mostrar o valor pago em comissões
-	- Ter opção de ordenar os métodos de pagamento pela ordem do que fica mais barato
 - Email quando há falhas de callback
 - Olhar para outros hooks disponíveis no plugin e "inventar" funcionalidades
 
@@ -49,3 +56,11 @@ CARTÃO DE CRÉDITO:
 - Implementar os vários filtros já existentes nos outros métodos de pagamento
 
 PAYHSOP:
+
+
+FEITO PRO:
+
+- Ter campos em cada método para o cliente inserir o que tem contratado com a IfthenPay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!
+	- Na verdade isto deveria vir no callback (email enviado a 2020-12-10)
+	- Na encomenda, fazer como no Stripe e mostrar o valor pago em comissões
+	- Ter opção de ordenar os métodos de pagamento pela ordem do que fica mais barato
