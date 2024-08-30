@@ -195,11 +195,12 @@ Be advised the Multibanco or Payshop reference will still be active and can be p
 You can use the `multibanco_ifthen_email_instructions_pending_send` and/or `mbway_ifthen_email_instructions_pending_send` filter: return false and the payment instructions won’t be included in the “new order” email – we do not recommend you to do it, though.
 You can use the `multibanco_ifthen_email_instructions_payment_received_send` and/or `mbway_ifthen_email_instructions_payment_received_send` filter: return false and the payment received message won’t be included in the “Processing” or “Completed” email.
 
-= IfthenPay says my callback URL is returning a 404 error. Should I sit in a corner and cry or is there a solution? =
+= IfthenPay says my callback URL is returning a 404 error. Is there a solution? =
 
-Don’t cry! There’s a solution!
 You probably have weird permalink settings (or permalinks not set at all) in your WordPress installation.
-Tell them to change the callback URL from `https://yourwebsite/wc-api/WC_Multibanco_IfThen_Webdados/?chave=[CHAVE_ANTI_PHISHING]&entidade=[ENTIDADE]&referencia=[REFERENCIA]&valor=[VALOR]` to `https://yourwebsite/?wc-api=WC_Multibanco_IfThen_Webdados&chave=[CHAVE_ANTI_PHISHING]&entidade=[ENTIDADE]&referencia=[REFERENCIA]&valor=[VALOR]`.
+
+If your permalinks are set as "Plain", tell them to change the callback URL from `https://yourwebsite/wc-api/WC_Multibanco_IfThen_Webdados/?chave=[CHAVE_ANTI_PHISHING]...` to `https://yourwebsite/?wc-api=WC_Multibanco_IfThen_Webdados&chave=[CHAVE_ANTI_PHISHING]...`.
+If your permalinks are set as "Custom structure": "/index.php/%postname%/" tell them to set the callback to `https://yourwebsite/index.php/wc-api/WC_Multibanco_IfThen_Webdados/?chave=[CHAVE_ANTI_PHISHING]...`
 
 = Is this plugin compliant with the European Union General Data Protection Regulation (GDPR)? =
 
@@ -232,6 +233,9 @@ You can report any security bugs found in the source code of this plugin through
 Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/multibanco-ifthen-software-gateway-for-woocommerce) and help us out.
 
 == Changelog ==
+
+= ? =
+* [TWEAK] Update readme.txt FAQ information about 404 callback error because of specific permalink settings
 
 = 9.4.4 - 2024-07-16 =
 * [TWEAK] Implement hook on the MB WAY payment gateway needed by [PRO add-on 4.1](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/)
