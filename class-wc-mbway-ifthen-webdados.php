@@ -1006,16 +1006,23 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 			if ( $order->get_total() > 0 ) {
 				$phone = isset( $_POST[ $this->id . '_phone' ] ) ? trim( sanitize_text_field( $_POST[ $this->id . '_phone' ] ) ) : '';
-				if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
-					if ( ! $this->order_initial_status_pending ) {
-						// Mark as on-hold
-						$order->update_status( 'on-hold', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				if ( empty( $phone ) ) { // Ticket: https://wordpress.org/support/topic/erro-pagamentos/
+					$phone = isset( $_REQUEST[ $this->id . '_phone' ] ) ? trim( sanitize_text_field( $_REQUEST[ $this->id . '_phone' ] ) ) : '';
+				}
+				if ( empty( $phone ) ) {
+					if ( $this->webservice_set_pedido( $order->get_id(), $phone ) ) {
+						if ( ! $this->order_initial_status_pending ) {
+							// Mark as on-hold
+							$order->update_status( 'on-hold', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+						} else {
+							$order->update_status( 'pending', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+						}
 					} else {
-						$order->update_status( 'pending', __( 'Awaiting MB WAY payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+						// wc_add_notice( __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
+						throw new Exception( __( 'Error creating MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 					}
 				} else {
-					// wc_add_notice( __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) , 'error' );
-					throw new Exception( __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					throw new Exception( __( 'Error creating MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - EMPTY PHONE' );
 				}
 			} else {
 				// Value = 0
@@ -1092,7 +1099,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				wc_add_notice( sprintf( __( '%s is required', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong>' . __( 'Phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong>' ), 'error' );
 				return false;
 			} else {
-				if ( strlen( $phone ) == 9 && substr( $phone, 0, 1 ) == '9' && ctype_digit( $phone ) ) {
+				if ( strlen( $phone ) === 9 && substr( $phone, 0, 1 ) === '9' && ctype_digit( $phone ) ) {
 					return true;
 				} else {
 					wc_add_notice( sprintf( __( '%s must be a valid portuguese mobile phone number', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong>' . __( 'Phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong>' ), 'error' );
