@@ -212,7 +212,7 @@ final class WC_IfthenPay_Webdados {
 		add_action( 'add_meta_boxes', array( $this, 'multibanco_order_metabox' ) );
 		add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'shop_order_search' ) );
 		add_filter( 'woocommerce_order_table_search_query_meta_keys', array( $this, 'shop_order_search' ) );
-		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'multibanco_woocommerce_checkout_update_order_meta' ) );    // Frontend
+		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'multibanco_woocommerce_checkout_update_order_meta' ) ); // Frontend
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', array( $this, 'multibanco_woocommerce_order_data_store_cpt_get_orders_query' ), 10, 3 );
 		add_action( 'woocommerce_cancel_unpaid_orders', array( $this, 'multibanco_woocommerce_cancel_unpaid_orders' ), 99 );
 		add_filter( 'apg_sms_message', array( $this, 'multibanco_apg_sms_message' ), 10, 2 );
@@ -1781,11 +1781,15 @@ final class WC_IfthenPay_Webdados {
 	public function multibanco_woocommerce_checkout_update_order_meta( $order_id ) {
 		$order = wc_get_order( $order_id );
 		// Avoid duplicate instructions on the email...
-		if ( $order->get_payment_method() === $this->multibanco_id ) {
-			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Force ref generation before anything - Order ' . $order->get_id() );
-			$ref = $this->multibanco_get_ref( $order->get_id(), false, true );
-			// That should do it...
-			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Ref: ' . wp_json_encode( $ref ) . ' - Order ' . $order->get_id() );
+		if ( $order ) {
+			if ( $order->get_payment_method() === $this->multibanco_id ) {
+				$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Force ref generation before anything - Order ' . $order->get_id() );
+				$ref = $this->multibanco_get_ref( $order->get_id(), false, true );
+				// That should do it...
+				$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Ref: ' . wp_json_encode( $ref ) . ' - Order ' . $order->get_id() );
+			}
+		} else {
+			$this->debug_log_extra( $this->multibanco_id, 'multibanco_woocommerce_checkout_update_order_meta - Could not get order - Order ' . $order_id );
 		}
 	}
 
