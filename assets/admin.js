@@ -4,6 +4,8 @@
 
 		var hide_extra_fields = true;
 
+		alert( ifthenpay.gateway );
+
 		switch ( ifthenpay.gateway ) {
 			case 'multibanco':
 				ifthen_toogle_mb_api_mode();
@@ -81,6 +83,15 @@
 					hide_extra_fields = false;
 				}
 				break;
+			case 'gateway_ifthen':
+				if (
+					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).val().trim().length == 11
+					&&
+					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).val().trim() != ''
+				) {
+					hide_extra_fields = false;
+				}
+				break;
 			default:
 				// code block
 				break;
@@ -101,6 +112,7 @@
 				case 'creditcard':
 				case 'payshop':
 				case 'cofidispay':
+				case 'gateway_ifthen':
 					$( '#wc_ifthen_settings table.form-table tr:nth-child(n+3)' ).hide();
 					$( '#wc_ifthen_settings .mb_hide_extra_fields' ).hide();
 					break;

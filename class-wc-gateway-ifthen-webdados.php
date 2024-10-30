@@ -8,11 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Apple and Google IfThen Class.
+ * Gateway IfThen Class.
  */
-if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
+if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 
-	class WC_Apple_Google_IfThen_Webdados extends WC_Payment_Gateway {
+	class WC_Gateway_IfThen_Webdados extends WC_Payment_Gateway {
 
 		/* Single instance */
 		protected static $_instance = null;
@@ -22,6 +22,10 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 		public $debug;
 		public $debug_email;
 		public $version;
+		public $api_url_production;
+		public $api_url_sandbox;
+		public $api_url;
+		public $gatewaykey;
 		public $settings_saved;
 		public $send_to_admin;
 		public $only_portugal;
@@ -39,7 +43,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 
 			self::$instances++;
 
-			$this->id = WC_IfthenPay_Webdados()->apple_google_id;
+			$this->id = WC_IfthenPay_Webdados()->gateway_ifthen_id;
 
 			// Logs
 			$this->debug       = ( $this->get_option( 'debug' ) == 'yes' ? true : false );
@@ -51,8 +55,8 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 
 			$this->has_fields = false;
 
-			$this->method_title       = __( 'Apple Pay or Google Pay (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			$this->method_description = __( 'Easy and simple payment using Apple Pay or Google Pay. Requires that you have the payment method configured on your device and/or browser. (Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_title       = __( 'Gateway IfthenPay', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_description = __( 'Easy and simple payment using Apple Pay, Google Pay, or Pix. (Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 
 			// Webservice
 			$this->api_url_production = 'https://api.ifthenpay.com/gateway/pinpay/'; // production mode
@@ -64,14 +68,14 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 			$this->init_settings();
 
 			// User settings
-			$this->title                     = $this->get_option( 'title' );
-			$this->description               = $this->get_option( 'description' );
-			$this->gatewaykey             = $this->get_option( 'gatewaykey' );
-			$this->settings_saved            = $this->get_option( 'settings_saved' );
-			$this->send_to_admin             = ( $this->get_option( 'send_to_admin' ) == 'yes' ? true : false );
-			$this->only_portugal             = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
-			$this->only_above                = $this->get_option( 'only_above' );
-			$this->only_below                = $this->get_option( 'only_bellow' );
+			$this->title          = $this->get_option( 'title' );
+			$this->description    = $this->get_option( 'description' );
+			$this->gatewaykey     = $this->get_option( 'gatewaykey' );
+			$this->settings_saved = $this->get_option( 'settings_saved' );
+			$this->send_to_admin  = ( $this->get_option( 'send_to_admin' ) == 'yes' ? true : false );
+			$this->only_portugal  = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
+			$this->only_above     = $this->get_option( 'only_above' );
+			$this->only_below     = $this->get_option( 'only_bellow' );
 
 			// Actions and filters
 			if ( self::$instances === 1 ) { // Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
@@ -92,23 +96,23 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 				// Customer Emails
 				// Regular orders
 				add_action(
-					apply_filters( 'apple_google_ifthen_email_hook', 'woocommerce_email_before_order_table' ),
+					apply_filters( 'gateway_ifthen_email_hook', 'woocommerce_email_before_order_table' ),
 					array( $this, 'email_instructions_1' ), // Avoid "Hyyan WooCommerce Polylang Integration" remove_action
-					apply_filters( 'apple_google_ifthen_email_hook_priority', 10 ),
+					apply_filters( 'gateway_ifthen_email_hook_priority', 10 ),
 					4
 				);
 
 				// Payment listener - Return from payment gateway
-				add_action( 'woocommerce_api_wc_apple_google_ifthen_webdados', array( $this, 'callback' ) );
+				add_action( 'woocommerce_api_wc_gateway_ifthen_webdados', array( $this, 'callback' ) );
 
 				// Admin notices
 				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 
 				// API URL
-				$this->api_url = apply_filters( 'apple_google_ifthen_sandbox', false ) ? $this->api_url_sandbox : $this->api_url_production;
+				$this->api_url = apply_filters( 'gateway_ifthen_sandbox', false ) ? $this->api_url_sandbox : $this->api_url_production;
 
 				// Method title in sandbox mode
-				if ( apply_filters( 'apple_google_ifthen_sandbox', false ) ) {
+				if ( apply_filters( 'gateway_ifthen_sandbox', false ) ) {
 					$this->title .= ' - SANDBOX (TEST MODE)';
 				}
 
@@ -183,13 +187,13 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 				'enabled'       => array(
 					'title'   => __( 'Enable/Disable', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'    => 'checkbox',
-					'label'   => __( 'Enable “Apple Pay or Google Pay” (using IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'   => __( 'Enable “Gateway IfthenPay” (using IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'default' => 'no',
 				),
 				'gatewaykey' => array(
 					'title'             => __( 'Gateway Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'              => 'text',
-					'description'       => __( 'Gateway Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'apple_google_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
+					'description'       => __( 'Gateway Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
 					'default'           => '',
 					'css'               => 'width: 130px;',
 					'placeholder'       => 'XXXX-000000',
@@ -208,7 +212,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 							'type'        => 'text',
 							'description' => __( 'This controls the title which the user sees during checkout.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 											. ( WC_IfthenPay_Webdados()->wpml_active ? '<br/>' . WC_IfthenPay_Webdados()->wpml_translation_info : '' ),
-							'default'     => 'Apple Pay or Google Pay',
+							'default'     => 'Apple Pay, Google Pay, or Pix',
 						),
 						'description'   => array(
 							'title'       => __( 'Description', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
@@ -228,9 +232,9 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 							'type'        => 'number',
 							'description' => __( 'Enable only for orders with a value from x &euro;. Leave blank (or zero) to allow for any order value.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' <br/> ' . sprintf(
 								__( 'By design, %1$s only allows payments from %2$s to %3$s. You can use this option to further limit this range.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								__( 'Apple Pay or Google Pay', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								wc_price( WC_IfthenPay_Webdados()->apple_google_min_value, array( 'currency' => 'EUR' ) ),
-								wc_price( WC_IfthenPay_Webdados()->apple_google_max_value, array( 'currency' => 'EUR' ) )
+								__( 'Apple Pay, Google Pay, or Pix', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								wc_price( WC_IfthenPay_Webdados()->gateway_ifthen_min_value, array( 'currency' => 'EUR' ) ),
+								wc_price( WC_IfthenPay_Webdados()->gateway_ifthen_max_value, array( 'currency' => 'EUR' ) )
 							),
 							'default'     => '',
 						),
@@ -240,8 +244,8 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 							'description' => __( 'Enable only for orders with a value up to x &euro;. Leave blank (or zero) to allow for any order value.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' <br/> ' . sprintf(
 								__( 'By design, %1$s only allows payments from %2$s to %3$s. You can use this option to further limit this range.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								__( 'Apple Pay or Google Pay', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								wc_price( WC_IfthenPay_Webdados()->apple_google_min_value, array( 'currency' => 'EUR' ) ),
-								wc_price( WC_IfthenPay_Webdados()->apple_google_max_value, array( 'currency' => 'EUR' ) )
+								wc_price( WC_IfthenPay_Webdados()->gateway_ifthen_min_value, array( 'currency' => 'EUR' ) ),
+								wc_price( WC_IfthenPay_Webdados()->gateway_ifthen_max_value, array( 'currency' => 'EUR' ) )
 							),
 							'default'     => '',
 						),
@@ -299,9 +303,9 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 			);
 
 			// Allow other plugins to add settings fields
-			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_apple_google_settings_fields', array() ) );
+			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_gateway_ifthen_settings_fields', array() ) );
 			// And to manipulate them
-			$this->form_fields = apply_filters( 'multibanco_ifthen_apple_google_settings_fields_all', $this->form_fields );
+			$this->form_fields = apply_filters( 'multibanco_ifthen_gateway_ifthen_settings_fields_all', $this->form_fields );
 
 		}
 		public function admin_options() {
@@ -320,7 +324,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 				?>
 				<div id="wc_ifthen_settings">
 					<h2>
-						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->apple_google_banner ); ?>" alt="<?php echo esc_attr( $title ); ?>" width="56" height="48"/>
+						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->gateway_ifthen_banner ); ?>" alt="<?php echo esc_attr( $title ); ?>" width="186" height="48"/>
 						<br/>
 						<?php echo $title; ?>
 						<small>v.<?php echo $this->version; ?></small>
@@ -397,7 +401,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 		 */
 		public function get_icon() {
 			$alt       = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
-			$icon_html = '<img src="' . esc_attr( WC_IfthenPay_Webdados()->apple_google_icon ) . '" alt="' . esc_attr( $alt ) . '" width="28" height="24"/>';
+			$icon_html = '<img src="' . esc_attr( WC_IfthenPay_Webdados()->gateway_ifthen_icon ) . '" alt="' . esc_attr( $alt ) . '" width="28" height="24"/>';
 			return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
 		}
 
@@ -496,7 +500,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 				}
 			}
 			// Apply filter
-			$send = apply_filters( 'apple_google_ifthen_send_email_instructions', $send, $order, $sent_to_admin, $plain_text, $email );
+			$send = apply_filters( 'gateway_ifthen_send_email_instructions', $send, $order, $sent_to_admin, $plain_text, $email );
 			// Send
 			if ( $send ) {
 				// Go
@@ -525,7 +529,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 						} else {
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
-								if ( apply_filters( 'apple_google_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
+								if ( apply_filters( 'gateway_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
 									echo $this->email_instructions_payment_received( $order->get_id() );
 								}
 							}
@@ -536,21 +540,21 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 		}
 		/*
 		function email_instructions_table_html( $order_id, $order_total ) {
-			return apply_filters( 'apple_google_ifthen_email_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
+			return apply_filters( 'gateway_ifthen_email_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
 		}*/
 		function email_instructions_payment_received( $order_id ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
 			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;">
-				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->apple_google_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
+				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->gateway_ifthen_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
 				<strong><?php _e( 'Apple Pay or Google Pay payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
 				<?php _e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 			</p>
 			<?php
-			return apply_filters( 'apple_google_ifthen_email_instructions_payment_received', ob_get_clean(), $order_id );
+			return apply_filters( 'gateway_ifthen_email_instructions_payment_received', ob_get_clean(), $order_id );
 		}
 
 		/**
@@ -581,7 +585,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 			$url  = $this->api_url . $gatewaykey;
 			$args = array(
 				'method'   => 'POST',
-				'timeout'  => apply_filters( 'apple_google_ifthen_api_timeout', 15 ),
+				'timeout'  => apply_filters( 'gateway_ifthen_api_timeout', 15 ),
 				'blocking' => true,
 				'body'     => array(
 					'id'            => (string) apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id(),
@@ -619,7 +623,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 								)
 							);
 							$this->debug_log( '- Apple Pay or Google Pay payment request created on IfthenPay servers - Redirecting to payment gateway - Order ' . $order->get_id() . ' - RequestId: ' . $body->RequestId );
-							do_action( 'apple_google_ifthen_created_reference', $body->RequestId, $order->get_id() );
+							do_action( 'gateway_ifthen_created_reference', $body->RequestId, $order->get_id() );
 							return $body->PaymentUrl;
 						} else {
 							$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Error code and message: ' . $body->Status . ' / ' . $body->Message;
@@ -647,7 +651,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 		function process_payment( $order_id ) {
 			// Webservice
 			$order = wc_get_order( $order_id );
-			do_action( 'apple_google_ifthen_before_process_payment', $order );
+			do_action( 'gateway_ifthen_before_process_payment', $order );
 			if ( $order->get_total() > 0 ) {
 				if ( $redirect_url = $this->api_init_payment( $order->get_id() ) ) {
 					// WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
@@ -716,7 +720,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 		 * Just above/below certain amounts
 		 */
 		function disable_only_above_or_below( $available_gateways ) {
-			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->apple_google_min_value, WC_IfthenPay_Webdados()->apple_google_max_value );
+			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
 		/* Payment complete - Stolen from PayPal method */
@@ -763,7 +767,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 							$order = $get_order['order'];
 							$this->debug_log_extra( 'Order found: ' . $order->get_id() . ' - Status: ' . $order->get_status() );
 							$order_id      = $order->get_id();
-							$order_details = WC_IfthenPay_Webdados()->get_apple_google_order_details( $order->get_id() );
+							$order_details = WC_IfthenPay_Webdados()->get_gateway_ifthen_order_details( $order->get_id() );
 							$sk            = isset( $_GET['sk'] ) ? trim( sanitize_text_field( $_GET['sk'] ) ) : '';
 							$hash          = hash_hmac( 'sha256', $id . $val . $request_id, $order_details['gatewaykey'] );
 							if ( $sk == $hash ) {
@@ -786,7 +790,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 								}
 								$url = $this->get_return_url( $order );
 								$this->payment_complete( $order, '', $note );
-								do_action( 'apple_google_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+								do_action( 'gateway_ifthen_callback_payment_complete', $order->get_id(), $_GET );
 								$debug_order = wc_get_order( $order->get_id() );
 								$this->debug_log( '-- Apple Pay or Google Pay payment received - Order ' . $order->get_id(), 'notice' );
 								$this->debug_log_extra( 'payment_complete - Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
@@ -822,7 +826,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 						// Maybe we can make this an option to cancel or just go back to the checkout.
 						$get_order = $this->callback_helper_get_pending_order( $request_id, $id, $val );
 						if ( $get_order['success'] && $get_order['order'] ) {
-							if ( apply_filters( 'apple_google_ifthen_cancel_order_on_back', false, $get_order['order'] ) ) {
+							if ( apply_filters( 'gateway_ifthen_cancel_order_on_back', false, $get_order['order'] ) ) {
 								$order    = $get_order['order'];
 								$order_id = $order->get_id();
 								$error    = __( 'Payment cancelled by the customer at the gateway.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
@@ -855,7 +859,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 			// Error and redirect
 			if ( $error ) {
 				$this->debug_log( '- ' . $error, 'warning', true, $error );
-				do_action( 'apple_google_ifthen_callback_payment_failed', $order_id, $error, $_GET );
+				do_action( 'gateway_ifthen_callback_payment_failed', $order_id, $error, $_GET );
 				if ( $redirect_url ) {
 					wp_redirect( $redirect_url );
 				} else {
@@ -872,7 +876,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 				'error'   => false,
 				'order'   => false,
 			);
-			$pending_status = apply_filters( 'apple_google_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); // Double filter - Should we deprectate this one?
+			$pending_status = apply_filters( 'gateway_ifthen_valid_callback_pending_status', WC_IfthenPay_Webdados()->unpaid_statuses ); // Double filter - Should we deprectate this one?
 			$args           = array(
 				'type'                          => array( 'shop_order', 'wcdp_payment' ), // Regular order or deposit
 				'status'                        => $pending_status,
@@ -917,8 +921,8 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 			if ( is_checkout() && $this->enabled === 'yes' && true ) { // Check if method settings are set
 				//wp_enqueue_script( 'google-pay', 'https://pay.google.com/gp/p/js/pay.js', array(), $this->version . ( WP_DEBUG ? '.' . wp_rand( 0, 99999 ) : '' ), true );
 				wp_enqueue_script(
-					'apple-google-ifthenpay',
-					plugins_url( 'assets/apple_google.js', __FILE__ ),
+					'gateway-ifthenpay',
+					plugins_url( 'assets/gateway.js', __FILE__ ),
 					array(
 						'jquery',
 						//'google-pay',
@@ -927,8 +931,8 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 					true
 				);
 				wp_localize_script(
-					'apple-google-ifthenpay',
-					'apple_google_ifthenpay',
+					'gateway-ifthenpay',
+					'gateway_ifthenpay',
 					array(
 						'general' => array(
 							'method_title'       => $this->title,
@@ -976,8 +980,8 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 				( ! apply_filters( 'multibanco_ifthen_hide_newmethod_notifications', false ) )
 			) {
 				?>
-				<div id="apple_google_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
-					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->apple_google_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 68px;"/>
+				<div id="gateway_ifthen_newmethod_notice" class="notice notice-info is-dismissible" style="padding-right: 38px; position: relative; display: none;">
+					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->gateway_ifthen_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 186px;"/>
 					<p>
 						<?php
 							echo sprintf(
@@ -989,7 +993,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 						<?php
 						echo sprintf(
 							__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=apple_google_ifthen_for_woocommerce">',
+							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=gateway_ifthen_for_woocommerce">',
 							'</a></strong>'
 						);
 						?>
@@ -997,7 +1001,7 @@ if ( ! class_exists( 'WC_Apple_Google_IfThen_Webdados' ) ) {
 				</div>
 				<script type="text/javascript">
 				(function () {
-					notice    = jQuery( '#apple_google_ifthen_newmethod_notice');
+					notice    = jQuery( '#gateway_ifthen_ifthen_newmethod_notice');
 					dismissed = localStorage.getItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss' );
 					if ( !dismissed ) {
 						jQuery( notice ).show();
