@@ -2809,7 +2809,11 @@ final class WC_IfthenPay_Webdados {
 						$debug_msg       = '- Error from IfthenPay: ' . trim( $body->Message ) . ' - Order ' . $order->get_id();
 						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 						$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
-						return new WP_Error( 'error', $debug_msg . ' - ' . __( 'Do not contact the plugin support. You need to check with IfthenPay why this refund could not be issued.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+						//return new WP_Error( 'error', $debug_msg . ' - ' . __( 'Do not contact the plugin support. You need to check with IfthenPay why this refund could not be issued.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+						return new WP_Error(
+							'error',
+							__( 'We are sorry but it was not possible to issue the refund. Please contact IfthenPay support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - (' . trim( $body->Code ) . ')' 
+						);
 					}
 				} else {
 					$debug_msg       = '- Response body is not JSON - Order ' . $order->get_id();
