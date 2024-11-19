@@ -2812,7 +2812,7 @@ final class WC_IfthenPay_Webdados {
 						//return new WP_Error( 'error', $debug_msg . ' - ' . __( 'Do not contact the plugin support. You need to check with IfthenPay why this refund could not be issued.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 						return new WP_Error(
 							'error',
-							__( 'We are sorry but it was not possible to issue the refund. Please contact IfthenPay support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - (' . trim( $body->Code ) . ')' 
+							__( 'We are sorry, but it was not possible to issue the refund. Please contact the IfthenPay support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - (' . trim( $body->Code ) . ')' 
 						);
 					}
 				} else {
