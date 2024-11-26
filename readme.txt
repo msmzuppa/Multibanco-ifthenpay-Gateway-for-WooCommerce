@@ -240,6 +240,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * [FIX] Check order object before saving Multibanco details on the classic checkout
 * [DEV] Change default webservices timeout to 15 seconds instead of 30
 * [DEV] Tested with WordPress 6.8-alpha-59459 and WooCommerce 9.5.0-beta.1
+* [Black Friday & Cyber Monday] Get our [PRO add-on](https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/) with 25% discount until December 2
 
 = 9.6.0 - 2024-10-08 =
 * [FIX] Load text domain at the right time to avoid PHP notices on WordPress 6.7 and above
