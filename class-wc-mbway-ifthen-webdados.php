@@ -669,7 +669,16 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						</p>
 						<?php
 					}
-					if ( is_wc_endpoint_url( 'order-received' ) && ! $expired ) {
+					if (
+						(
+							is_wc_endpoint_url( 'order-received' )
+							||
+							// https://wordpress.org/support/topic/pagina-checkout-nao-atualiza/
+							apply_filters( 'mbway_ifthen_force_check_order_status_thankyou', false )
+						)
+						&&
+						! $expired
+					) {
 						if ( apply_filters( 'mbway_ifthen_enable_check_order_status_thankyou', true, $order->get_id() ) ) { // return false to mbway_ifthen_enable_check_order_status_thankyou in order to stop the ajax checking
 							// Check order status
 							?>

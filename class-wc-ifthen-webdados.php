@@ -115,6 +115,7 @@ final class WC_IfthenPay_Webdados {
 	/* Internal variables - For Apple and Google Pay */
 	public $gateway_ifthen_settings     = null;
 	public $gateway_ifthen_notify_url   = '';
+	public $gateway_ifthenreturn_url    = '';
 	public $gateway_ifthen_min_value    = 0; /* No limit in theory */
 	public $gateway_ifthen_max_value    = 99999.99; /* No limit in theory */
 	public $gateway_ifthen_banner_email = ''; /* Needed ? */

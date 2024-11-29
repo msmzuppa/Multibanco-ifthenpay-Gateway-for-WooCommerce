@@ -30,6 +30,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		public $gateways_methods_api_url;
 		public $backoffice_key;
 		public $gatewaykey;
+		public $methods_keys;
 		public $settings_saved;
 		public $send_to_admin;
 		public $only_portugal;
@@ -93,6 +94,13 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			$this->only_portugal  = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
 			$this->only_above     = $this->get_option( 'only_above' );
 			$this->only_below     = $this->get_option( 'only_bellow' );
+			$this->methods_keys   = array();
+			foreach( $this->get_available_gateway_methods() as $method => $accounts ) {
+				if ( $this->get_option( 'method_' . $method ) !== '' ) {
+					$this->methods_keys[ $method ] = $this->get_option( 'method_' . $method );
+				}
+			}
+
 
 			// Actions and filters
 			if ( self::$instances === 1 ) { // Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
@@ -574,10 +582,24 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 					} else {
 						// Set gateway callbacks
 						$available_methods = $this->get_available_gateway_methods();
-						foreach( $available_methods as $key => $account ) {
-							if ( isset( $_POST[ 'woocommerce_' . $this->id . '_method_' . $key ] ) && trim( $_POST[ 'woocommerce_' . $this->id . '_method_' . $key ] ) !== '' ) {
+						foreach( $available_methods as $method => $accounts ) {
+							if ( isset( $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] ) && trim( $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] ) !== '' ) {
+								if (
+									// Changed account
+									(
+										isset( $this->methods_keys[ $method ] )
+										&&
+										trim( $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] ) !== $this->methods_keys[ $method ]
+									)
+									||
+									// Set new account from no account
+									(
+										! isset( $this->methods_keys[ $method ] )
+									)
+								) {
+									var_dump( 'activate', $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] );
+								}
 								// Update callback for account
-								var_dump( $key, $_POST[ 'woocommerce_' . $this->id . '_method_' . $key ] );
 								/*
 								// Webservice
 								$result = WC_IfthenPay_Webdados()->callback_webservice( trim( $_POST['wc_ifthen_callback_bo_key'] ), 'MBWAY', $this->mbwaykey, $this->secret_key, WC_IfthenPay_Webdados()->mbway_notify_url );
@@ -903,8 +925,16 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		 */
 		function disable_if_settings_missing( $available_gateways ) {
 			if (
+				// Backoffice Key
+				strlen( trim( $this->backoffice_key ) ) != 19
+				||
+				// Gateway key
 				strlen( trim( $this->gatewaykey ) ) != 11
 				||
+				// Methods set
+				empty( $this->methods_keys )
+				||
+				// Enabled
 				trim( $this->enabled ) != 'yes'
 			) {
 				unset( $available_gateways[ $this->id ] );
