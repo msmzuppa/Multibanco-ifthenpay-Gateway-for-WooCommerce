@@ -8,8 +8,8 @@ jQuery(
 		var total_interval = 0;
 
 		function mbway_ifthen_order_check_status_init() {
-			  order_id  = $( '#mbway-order-id' ).val();
-			  order_key = $( '#mbway-order-key' ).val();
+			order_id  = $( '#mbway-order-id' ).val();
+			order_key = $( '#mbway-order-key' ).val();
 			setTimeout(
 				function(){
 					mbway_ifthen_order_check_status();
@@ -32,9 +32,10 @@ jQuery(
 				function( response ) {
 					var response = JSON.parse( response );
 					console.log( 'Status: ' + response.order_status );
-					if ( response.order_status && ( response.order_status == 'processing' || response.order_status == 'completed' ) ) {
-						  // DONE
-						  location.reload();
+					console.log( 'Expired: ' + response.expired );
+					if ( response.order_status && ( response.order_status == 'processing' || response.order_status == 'completed' || response.expired ) ) {
+						// DONE
+						location.reload();
 					} else {
 						interval = Math.round( interval * 1.2 );
 						if ( total_interval <= mbway_expire ) {

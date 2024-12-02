@@ -2606,13 +2606,25 @@ final class WC_IfthenPay_Webdados {
 	public function mbway_ajax_order_status() {
 		$order_id = wc_get_order_id_by_order_key( trim( $_POST['order_key'] ) );
 		if ( intval( $order_id ) > 0 && intval( $_POST['order_id'] ) == intval( $order_id ) ) {
-			$order = wc_get_order( intval( $order_id ) );
+			$order   = wc_get_order( intval( $order_id ) );
+			$expired = false;
+			if ( ! in_array( $order->get_status(), array( 'processing', 'completed' ) ) ) {
+				if ( date_i18n( 'Y-m-d H:i:s', strtotime( '-' . intval( $this->mbway_minutes * $this->mbway_multiplier_new_payment * 60 ) . ' SECONDS', current_time( 'timestamp' ) ) ) > $order->get_meta( '_' . $this->mbway_id . '_time' ) ) {
+					$expired = true;
+				}
+			}
 			echo json_encode(
-				array( 'order_status' => $order->get_status() )
+				array(
+					'order_status' => $order->get_status(),
+					'expired'      => $expired,
+				)
 			);
 		} else {
 			echo json_encode(
-				array( 'order_status' => '' )
+				array(
+					'order_status' => '',
+					'expirde'      => '',
+				)
 			);
 		}
 		die();
