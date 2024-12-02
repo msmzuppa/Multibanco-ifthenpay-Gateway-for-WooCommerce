@@ -857,12 +857,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			// Avoid duplicate email instructions on some edge cases
 			$send = false;
 			if ( ( $sent_to_admin ) ) {
-				// if ( ( $sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_admin ) ) { //Fixed by checking class instances
-				// WC_IfthenPay_Webdados()->instructions_sent_to_admin = true;
 				$send = true;
 			} elseif ( ( ! $sent_to_admin ) ) {
-					// if ( ( !$sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_client ) ) { //Fixed by checking class instances
-					// WC_IfthenPay_Webdados()->instructions_sent_to_client = true;
 					$send = true;
 			}
 			// Apply filter
@@ -870,7 +866,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			// Send
 			if ( $send ) {
 				// Go
-				if ( $this->id === $order->get_payment_method() || $order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id ) ) {
+				$order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id );
+				if ( $this->id === $order->get_payment_method() || $order_deposit ) {
 					if ( isset( $order_deposit ) && $order_deposit ) {
 						$order = $order_deposit;
 					}
@@ -890,11 +887,11 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							} else {
 								// We should not be here because there's no email for pending orders
 							}
-						} else {
+						} else { // phpcs:ignore (Universal.ControlStructures.DisallowLonelyIf.Found
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'gateway_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
-									echo $this->email_instructions_payment_received( $order->get_id() );
+									echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							}
 						}
@@ -902,11 +899,13 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				}
 			}
 		}
-		/*
-		function email_instructions_table_html( $order_id, $order_total ) {
-			return apply_filters( 'gateway_ifthen_email_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
-		}*/
-		function email_instructions_payment_received( $order_id ) {
+
+		/**
+		 * Email instructions - payment received
+		 *
+		 * @param int $order_id The order ID.
+		 */
+		private function email_instructions_payment_received( $order_id ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
@@ -924,9 +923,12 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		/**
 		 * API Init Payment
 		 * https://ifthenpay.com/docs/en/api/pbl/#tag/pay-by-link--pinpay/POST/{GATEWAY_KEY}
+		 *
+		 * @param int $order_id The order ID.
 		 */
-		function api_init_payment( $order_id ) {
-			$id                = $order_id; // We could randomize this...
+		private function api_init_payment( $order_id ) {
+			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$id                = $order_id;
 			$order             = wc_get_order( $order_id );
 			$valor             = round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
 			$gatewaykey        = apply_filters( 'multibanco_ifthen_base_gatewaykey', $this->gatewaykey, $order );
@@ -943,7 +945,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 						'en',
 						'es',
 						'fr',
-					)
+					),
+					true
 				)
 			) {
 				$lang = 'en';
@@ -971,7 +974,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 					'lang'          => $lang,
 				),
 			);
-			$args['body'] = json_encode( $args['body'] ); // Json not post variables
+			$args['body'] = wp_json_encode( $args['body'] ); // Json not post variables
 			$response     = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
 				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
@@ -979,7 +982,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
 			} elseif ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
-				if ( $body = json_decode( trim( $response['body'] ) ) ) {
+				$body = json_decode( trim( $response['body'] ) );
+				if ( $body ) {
 					WC_IfthenPay_Webdados()->set_order_gatewayifthenpay_details(
 						$order->get_id(),
 						array(
@@ -1006,6 +1010,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				return false;
 			}
 			return false;
+			// phpcs:enable
 		}
 
 		/**

@@ -1521,7 +1521,7 @@ final class WC_IfthenPay_Webdados {
 									$args['body']['expiryDays'] = trim( $expire_days );
 									// Temos de calcular a data e guardar mais lá à frente
 								}
-								$args['body'] = json_encode( $args['body'] );
+								$args['body'] = wp_json_encode( $args['body'] );
 								$response     = wp_remote_post( $url, $args );
 								if ( is_wp_error( $response ) ) {
 									$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
@@ -2728,14 +2728,14 @@ final class WC_IfthenPay_Webdados {
 					$expired = true;
 				}
 			}
-			echo json_encode(
+			echo wp_json_encode(
 				array(
 					'order_status' => $order->get_status(),
 					'expired'      => $expired,
 				)
 			);
 		} else {
-			echo json_encode(
+			echo wp_json_encode(
 				array(
 					'order_status' => '',
 					'expirde'      => '',
@@ -2750,11 +2750,11 @@ final class WC_IfthenPay_Webdados {
 		$order_id = wc_get_order_id_by_order_key( trim( $_POST['order_key'] ) );
 		if ( intval( $order_id ) > 0 && intval( $_POST['order_id'] ) == intval( $order_id ) ) {
 			$order = wc_get_order( intval( $order_id ) );
-			echo json_encode(
+			echo wp_json_encode(
 				array( 'order_status' => $order->get_status() )
 			);
 		} else {
-			echo json_encode(
+			echo wp_json_encode(
 				array( 'order_status' => '' )
 			);
 		}
@@ -2766,11 +2766,11 @@ final class WC_IfthenPay_Webdados {
 		$order_id = wc_get_order_id_by_order_key( trim( $_POST['order_key'] ) );
 		if ( intval( $order_id ) > 0 && intval( $_POST['order_id'] ) == intval( $order_id ) ) {
 			$order = wc_get_order( intval( $order_id ) );
-			echo json_encode(
+			echo wp_json_encode(
 				array( 'order_status' => $order->get_status() )
 			);
 		} else {
-			echo json_encode(
+			echo wp_json_encode(
 				array( 'order_status' => '' )
 			);
 		}
@@ -2785,14 +2785,14 @@ final class WC_IfthenPay_Webdados {
 				$mbway = new WC_MBWAY_IfThen_Webdados();
 				$phone = isset( $_REQUEST['phone'] ) ? trim( sanitize_text_field( $_REQUEST['phone'] ) ) : '';
 				if ( $mbway->webservice_set_pedido( $order->get_id(), $phone ) ) {
-					echo json_encode(
+					echo wp_json_encode(
 						array(
 							'status'  => 1,
 							'message' => __( 'MB WAY Payment has been requested', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						)
 					);
 				} else {
-					echo json_encode(
+					echo wp_json_encode(
 						array(
 							'status' => 0,
 							'error'  => __( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
@@ -2800,7 +2800,7 @@ final class WC_IfthenPay_Webdados {
 					);
 				}
 			} else {
-				echo json_encode(
+				echo wp_json_encode(
 					array(
 						'status' => 0,
 						'error'  => __( 'Invalid parameters', 'mbway_ifthen_request_payment_again' ),
@@ -2808,7 +2808,7 @@ final class WC_IfthenPay_Webdados {
 				);
 			}
 		} else {
-			echo json_encode(
+			echo wp_json_encode(
 				array(
 					'status' => 0,
 					'error'  => __( 'Error', 'mbway_ifthen_request_payment_again' ),
@@ -2894,7 +2894,7 @@ final class WC_IfthenPay_Webdados {
 			'headers'  => array(
 				'content-type' => 'application/json',
 			),
-			'body'     => json_encode(
+			'body'     => wp_json_encode(
 				array(
 					'chave'       => $bo_key,
 					'entidade'    => $ent,
@@ -2969,7 +2969,7 @@ final class WC_IfthenPay_Webdados {
 				'amount'        => (string) round( floatval( $amount ), 2 ),
 			),
 		);
-		$args['body'] = json_encode( $args['body'] );
+		$args['body'] = wp_json_encode( $args['body'] );
 		$response     = wp_remote_post( $this->refunds_url, $args );
 		if ( is_wp_error( $response ) ) {
 			$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();

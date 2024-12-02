@@ -493,7 +493,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				} else {
 					// Processing
 					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && ! is_wc_endpoint_url( 'view-order' ) ) {
-						echo $this->email_instructions_payment_received( $order->get_id() );
+						echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 				}
 			}
@@ -598,7 +598,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			// Send
 			if ( $send ) {
 				// Go
-				if ( $this->id === $order->get_payment_method() || $order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id ) ) {
+				$order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id );
+				if ( $this->id === $order->get_payment_method() || $order_deposit ) {
 					if ( isset( $order_deposit ) && $order_deposit ) {
 						$order = $order_deposit;
 					}
@@ -624,7 +625,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'creditcard_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
-									echo $this->email_instructions_payment_received( $order->get_id() );
+									echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							}
 						}
@@ -632,11 +633,13 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				}
 			}
 		}
-		/*
-		function email_instructions_table_html( $order_id, $order_total ) {
-			return apply_filters( 'creditcard_ifthen_email_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
-		}*/
-		function email_instructions_payment_received( $order_id ) {
+
+		/**
+		 * Email instructions - payment received
+		 *
+		 * @param int $order_id The order ID.
+		 */
+		private function email_instructions_payment_received( $order_id ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
@@ -655,7 +658,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		 * API Init Payment
 		 */
 		function api_init_payment( $order_id ) {
-			$id            = $order_id; // We could randomize this...
+			$id            = $order_id;
 			$order         = wc_get_order( $order_id );
 			$valor         = round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
 			$creditcardkey = apply_filters( 'multibanco_ifthen_base_creditcardkey', $this->creditcardkey, $order );
@@ -674,7 +677,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					'language'   => substr( trim( get_locale() ), 0, 2 ),
 				),
 			);
-			$args['body']  = json_encode( $args['body'] ); // Json not post variables
+			$args['body']  = wp_json_encode( $args['body'] ); // Json not post variables
 			$response      = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
 				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();

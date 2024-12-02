@@ -694,7 +694,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				} else {
 					// Processing
 					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && ! is_wc_endpoint_url( 'view-order' ) ) {
-						echo $this->email_instructions_payment_received( $order->get_id() );
+						echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 				}
 			}
@@ -884,7 +884,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			// Send
 			if ( $send ) {
 				// Go
-				if ( $this->id === $order->get_payment_method() || $order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id ) ) {
+				$order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id );
+				if ( $this->id === $order->get_payment_method() || $order_deposit ) {
 					if ( isset( $order_deposit ) && $order_deposit ) {
 						$order = $order_deposit;
 					}
@@ -912,7 +913,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'payshop_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
-									echo $this->email_instructions_payment_received( $order->get_id() );
+									echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							}
 						}
@@ -963,7 +964,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<?php
 			return apply_filters( 'payshop_ifthen_email_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
 		}
-		function email_instructions_payment_received( $order_id ) {
+
+		/**
+		 * Email instructions - payment received
+		 *
+		 * @param int $order_id The order ID.
+		 */
+		private function email_instructions_payment_received( $order_id ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
@@ -1006,7 +1013,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			if ( $date_exp ) {
 				$args['body']['validade'] = $date_exp->format( 'Ymd' );
 			}
-			$args['body'] = json_encode( $args['body'] ); // Json not post variables
+			$args['body'] = wp_json_encode( $args['body'] ); // Json not post variables
 
 			$response = wp_remote_post( $this->webservice_url, $args );
 			if ( is_wp_error( $response ) ) {

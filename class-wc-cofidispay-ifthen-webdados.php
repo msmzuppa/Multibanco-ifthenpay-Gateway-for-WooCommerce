@@ -663,7 +663,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				} else {
 					// Processing
 					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && ! is_wc_endpoint_url( 'view-order' ) ) {
-						echo $this->email_instructions_payment_received( $order->get_id() );
+						echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 				}
 			}
@@ -826,7 +826,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'cofidispay_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
-									echo $this->email_instructions_payment_received( $order->get_id() );
+									echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							}
 						}
@@ -866,7 +866,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<?php
 			return apply_filters( 'cofidispay_ifthen_email_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
 		}
-		function email_instructions_payment_received( $order_id ) {
+
+		/**
+		 * Email instructions - payment received
+		 *
+		 * @param int $order_id The order ID.
+		 */
+		private function email_instructions_payment_received( $order_id ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
@@ -887,7 +893,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		 * API Init Payment
 		 */
 		function api_init_payment( $order_id ) {
-			$id                = $order_id; // We could randomize this...
+			$id                = $order_id;
 			$order             = wc_get_order( $order_id );
 			$valor             = (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
 			$cofidispaykey     = apply_filters( 'multibanco_ifthen_base_cofidispaykey', $this->cofidispaykey, $order );
@@ -922,7 +928,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					'deliveryCity'    => trim( $order->get_shipping_city() ),
 				),
 			);
-			$args['body']  = json_encode( $args['body'] ); // Json not post variables
+			$args['body']  = wp_json_encode( $args['body'] ); // Json not post variables
 			$response      = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
 				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
