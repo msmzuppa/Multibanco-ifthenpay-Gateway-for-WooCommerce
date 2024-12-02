@@ -724,8 +724,11 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		/**
 		 * Process it
+		 *
+		 * @param  int $order_id Order ID.
+		 * @throws Exception     Error message.
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 			// Webservice
 			$order = wc_get_order( $order_id );
 			do_action( 'creditcard_ifthen_before_process_payment', $order );
@@ -742,8 +745,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					throw new Exception(
 						sprintf(
 							/* translators: %s: payment method */
-							__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							__( 'Credit or debit card', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+							esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							esc_html__( 'Credit or debit card', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 						)
 					);
 				}
@@ -764,11 +767,12 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			);
 		}
 
-
 		/**
 		 * Disable if key not correctly set
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_settings_missing( $available_gateways ) {
+		public function disable_if_settings_missing( $available_gateways ) {
 			if (
 				strlen( trim( $this->creditcardkey ) ) != 10
 				||
@@ -781,27 +785,39 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		/**
 		 * Just for €
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_currency_not_euro( $available_gateways ) {
+		public function disable_if_currency_not_euro( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_if_currency_not_euro( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just for Portugal
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_unless_portugal( $available_gateways ) {
+		public function disable_unless_portugal( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_unless_portugal( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just above/below certain amounts
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_only_above_or_below( $available_gateways ) {
-			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->creditcard_min_value, WC_IfthenPay_Webdados()->creditcard_max_value );
+		public function disable_only_above_or_below( $available_gateways ) {
+			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-		/* Payment complete - Stolen from PayPal method */
-		function payment_complete( $order, $txn_id = '', $note = '' ) {
+		/**
+		 * Payment complete
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @param  string   $txn_id Transaction ID.
+		 * @param  string   $note Payment note.
+		 */
+		public function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 			// As in PayPal, we only empty the cart if it was paid
@@ -815,7 +831,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		/**
 		 * Callback - Return from the payment gateway
 		 */
-		function callback() {
+		public function callback() {
 
 			$redirect_url = '';
 			$error        = false;
@@ -867,11 +883,11 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 								}
 								$url = $this->get_return_url( $order );
 								$this->payment_complete( $order, '', $note );
-								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								$debug_order = wc_get_order( $order->get_id() );
 								$this->debug_log( '-- Credit card payment received - Order ' . $order->get_id(), 'notice' );
 								$this->debug_log_extra( 'payment_complete - Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
-								wp_redirect( $url );
+								wp_safe_redirect( $url );
 								exit;
 							} else {
 								$error = 'Error: IfthenPay security hash validation failed';
@@ -936,11 +952,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			// Error and redirect
 			if ( $error ) {
 				$this->debug_log( '- ' . $error, 'warning', true, $error );
-				do_action( 'creditcard_ifthen_callback_payment_failed', $order_id, $error, $_GET );
-				if ( $redirect_url ) {
-					wp_redirect( $redirect_url );
-				} else {
-					// ???
+				do_action( 'creditcard_ifthen_callback_payment_failed', $order_id, $error, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( $redirect_url ) { // What if we don't have a redirect?
+					wp_safe_redirect( $redirect_url );
 				}
 				exit;
 			}
@@ -958,7 +972,14 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			return $result;
 		}
 
-		function callback_helper_get_pending_order( $request_id, $id, $val, $wd_secret = null ) {
+		/**
+		 * Helper to get pending order on calback
+		 *
+		 * @param mixed  $id        The unique ID, normally Order ID.
+		 * @param float  $val       The order value.
+		 * @param string $wd_secret The secret set to validate callbacks.
+		 */
+		private function callback_helper_get_pending_order( $id, $val, $wd_secret = null ) {
 			$return         = array(
 				'success' => false,
 				'error'   => false,
@@ -1004,20 +1025,38 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
+		/**
+		 * Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
-			}
-		}
-		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
-			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
 
-		/* Global admin notices */
-		function admin_notices() {
+		/**
+		 * Debug / Log Extra
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
+		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
+			if ( $this->debug ) {
+				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
+			}
+		}
+
+		/**
+		 * Global admin notices
+		 */
+		public function admin_notices() {
 			// New method
 			if (
 				(
@@ -1033,17 +1072,26 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 68px;"/>
 					<p>
 						<?php
-							echo sprintf(
-								__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong>Credit or debit card (IfthenPay)</strong>'
+							echo wp_kses_post(
+								printf(
+									/* translators: %s: payment method */
+									__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<strong>Credit or debit card (IfthenPay)</strong>'
+								)
 							);
 						?>
 						<br/>
 						<?php
-						echo sprintf(
-							__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=creditcard_ifthen_for_woocommerce">',
-							'</a></strong>'
+						echo wp_kses_post(
+							sprintf(
+							/* translators: %1$s: open link, %2$s: close link */
+								esc_html__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								sprintf(
+									'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=%s">',
+									$this->id
+								),
+								'</a></strong>'
+							)
 						);
 						?>
 					</p>

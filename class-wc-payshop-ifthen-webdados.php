@@ -1080,8 +1080,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Process it
+		 *
+		 * @param  int $order_id Order ID.
+		 * @throws Exception     Error message.
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 			// Webservice
 			$order = wc_get_order( $order_id );
 			do_action( 'payshop_ifthen_before_process_payment', $order );
@@ -1114,7 +1117,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				throw new Exception(
 					sprintf(
 						/* translators: %s: payment method */
-						__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'Payshop'
 					)
 				);
@@ -1122,11 +1125,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			return;
 		}
 
-
 		/**
 		 * Disable if key not correctly set
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_settings_missing( $available_gateways ) {
+		public function disable_if_settings_missing( $available_gateways ) {
 			if (
 				strlen( trim( $this->payshopkey ) ) != 10
 				||
@@ -1139,30 +1143,43 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Just for €
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_currency_not_euro( $available_gateways ) {
+		public function disable_if_currency_not_euro( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_if_currency_not_euro( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just for Portugal
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_unless_portugal( $available_gateways ) {
+		public function disable_unless_portugal( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_unless_portugal( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just above/below certain amounts
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_only_above_or_below( $available_gateways ) {
-			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->payshop_min_value, WC_IfthenPay_Webdados()->payshop_max_value );
+		public function disable_only_above_or_below( $available_gateways ) {
+			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-		/* Payment complete - Stolen from PayPal method */
-		function payment_complete( $order, $txn_id = '', $note = '' ) {
+		/**
+		 * Payment complete
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @param  string   $txn_id Transaction ID.
+		 * @param  string   $note Payment note.
+		 */
+		public function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 		}
+
 		/* Reduce stock on 'wc_maybe_reduce_stock_levels'? */
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
@@ -1176,7 +1193,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/**
 		 * Callback
 		 */
-		function callback() {
+		public function callback() {
 			@ob_clean();
 			// We must 1st check the situation and then process it and send email to the store owner in case of error.
 			if (
@@ -1281,7 +1298,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 											remove_filter( 'woocommerce_new_order_email_allows_resend', '__return_true' );
 										}
 									}
-									do_action( 'payshop_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+									do_action( 'payshop_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 									header( 'HTTP/1.1 200 OK' );
 									$this->debug_log( '-- Payshop payment received - Order ' . $order->get_id(), 'notice' );
@@ -1290,55 +1307,78 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 									header( 'HTTP/1.1 200 OK' );
 									$err = 'Error: The value does not match';
 									$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-									echo $err;
-									do_action( 'payshop_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET );
+									echo esc_html( $err );
+									do_action( 'payshop_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								}
 							} else {
 								header( 'HTTP/1.1 200 OK' );
 								$err = 'Error: More than 1 order found awaiting payment with these details';
 								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-								echo $err;
-								do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET );
+								echo esc_html( $err );
+								do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );
 							$err = 'Error: No orders found awaiting payment with these details';
 							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-							echo $err;
-							do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET );
+							echo esc_html( $err );
+							do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
 					} else {
 						header( 'HTTP/1.1 200 OK' );
 						$err = 'Error: Cannot process ' . trim( $estado ) . ' status';
 						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-						echo $err;
-						do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET );
+						echo esc_html( $err );
+						do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					}
 				} else {
 					// header("Status: 400");
 					$err = 'Argument errors';
 					$this->debug_log( '-- ' . $err . $arguments_error, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') with argument errors from ' . $_SERVER['REMOTE_ADDR'] . $arguments_error );
-					do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET );
-					wp_die( $err, 'WC_Payshop_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
+					do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					wp_die( esc_html( $err ), 'WC_Payshop_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 				}
 			} else {
 				// header("Status: 400");
 				$err = 'Callback (' . $_SERVER['REQUEST_URI'] . ') with missing arguments from ' . $_SERVER['REMOTE_ADDR'];
 				$this->debug_log( '- ' . $err, 'warning', true );
-				do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET );
+				do_action( 'payshop_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				wp_die( 'Error: Something is missing...', 'WC_Payshop_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 			}
 		}
 
-		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
+		/**
+		 * Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
 
-		/* Global admin notices - For example if callback email activation is still not sent */
-		function admin_notices() {
+		/**
+		 * Debug / Log Extra
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
+		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
+			if ( $this->debug ) {
+				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
+			}
+		}
+
+		/**
+		 * Global admin notices
+		 */
+		public function admin_notices() {
 			// Callback email
 			if (
 				trim( $this->enabled ) == 'yes'
@@ -1382,17 +1422,26 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 182px;"/>
 					<p>
 						<?php
-							echo sprintf(
-								__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong>Payshop (IfthenPay)</strong>'
+							echo wp_kses_post(
+								printf(
+									/* translators: %s: payment method */
+									__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<strong>Payshop (IfthenPay)</strong>'
+								)
 							);
 						?>
 						<br/>
 						<?php
-						echo sprintf(
-							__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=payshop_ifthen_for_woocommerce">',
-							'</a></strong>'
+						echo wp_kses_post(
+							sprintf(
+							/* translators: %1$s: open link, %2$s: close link */
+								esc_html__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								sprintf(
+									'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=%s">',
+									$this->id
+								),
+								'</a></strong>'
+							)
 						);
 						?>
 					</p>

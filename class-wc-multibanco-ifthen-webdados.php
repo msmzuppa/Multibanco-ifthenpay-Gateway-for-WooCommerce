@@ -1172,8 +1172,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Process it
+		 *
+		 * @param  int $order_id Order ID.
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 
 			$order = wc_get_order( $order_id );
 			do_action( 'multibanco_ifthen_before_process_payment', $order );
@@ -1284,11 +1286,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		}
 
-
 		/**
 		 * Disable if key not correctly set
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_settings_missing( $available_gateways ) {
+		public function disable_if_settings_missing( $available_gateways ) {
 			if (
 				trim( $this->enabled ) == 'yes'
 				&&
@@ -1321,28 +1324,39 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Just for €
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_currency_not_euro( $available_gateways ) {
+		public function disable_if_currency_not_euro( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_if_currency_not_euro( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just for Portugal
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_unless_portugal( $available_gateways ) {
+		public function disable_unless_portugal( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_unless_portugal( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just above/below certain amounts
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_only_above_or_below( $available_gateways ) {
-			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->multibanco_min_value, WC_IfthenPay_Webdados()->multibanco_max_value );
+		public function disable_only_above_or_below( $available_gateways ) {
+			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-
-		/* Payment complete - Stolen from PayPal method */
-		function payment_complete( $order, $txn_id = '', $note = '' ) {
+		/**
+		 * Payment complete
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @param  string   $txn_id Transaction ID.
+		 * @param  string   $note Payment note.
+		 */
+		public function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 		}
@@ -1359,7 +1373,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/**
 		 * Callback
 		 */
-		function callback() {
+		public function callback() {
 			@ob_clean();
 			// We must 1st check the situation and then process it and send email to the store owner in case of error.
 			if (
@@ -1419,7 +1433,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					if ( count( $orders ) > 0 ) {
 						$orders_exist = true;
 						$orders_count = count( $orders );
-						foreach ( $orders as $order ) {
+						foreach ( $orders as $order ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
 							// Just getting the last one
 						}
 					}
@@ -1458,7 +1472,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 										remove_filter( 'woocommerce_new_order_email_allows_resend', '__return_true' );
 									}
 								}
-								do_action( 'multibanco_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+								do_action( 'multibanco_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 								header( 'HTTP/1.1 200 OK' );
 								$this->debug_log( '-- Multibanco payment received - Order ' . $order->get_id(), 'notice' );
@@ -1467,48 +1481,64 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 								header( 'HTTP/1.1 200 OK' );
 								$err = 'Error: The value does not match';
 								$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-								echo $err;
-								do_action( 'multibanco_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET );
+								echo esc_html( $err );
+								do_action( 'multibanco_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );
 							$err = 'Error: More than 1 order found awaiting payment with these details';
 							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-							echo $err;
-							do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
+							echo esc_html( $err );
+							do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
 					} else {
 						header( 'HTTP/1.1 200 OK' );
 						$err = 'Error: No orders found awaiting payment with these details';
 						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-						echo $err;
-						do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
+						echo esc_html( $err );
+						do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					}
 				} else {
 					// header("Status: 400");
 					$err = 'Argument errors';
 					$this->debug_log( '-- ' . $err . $arguments_error, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') with argument errors from ' . $_SERVER['REMOTE_ADDR'] . $arguments_error );
-					do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
-					wp_die( $err, 'WC_Multibanco_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
+					do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					wp_die( esc_html( $err ), 'WC_Multibanco_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 				}
 			} else {
 				// header("Status: 400");
 				$err = 'Callback (' . $_SERVER['REQUEST_URI'] . ') with missing arguments from ' . $_SERVER['REMOTE_ADDR'];
 				$this->debug_log( '- ' . $err, 'warning', true );
-				do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
+				do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				wp_die( 'Error: Something is missing...', 'WC_Multibanco_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 			}
 		}
 
-		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
+		/**
+		 * Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
+
+		/**
+		 * Debug / Log Extra
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
 

@@ -1572,7 +1572,7 @@ final class WC_IfthenPay_Webdados {
 													throw new Exception(
 														sprintf(
 															/* translators: %s: payment method */
-															__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+															esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 															'Multibanco'
 														)
 													);
@@ -1602,7 +1602,7 @@ final class WC_IfthenPay_Webdados {
 											throw new Exception(
 												sprintf(
 													/* translators: %s: payment method */
-													__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+													esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 													'Multibanco'
 												)
 											);
@@ -3149,8 +3149,10 @@ final class WC_IfthenPay_Webdados {
 		);
 	}
 
-	/* Admin notices to warn about old technology */
-	function admin_notices() {
+	/**
+	 * Admin notices to warn about old technology
+	 */
+	public function admin_notices() {
 		$screen    = get_current_screen();
 		$screen_id = $screen ? $screen->id : '';
 		if ( apply_filters( 'ifthen_show_old_techonology_notice', true ) ) {

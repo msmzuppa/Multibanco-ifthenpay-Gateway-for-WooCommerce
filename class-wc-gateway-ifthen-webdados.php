@@ -887,7 +887,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							} else {
 								// We should not be here because there's no email for pending orders
 							}
-						} else { // phpcs:ignore (Universal.ControlStructures.DisallowLonelyIf.Found
+						} else { // phpcs:ignore Universal.ControlStructures.DisallowLonelyIf.Found
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'gateway_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
@@ -1015,13 +1015,17 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 
 		/**
 		 * Process it
+		 *
+		 * @param  int $order_id Order ID.
+		 * @throws Exception     Error message.
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 			// Webservice
 			$order = wc_get_order( $order_id );
 			do_action( 'gateway_ifthen_before_process_payment', $order );
 			if ( $order->get_total() > 0 ) {
-				if ( $redirect_url = $this->api_init_payment( $order->get_id() ) ) {
+				$redirect_url = $this->api_init_payment( $order->get_id() );
+				if ( ! empty( $redirect_url ) ) {
 					// WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
 					if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 						add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
@@ -1033,8 +1037,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 					throw new Exception(
 						sprintf(
 							/* translators: %s: payment method */
-							__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							__( 'IfthenPay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+							esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							esc_html__( 'IfthenPay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 						)
 					);
 				}
@@ -1055,11 +1059,12 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			);
 		}
 
-
 		/**
 		 * Disable if key not correctly set
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_settings_missing( $available_gateways ) {
+		public function disable_if_settings_missing( $available_gateways ) {
 			if (
 				// Backoffice Key
 				strlen( trim( $this->backoffice_key ) ) !== 19
@@ -1080,27 +1085,39 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 
 		/**
 		 * Just for €
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_currency_not_euro( $available_gateways ) {
+		public function disable_if_currency_not_euro( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_if_currency_not_euro( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just for Portugal
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_unless_portugal( $available_gateways ) {
+		public function disable_unless_portugal( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_unless_portugal( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just above/below certain amounts
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_only_above_or_below( $available_gateways ) {
+		public function disable_only_above_or_below( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-		/* Payment complete - Stolen from PayPal method */
-		function payment_complete( $order, $txn_id = '', $note = '' ) {
+		/**
+		 * Payment complete
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @param  string   $txn_id Transaction ID.
+		 * @param  string   $note Payment note.
+		 */
+		public function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 			// As in PayPal, we only empty the cart if it was paid
@@ -1114,12 +1131,15 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		/**
 		 * Callback - Return from payment gateway
 		 */
-		function return_payment_gateway() {
+		public function return_payment_gateway() {
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
 			$redirect_url = '';
 			$error        = false;
 			$order_id     = 0;
 			$orders_exist = false;
+
+			$server_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 
 			if (
 				isset( $_GET['id'] )
@@ -1128,12 +1148,12 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				&&
 				isset( $_GET['wd_secret'] )
 			) {
-				$this->debug_log( '- Return from payment gateway (' . $_SERVER['REQUEST_URI'] . ') with all arguments' );
-				$id        = trim( sanitize_text_field( $_GET['id'] ) );
-				$val       = trim( sanitize_text_field( $_GET['amount'] ) ); // Não fazemos float porque 7.40 passaria a 7.4 e depois não validava a hash
-				$wd_secret = trim( sanitize_text_field( $_GET['wd_secret'] ) );
+				$this->debug_log( '- Return from payment gateway (' . $server_request_uri . ') with all arguments' );
+				$id        = trim( sanitize_text_field( wp_unslash( $_GET['id'] ) ) );
+				$val       = trim( sanitize_text_field( wp_unslash( $_GET['amount'] ) ) ); // Não fazemos float porque 7.40 passaria a 7.4 e depois não validava a hash
+				$wd_secret = trim( sanitize_text_field( wp_unslash( $_GET['wd_secret'] ) ) );
 				$get_order = $this->callback_helper_get_pending_order( $id, $val, $wd_secret );
-				$success   = isset( $_GET['status'] ) ? trim( $_GET['status'] ) === 'success' : false;
+				$success   = isset( $_GET['status'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['status'] ) ) ) === 'success' : false;
 				switch ( $success ) {
 
 					case true:
@@ -1144,13 +1164,13 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							$order_details = WC_IfthenPay_Webdados()->get_gatewayifthenpay_order_details( $order->get_id() );
 							$note          = __( 'IfthenPay Gateway payment pre-approval received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 							$url           = $this->get_return_url( $order );
-							do_action( 'gateway_ifthen_return_payment_gateway_complete', $order->get_id(), $_GET );
+							do_action( 'gateway_ifthen_return_payment_gateway_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							$debug_order = wc_get_order( $order->get_id() );
 							$this->debug_log( '-- IfthenPay Gateway payment pre-approval received - Order ' . $order->get_id(), 'notice' );
 							$this->debug_log_extra( 'Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
 							$order->delete_meta_data( '_' . $this->id . '_checkouterror' );
 							$order->save();
-							wp_redirect( $url );
+							wp_safe_redirect( $url );
 							exit;
 						} else {
 							$error        = $get_order['error'];
@@ -1184,7 +1204,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 
 				}
 			} else {
-				$error = 'Return from payment gateway (' . $_SERVER['REQUEST_URI'] . ') with missing arguments';
+				$error = 'Return from payment gateway (' . $server_request_uri . ') with missing arguments';
 			}
 
 			// Error and redirect
@@ -1192,27 +1212,31 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				if ( ! empty( $order ) ) {
 					$order->update_meta_data( '_' . $this->id . '_checkouterror', $error ); // To show error on blocks checkout
 					$order->save();
-					do_action( 'gateway_ifthen_return_payment_gateway_failed', $order_id, $error, $_GET );
+					do_action( 'gateway_ifthen_return_payment_gateway_failed', $order_id, $error, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				}
 				$this->debug_log( '- ' . $error, 'warning', true, $error );
-				if ( $redirect_url ) {
-					wp_redirect( $redirect_url );
-				} else {
-					// ???
+				if ( $redirect_url ) { // What if we don't have a redirect?
+					wp_safe_redirect( $redirect_url );
 				}
 				exit;
 			}
+			// phpcs:enable
 		}
 
 		/**
 		 * Callback - Return from the payment gateway
 		 */
-		function callback() {
+		public function callback() {
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
 			$redirect_url = '';
 			$error        = false;
 			$order_id     = 0;
 			$orders_exist = false;
+
+			$server_http_host   = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+			$server_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+			$server_remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 
 			if (
 				isset( $_GET['key'] )
@@ -1222,16 +1246,17 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				isset( $_GET['amount'] )
 				&&
 				isset( $_GET['payment_method'] )
+				&&
+				isset( $_GET['status'] )
 			) {
-				$this->debug_log( '- Callback (' . $_SERVER['REQUEST_URI'] . ') with all arguments from ' . $_SERVER['REMOTE_ADDR'] );
-				$id  = trim( sanitize_text_field( $_GET['id'] ) );
-				$val = floatval( $_GET['amount'] );
-				// $status          = trim( $_GET['status'] );
-				$status          = 'PAGO';
-				$payment_method  = trim( $_GET['payment_method'] );
+				$this->debug_log( '- Callback (' . $server_request_uri . ') with all arguments from ' . $server_remote_addr );
+				$id              = trim( sanitize_text_field( wp_unslash( $_GET['id'] ) ) );
+				$val             = floatval( $_GET['amount'] );
+				$status          = trim( sanitize_text_field( wp_unslash( $_GET['status'] ) ) );
+				$payment_method  = trim( sanitize_text_field( wp_unslash( $_GET['payment_method'] ) ) );
 				$arguments_ok    = true;
 				$arguments_error = '';
-				if ( trim( $_GET['key'] ) !== trim( $this->secret_key ) ) {
+				if ( trim( sanitize_text_field( wp_unslash( $_GET['key'] ) ) ) !== trim( $this->secret_key ) ) {
 					$arguments_ok     = false;
 					$arguments_error .= ' - Key';
 				}
@@ -1253,12 +1278,12 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 						if ( count( $orders ) > 0 ) {
 							$orders_exist = true;
 							$orders_count = count( $orders );
-							foreach ( $orders as $order ) {
+							foreach ( $orders as $order ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
 								// Just getting the last one
 							}
 						} else {
 							$err = 'Error: No orders found awaiting payment with these details';
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 						}
 						if ( $orders_exist ) {
 							if ( $orders_count === 1 ) {
@@ -1273,8 +1298,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 											__( 'IfthenPay Gateway payment received via %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 											$payment_method
 										);
-										if ( isset( $_GET['payment_datetime'] ) && trim( $_GET['payment_datetime'] ) !== '' ) {
-											$note .= ' ' . trim( $_GET['payment_datetime'] );
+										if ( isset( $_GET['payment_datetime'] ) ) {
+											$note .= ' ' . trim( sanitize_text_field( wp_unslash( $_GET['payment_datetime'] ) ) );
 										}
 										// WooCommerce Deposits second payment?
 										if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
@@ -1295,60 +1320,68 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 										$order->update_meta_data( '_' . $this->id . '_payment_method', $payment_method );
 										$order->save();
 										$this->payment_complete( $order, '', $note );
-										do_action( 'gateway_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+										do_action( 'gateway_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 										header( 'HTTP/1.1 200 OK' );
 										$this->debug_log( '-- IfthenPay Gateway payment received - Order ' . $order->get_id(), 'notice' );
 										echo 'OK - IfthenPay Gateway payment received';
 									} else {
 										header( 'HTTP/1.1 200 OK' );
 										$err = 'Error: The value does not match';
-										$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] . ' - The value does not match' );
-										echo $err;
-										do_action( 'gateway_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET );
+										$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - The value does not match' );
+										echo esc_html( $err );
+										do_action( 'gateway_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 									}
 								} else {
 									header( 'HTTP/1.1 200 OK' );
 									$err = 'Error: IfthenPay Gateway payment received but order id or number does not match ID - Order callbak ID ' . $id . ' - Order id ' . $order->get_id() . ' - Order number ' . $order->get_order_number();
-									$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-									echo $err;
-									do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET );
+									$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
+									echo esc_html( $err );
+									do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								}
 							} else {
 								header( 'HTTP/1.1 200 OK' );
 								$err = 'Error: More than 1 order found awaiting payment with these details';
-								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] . ' - More than 1 order found awaiting payment with these details' );
-								echo $err;
-								do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET );
+								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - More than 1 order found awaiting payment with these details' );
+								echo esc_html( $err );
+								do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );
 							$err = 'Error: No orders found awaiting payment with these details';
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] . ' - No orders found awaiting payment with these details' );
-							echo $err;
-							do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - No orders found awaiting payment with these details' );
+							echo esc_html( $err );
+							do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
 					} else {
 						header( 'HTTP/1.1 200 OK' );
 						$err = 'Error: Cannot process ' . trim( $status ) . ' status';
-						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] . ' - Cannot process ' . trim( $status ) . ' status' );
-						echo $err;
-						do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET );
+						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - Cannot process ' . trim( $status ) . ' status' );
+						echo esc_html( $err );
+						do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					}
 				} else {
 					$err = 'Argument errors';
-					$this->debug_log( '-- ' . $err . $arguments_error, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') with argument errors from ' . $_SERVER['REMOTE_ADDR'] . $arguments_error );
-					do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET );
-					wp_die( $err, 'WC_Gateway_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
+					$this->debug_log( '-- ' . $err . $arguments_error, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') with argument errors from ' . $server_remote_addr . $arguments_error );
+					do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					wp_die( esc_html( $err ), 'WC_Gateway_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 				}
 			} else {
-				$err = 'Callback (' . $_SERVER['REQUEST_URI'] . ') with missing arguments from ' . $_SERVER['REMOTE_ADDR'];
-				$this->debug_log( '- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') with missing arguments from ' . $_SERVER['REMOTE_ADDR'] );
-				do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET );
+				$err = 'Callback (' . $server_request_uri . ') with missing arguments from ' . $server_remote_addr;
+				$this->debug_log( '- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') with missing arguments from ' . $server_remote_addr );
+				do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				wp_die( 'Error: Something is missing...', 'WC_Gateway_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 			}
+			// phpcs:enable
 		}
 
-		function callback_helper_get_pending_order( $id, $val, $wd_secret = null ) {
+		/**
+		 * Helper to get pending order on calback
+		 *
+		 * @param mixed  $id        The unique ID, normally Order ID.
+		 * @param float  $val       The order value.
+		 * @param string $wd_secret The secret set to validate callbacks.
+		 */
+		private function callback_helper_get_pending_order( $id, $val, $wd_secret = null ) {
 			$return         = array(
 				'success' => false,
 				'error'   => false,
@@ -1393,61 +1426,38 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/*
-		Localize javascript */
-		/*
-		public function frontend_classic_checkout_availability_check() {
-			if ( is_checkout() && $this->enabled === 'yes' && true ) { // Check if method settings are set
-				//wp_enqueue_script( 'google-pay', 'https://pay.google.com/gp/p/js/pay.js', array(), $this->version . ( WP_DEBUG ? '.' . wp_rand( 0, 99999 ) : '' ), true );
-				wp_enqueue_script(
-					'gateway-ifthenpay',
-					plugins_url( 'assets/gateway.js', __FILE__ ),
-					array(
-						'jquery',
-						//'google-pay',
-					),
-					$this->version . ( WP_DEBUG ? '.' . wp_rand( 0, 99999 ) : '' ),
-					true
-				);
-				wp_localize_script(
-					'gateway-ifthenpay',
-					'gateway_ifthenpay',
-					array(
-						'general' => array(
-							'method_title'       => $this->title,
-						),
-						'apple' => array(
-							'enabled'            => true, // There's a Apple Pay entity set
-							'method_title'       => 'Apple Pay', // From settings
-							//'method_description' => 'Apple Pay description', // From settings
-							'icon'               => '', // From settings
-						),
-						'google' => array(
-							'enabled'            => true, // There's a Google Pay entity set
-							'method_title'       => 'Google Pay', // From settings
-							//'method_description' => 'Google Pay description', // From settings
-							'icon'               => '', // From settings
-						),
-					)
-				);
-			}
-		}*/
-
-
-		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
+		/**
+		 * Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
 				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
+
+		/**
+		 * Debug / Log Extra
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
 				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
 
-		/* Global admin notices */
-		function admin_notices() {
+		/**
+		 * Global admin notices
+		 */
+		public function admin_notices() {
 			// New method
 			if (
 				(
@@ -1463,17 +1473,26 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->gateway_ifthen_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 186px;"/>
 					<p>
 						<?php
-							printf(
-								__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong>Apple Pay, Google Pay, or Pix (IfthenPay)</strong>'
+							echo wp_kses_post(
+								printf(
+									/* translators: %s: payment method */
+									__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<strong>Apple Pay, Google Pay, or Pix (IfthenPay)</strong>'
+								)
 							);
 						?>
 						<br/>
 						<?php
-						printf(
-							__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=gateway_ifthen_for_woocommerce">',
-							'</a></strong>'
+						echo wp_kses_post(
+							sprintf(
+								/* translators: %1$s: open link, %2$s: close link */
+								esc_html__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								sprintf(
+									'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=%s">',
+									$this->id
+								),
+								'</a></strong>'
+							)
 						);
 						?>
 					</p>

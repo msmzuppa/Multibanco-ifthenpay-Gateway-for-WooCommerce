@@ -975,8 +975,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Process it
+		 *
+		 * @param  int $order_id Order ID.
+		 * @throws Exception     Error message.
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 			// Webservice
 			$order = wc_get_order( $order_id );
 			do_action( 'cofidispay_ifthen_before_process_payment', $order );
@@ -988,7 +991,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					throw new Exception(
 						sprintf(
 							/* translators: %s: payment method */
-							__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'Cofidis Pay'
 						)
 					);
@@ -1010,11 +1013,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			);
 		}
 
-
 		/**
 		 * Disable if key not correctly set
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_settings_missing( $available_gateways ) {
+		public function disable_if_settings_missing( $available_gateways ) {
 			if (
 				strlen( trim( $this->cofidispaykey ) ) != 10
 				||
@@ -1027,27 +1031,39 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Just for €
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_currency_not_euro( $available_gateways ) {
+		public function disable_if_currency_not_euro( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_if_currency_not_euro( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just for Portugal
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_unless_portugal( $available_gateways ) {
+		public function disable_unless_portugal( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_unless_portugal( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just above/below certain amounts
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_only_above_or_below( $available_gateways ) {
-			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->cofidispay_min_value, WC_IfthenPay_Webdados()->cofidispay_max_value );
+		public function disable_only_above_or_below( $available_gateways ) {
+			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-		/* Payment complete - Stolen from PayPal method */
-		function payment_complete( $order, $txn_id = '', $note = '' ) {
+		/**
+		 * Payment complete
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @param  string   $txn_id Transaction ID.
+		 * @param  string   $note Payment note.
+		 */
+		public function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 			// As in PayPal, we only empty the cart if it was paid
@@ -1061,7 +1077,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/**
 		 * Callback - Return from payment gateway
 		 */
-		function return_payment_gateway() {
+		public function return_payment_gateway() {
 
 			$redirect_url = '';
 			$error        = false;
@@ -1093,13 +1109,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							$order_details = WC_IfthenPay_Webdados()->get_cofidispay_order_details( $order->get_id() );
 							$note          = __( 'Cofidis Pay payment pre-approval received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 							$url           = $this->get_return_url( $order );
-							do_action( 'cofidispay_ifthen_return_payment_gateway_complete', $order->get_id(), $_GET );
+							do_action( 'cofidispay_ifthen_return_payment_gateway_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							$debug_order = wc_get_order( $order->get_id() );
 							$this->debug_log( '-- Cofidis Pay payment pre-approval received - Order ' . $order->get_id(), 'notice' );
 							$this->debug_log_extra( 'Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
 							$order->delete_meta_data( '_' . $this->id . '_checkouterror' );
 							$order->save();
-							wp_redirect( $url );
+							wp_safe_redirect( $url );
 							exit;
 						} else {
 							$error = $get_order['error'];
@@ -1141,11 +1157,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				$order->update_meta_data( '_' . $this->id . '_checkouterror', $error ); // To show error on blocks checkout
 				$order->save();
 				$this->debug_log( '- ' . $error, 'warning', true, $error );
-				do_action( 'cofidispay_ifthen_callback_payment_failed', $order_id, $error, $_GET );
-				if ( $redirect_url ) {
-					wp_redirect( $redirect_url );
-				} else {
-					// ???
+				do_action( 'cofidispay_ifthen_callback_payment_failed', $order_id, $error, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( $redirect_url ) { // What if we don't have a redirect?
+					wp_safe_redirect( $redirect_url );
 				}
 				exit;
 			}
@@ -1155,7 +1169,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/**
 		 * Callback - IfthenPay callback
 		 */
-		function callback() {
+		public function callback() {
 			@ob_clean();
 			// We must 1st check the situation and then process it and send email to the store owner in case of error.
 			if (
@@ -1201,7 +1215,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					if ( count( $orders ) > 0 ) {
 						$orders_exist = true;
 						$orders_count = count( $orders );
-						foreach ( $orders as $order ) {
+						foreach ( $orders as $order ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
 							// Just getting the last one
 						}
 					} else {
@@ -1216,7 +1230,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 									$note .= ' ' . trim( $_GET['datahorapag'] );
 								}
 								$this->payment_complete( $order, '', $note );
-								do_action( 'cofidispay_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+								do_action( 'cofidispay_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								header( 'HTTP/1.1 200 OK' );
 								$this->debug_log( '-- Cofidis Pay payment approval received - Order ' . $order->get_id(), 'notice' );
 								echo 'OK - Cofidis Pay payment approval received';
@@ -1224,39 +1238,46 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 								header( 'HTTP/1.1 200 OK' );
 								$err = 'Error: The value does not match';
 								$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] . ' - The value does not match' );
-								echo $err;
-								do_action( 'cofidispay_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET );
+								echo esc_html( $err );
+								do_action( 'cofidispay_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );
 							$err = 'Error: More than 1 order found awaiting payment with these details';
 							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] . ' - More than 1 order found awaiting payment with these details' );
-							echo $err;
-							do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET );
+							echo esc_html( $err );
+							do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
 					} else {
 						header( 'HTTP/1.1 200 OK' );
 						$err = 'Error: No orders found awaiting payment with these details';
 						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] . ' - No orders found awaiting payment with these details' );
-						echo $err;
-						do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET );
+						echo esc_html( $err );
+						do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					}
 				} else {
 					// header("Status: 400");
 					$this->debug_log( '-- ' . $err . $arguments_error, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') with argument errors from ' . $_SERVER['REMOTE_ADDR'] . $arguments_error );
-					do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET );
-					wp_die( $err, 'WC_CofidisPay_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
+					do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					wp_die( esc_html( $err ), 'WC_CofidisPay_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 				}
 			} else {
 				// header("Status: 400");
 				$err = 'Callback (' . $_SERVER['REQUEST_URI'] . ') with missing arguments from ' . $_SERVER['REMOTE_ADDR'];
 				$this->debug_log( '- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') with missing arguments from ' . $_SERVER['REMOTE_ADDR'] );
-				do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET );
+				do_action( 'cofidispay_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				wp_die( 'Error: Something is missing...', 'WC_CofidisPay_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 			}
 		}
 
-		function callback_helper_get_pending_order( $id, $val, $wd_secret ) {
+		/**
+		 * Helper to get pending order on calback
+		 *
+		 * @param mixed  $id        The unique ID, normally Order ID.
+		 * @param float  $val       The order value.
+		 * @param string $wd_secret The secret set to validate callbacks.
+		 */
+		private function callback_helper_get_pending_order( $id, $val, $wd_secret = null ) {
 			$return         = array(
 				'success' => false,
 				'error'   => false,
@@ -1299,20 +1320,38 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			}
 		}
 
-		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
+		/**
+		 * Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
-			}
-		}
-		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
-			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
 
-		/* Global admin notices */
-		function admin_notices() {
+		/**
+		 * Debug / Log Extra
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
+		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
+			if ( $this->debug ) {
+				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
+			}
+		}
+
+		/**
+		 * Global admin notices
+		 */
+		public function admin_notices() {
 			// Callback email
 			if (
 				trim( $this->enabled ) == 'yes'
@@ -1356,17 +1395,26 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->cofidispay_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 200px;"/>
 					<p>
 						<?php
-							echo sprintf(
-								__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong>Cofidis Pay (IfthenPay)</strong>'
+							echo wp_kses_post(
+								printf(
+									/* translators: %s: payment method */
+									__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<strong>Cofidis Pay (IfthenPay)</strong>'
+								)
 							);
 						?>
 						<br/>
 						<?php
-						echo sprintf(
-							__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=cofidispay_ifthen_for_woocommerce">',
-							'</a></strong>'
+						echo wp_kses_post(
+							sprintf(
+							/* translators: %1$s: open link, %2$s: close link */
+								esc_html__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								sprintf(
+									'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=%s">',
+									$this->id
+								),
+								'</a></strong>'
+							)
 						);
 						?>
 					</p>
