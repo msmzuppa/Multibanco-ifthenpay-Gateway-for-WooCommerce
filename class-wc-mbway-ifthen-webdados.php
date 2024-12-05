@@ -645,7 +645,7 @@ Chave anti-phishing (MB WAY):
 URL:
 ' . WC_IfthenPay_Webdados()->mbway_notify_url . '
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Payshop and Cofidis Pay (IfthenPay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
+Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, and Cofidis Pay (IfthenPay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
 				$headers = array(
 					'From: ' . get_option( 'admin_email' ) . ' <' . get_option( 'admin_email' ) . '>',
 					'Cc: ' . $cc,
@@ -682,7 +682,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 					// We might have to deal with deposits...
-					if ( date_i18n( 'Y-m-d H:i:s', strtotime( '-' . intval( WC_IfthenPay_Webdados()->mbway_minutes * WC_IfthenPay_Webdados()->mbway_multiplier_new_payment * 60 ) . ' SECONDS', current_time( 'timestamp' ) ) ) > $order->get_meta( '_' . WC_IfthenPay_Webdados()->mbway_id . '_time' ) ) {
+					if ( date_i18n( 'Y-m-d H:i:s', strtotime( '-' . intval( WC_IfthenPay_Webdados()->mbway_minutes * WC_IfthenPay_Webdados()->mbway_multiplier_new_payment * 60 ) . ' SECONDS', current_time( 'timestamp' ) ) ) > $order->get_meta( '_' . WC_IfthenPay_Webdados()->mbway_id . '_time' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 						// Expired
 						$expired = true;
 						echo $this->thankyou_instructions_table_html_expired( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); // Missing MB WAY email or phone number?
@@ -840,7 +840,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					?>
 					<tr>
 						<td><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
-						<td class="mb_value"><?php echo WC_IfthenPay_Webdados()->mbway_format_expiration( $mbway_order_details['exp'], $order_id ); ?></td>
+						<td class="mb_value"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->mbway_format_expiration( $mbway_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
 				}
@@ -1014,7 +1014,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					?>
 					<tr>
 						<td style="border-top: 1px solid #1465AA; color: #000000;"><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
-						<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo WC_IfthenPay_Webdados()->mbway_format_expiration( $mbway_order_details['exp'], $order_id ); ?></td>
+						<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->mbway_format_expiration( $mbway_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
 				}

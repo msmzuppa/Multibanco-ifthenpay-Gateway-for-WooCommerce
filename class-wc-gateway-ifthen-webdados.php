@@ -606,23 +606,18 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							delete_option( $this->id . '_gateways' );
 							delete_option( $this->id . '_gateway_methods' );
 						}
-					} else { // phpcs:ignore Universal.ControlStructures.DisallowLonelyIf.Found
-						if ( isset( $_POST[ 'woocommerce_' . $this->id . '_gatewaykey' ] ) ) {
-							$gatewaykey = trim( sanitize_text_field( wp_unslash( $_POST[ 'woocommerce_' . $this->id . '_gatewaykey' ] ) ) );
-							if ( strlen( $gatewaykey ) === 11 ) {
-								if ( trim( $gatewaykey ) !== $this->gatewaykey ) {
-									// Update gateway methods
-									$url      = $this->gateways_methods_api_url . '?backofficekey=' . $backoffice_key . '&gatewayKey=' . $gatewaykey;
-									$response = wp_remote_get( $url );
-									if ( ! is_wp_error( $response ) ) {
-										if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
-											$body = json_decode( trim( $response['body'], true ) );
-											if ( ! empty( $body ) ) {
-												update_option( $this->id . '_gateway_methods', $body );
-											} else {
-												// Error handling missing
-												delete_option( $this->id . '_gateway_methods' );
-											}
+					} elseif ( isset( $_POST[ 'woocommerce_' . $this->id . '_gatewaykey' ] ) ) {
+						$gatewaykey = trim( sanitize_text_field( wp_unslash( $_POST[ 'woocommerce_' . $this->id . '_gatewaykey' ] ) ) );
+						if ( strlen( $gatewaykey ) === 11 ) {
+							if ( trim( $gatewaykey ) !== $this->gatewaykey ) {
+								// Update gateway methods
+								$url      = $this->gateways_methods_api_url . '?backofficekey=' . $backoffice_key . '&gatewayKey=' . $gatewaykey;
+								$response = wp_remote_get( $url );
+								if ( ! is_wp_error( $response ) ) {
+									if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
+										$body = json_decode( trim( $response['body'], true ) );
+										if ( ! empty( $body ) ) {
+											update_option( $this->id . '_gateway_methods', $body );
 										} else {
 											// Error handling missing
 											delete_option( $this->id . '_gateway_methods' );
@@ -631,79 +626,82 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 										// Error handling missing
 										delete_option( $this->id . '_gateway_methods' );
 									}
-									// Delete chosen methods
-									foreach ( $this->settings as $key => $value ) {
-										if ( substr( $key, 0, 7 ) === 'method_' ) {
-											unset( $this->settings[ $key ] );
-										}
-									}
-									update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ), 'yes' );
 								} else {
-									// Set gateway callbacks
-									$available_methods = $this->get_available_gateway_methods();
-									foreach ( $available_methods as $method => $accounts ) {
-										if ( isset( $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] ) ) {
-											$method_key = trim( sanitize_text_field( wp_unslash( $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] ) ) );
-											if ( $method_key !== '' ) {
-												if (
-													// Changed account
-													(
-														isset( $this->methods_keys[ $method ] )
-														&&
-														$method_key !== $this->methods_keys[ $method ]
-													)
-													||
-													// Set new account from no account
-													(
-														! isset( $this->methods_keys[ $method ] )
-													)
-												) {
-													// Activate callback for this account.
-													$method_key_temp = explode( '|', $method_key );
-													$result          = WC_IfthenPay_Webdados()->callback_webservice(
-														$this->backoffice_key,
-														trim( $method_key_temp[0] ),
-														trim( $method_key_temp[1] ),
-														$this->secret_key,
-														WC_IfthenPay_Webdados()->gateway_ifthen_notify_url
+									// Error handling missing
+									delete_option( $this->id . '_gateway_methods' );
+								}
+								// Delete chosen methods
+								foreach ( $this->settings as $key => $value ) {
+									if ( substr( $key, 0, 7 ) === 'method_' ) {
+										unset( $this->settings[ $key ] );
+									}
+								}
+								update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ), 'yes' );
+							} else {
+								// Set gateway callbacks
+								$available_methods = $this->get_available_gateway_methods();
+								foreach ( $available_methods as $method => $accounts ) {
+									if ( isset( $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] ) ) {
+										$method_key = trim( sanitize_text_field( wp_unslash( $_POST[ 'woocommerce_' . $this->id . '_method_' . $method ] ) ) );
+										if ( $method_key !== '' ) {
+											if (
+												// Changed account
+												(
+													isset( $this->methods_keys[ $method ] )
+													&&
+													$method_key !== $this->methods_keys[ $method ]
+												)
+												||
+												// Set new account from no account
+												(
+													! isset( $this->methods_keys[ $method ] )
+												)
+											) {
+												// Activate callback for this account.
+												$method_key_temp = explode( '|', $method_key );
+												$result          = WC_IfthenPay_Webdados()->callback_webservice(
+													$this->backoffice_key,
+													trim( $method_key_temp[0] ),
+													trim( $method_key_temp[1] ),
+													$this->secret_key,
+													WC_IfthenPay_Webdados()->gateway_ifthen_notify_url
+												);
+												$ok_messages     = array();
+												$error_messages  = array();
+												if ( $result['success'] ) {
+													WC_Admin_Settings::add_message(
+														sprintf(
+															/* translators: %s: payment account */
+															__( 'The “Callback” activation request for account %s has been submited to IfthenPay via webservice and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+															$method_key
+														)
 													);
-													$ok_messages     = array();
-													$error_messages  = array();
-													if ( $result['success'] ) {
-														WC_Admin_Settings::add_message(
-															sprintf(
-																/* translators: %s: payment account */
-																__( 'The “Callback” activation request for account %s has been submited to IfthenPay via webservice and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-																$method_key
-															)
-														);
-													} else {
-														// phpcs:disable
-														// https://github.com/woocommerce/woocommerce/issues/53397
-														// WC_Admin_Settings::add_error(
-														// phpcs:enabled
-														WC_Admin_Settings::add_message(
-															'ERROR: '
-															.
-															sprintf(
-																/* translators: %s: payment account */
-																__( 'The “Callback” activation request for account %s via webservice has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-																$method_key
-															)
-															.
-															' - '
-															.
-															$result['message']
-														);
-													}
+												} else {
+													// phpcs:disable
+													// https://github.com/woocommerce/woocommerce/issues/53397
+													// WC_Admin_Settings::add_error(
+													// phpcs:enabled
+													WC_Admin_Settings::add_message(
+														'ERROR: '
+														.
+														sprintf(
+															/* translators: %s: payment account */
+															__( 'The “Callback” activation request for account %s via webservice has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+															$method_key
+														)
+														.
+														' - '
+														.
+														$result['message']
+													);
 												}
 											}
 										}
 									}
 								}
-							} elseif ( strlen( $gatewaykey ) === 0 ) {
-								delete_option( $this->id . '_gateway_methods' );
 							}
+						} elseif ( strlen( $gatewaykey ) === 0 ) {
+							delete_option( $this->id . '_gateway_methods' );
 						}
 					}
 				} elseif ( strlen( $backoffice_key ) === 0 ) {
@@ -759,11 +757,9 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							);
 						}
 					}
-				} else { // phpcs:ignore Universal.ControlStructures.DisallowLonelyIf.Found
+				} elseif ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && ! is_wc_endpoint_url( 'view-order' ) ) {
 					// Processing
-					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && ! is_wc_endpoint_url( 'view-order' ) ) {
-						echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					}
+					echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 			}
 		}
@@ -917,12 +913,10 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							} else { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedElse
 								// We should not be here because there's no email for pending orders
 							}
-						} else { // phpcs:ignore Universal.ControlStructures.DisallowLonelyIf.Found
+						} elseif ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 							// Processing
-							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
-								if ( apply_filters( 'gateway_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
-									echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								}
+							if ( apply_filters( 'gateway_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
+								echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							}
 						}
 					}

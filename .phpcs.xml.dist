@@ -11,6 +11,7 @@
 		<exclude name="Squiz.Commenting.VariableComment.WrongStyle"/>
 		<exclude name="Squiz.Commenting.VariableComment.Missing"/>
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+		<exclude name="Generic.CodeAnalysis.AssignmentInCondition.Found"/><!-- There's already the WordPress one -->
 		<!-- No Yoda conditions! -->
 		<exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
 	</rule>

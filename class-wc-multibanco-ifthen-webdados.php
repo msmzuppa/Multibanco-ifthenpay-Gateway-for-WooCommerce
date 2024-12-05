@@ -828,7 +828,7 @@ Chave anti-phishing (Multibanco):
 URL:
 ' . WC_IfthenPay_Webdados()->multibanco_notify_url . '
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Payshop and Cofidis Pay (IfthenPay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
+Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, and Cofidis Pay (IfthenPay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
 				$headers = array(
 					'From: ' . get_option( 'admin_email' ) . ' <' . get_option( 'admin_email' ) . '>',
 					'Cc: ' . $cc,
@@ -970,7 +970,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					?>
 					<tr>
 						<td><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
-						<td class="mb_value"><?php echo WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ); ?></td>
+						<td class="mb_value"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
 				}
@@ -1120,7 +1120,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					?>
 					<tr>
 						<td style="border-top: 1px solid #1465AA; color: #000000;"><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
-						<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ); ?></td>
+						<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
 				}
