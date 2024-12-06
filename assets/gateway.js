@@ -20,6 +20,8 @@ jQuery(
 
 		function gateway_ifthen_order_check_status() {
 			total_interval = total_interval + interval;
+			page_url       = new URL( window.location.href );
+			page_url.searchParams.set( 'cache_buster', Math.random() );
 			console.log( 'Checking Gateway IfthenPay payment status, after ' + interval + 'ms (total: ' + total_interval + 'ms)' );
 			var data = {
 				action: 'wc_gateway_ifthenpay_order_status',
@@ -32,9 +34,9 @@ jQuery(
 				function( response ) {
 					var response = JSON.parse( response );
 					console.log( 'Status: ' + response.order_status );
-					if ( response.order_status && ( response.order_status == 'processing' || response.order_status == 'completed' ) ) {
+					if ( response.order_status && ( response.order_status == 'processing' || response.order_status == 'completed' || response.expired ) ) {
 						// DONE
-						location.reload();
+						window.location.href = page_url.toString() + '#ifthenpay_payment_received';
 					} else {
 						interval = Math.round( interval * 1.2 );
 						if ( total_interval <= gateway_expire ) {

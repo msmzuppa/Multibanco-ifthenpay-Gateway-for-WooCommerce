@@ -751,7 +751,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 								'gateway-ifthenpay',
 								'gateway_ifthenpay',
 								array(
-									'interval'        => apply_filters( 'gateway_ifthen_check_order_status_thankyou_interval', 10 ),
+									'interval'        => apply_filters( 'gateway_ifthen_check_order_status_thankyou_interval', 5 ),
 									'gateway_minutes' => 5,
 								)
 							);
@@ -933,7 +933,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
-			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;">
+			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->gateway_ifthen_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
 				<strong><?php esc_html_e( 'IfthenPay Gateway payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>

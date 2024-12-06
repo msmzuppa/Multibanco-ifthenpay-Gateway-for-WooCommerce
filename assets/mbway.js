@@ -20,6 +20,8 @@ jQuery(
 
 		function mbway_ifthen_order_check_status() {
 			total_interval = total_interval + interval;
+			page_url       = new URL( window.location.href );
+			page_url.searchParams.set( 'cache_buster', Math.random() );
 			console.log( 'Checking MB WAY payment status, after ' + interval + 'ms (total: ' + total_interval + 'ms)' );
 			var data = {
 				action: 'wc_mbway_ifthen_order_status',
@@ -32,10 +34,9 @@ jQuery(
 				function( response ) {
 					var response = JSON.parse( response );
 					console.log( 'Status: ' + response.order_status );
-					console.log( 'Expired: ' + response.expired );
 					if ( response.order_status && ( response.order_status == 'processing' || response.order_status == 'completed' || response.expired ) ) {
 						// DONE
-						location.reload();
+						window.location.href = page_url.toString() + '#ifthenpay_payment_received';
 					} else {
 						interval = Math.round( interval * 1.2 );
 						if ( total_interval <= mbway_expire ) {

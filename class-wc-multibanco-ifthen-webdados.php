@@ -1142,7 +1142,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
-			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;">
+			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->multibanco_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
 				<strong><?php _e( 'Multibanco payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
@@ -1545,12 +1545,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/* Global admin notices - For example if callback email activation is still not sent */
 		function admin_notices() {
 			if (
-				trim( $this->enabled ) == 'yes'
+				trim( $this->enabled ) === 'yes'
 				&&
 				(
 					( ! WC_IfthenPay_Webdados()->multibanco_api_mode_enabled )
 					&&
-					strlen( trim( $this->ent ) ) == 5
+					strlen( trim( $this->ent ) ) === 5
 					&&
 					strlen( trim( $this->subent ) ) <= 3
 					&&
@@ -1562,13 +1562,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				(
 					WC_IfthenPay_Webdados()->multibanco_api_mode_enabled
 					&&
-					strlen( trim( $this->mbkey ) ) == 10
+					strlen( trim( $this->mbkey ) ) === 10
 				)
 				&&
-				trim( $this->secret_key ) != ''
+				trim( $this->secret_key ) !== ''
 			) {
 				if ( $callback_email_sent = get_option( $this->id . '_callback_email_sent' ) ) { // No notice for older versions
-					if ( $callback_email_sent == 'no' ) {
+					if ( $callback_email_sent === 'no' ) {
 						if ( ! isset( $_GET['callback_warning'] ) ) {
 							if ( apply_filters( 'multibanco_ifthen_show_callback_notice', true ) ) {
 								?>
