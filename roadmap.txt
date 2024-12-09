@@ -1,5 +1,7 @@
 PRO ADD-ON PAGO:
-- Opção de guardar nº MBWAY:
+- Email quando há falhas de callback
+- Olhar para outros hooks disponíveis no plugin e "inventar" funcionalidades
+- Opção de guardar nº MBWAY: -> FEITO
 	- Checkbox junto ao campo de telefone, inactiva por omissão
 	- Se activada guarda em user meta que pode ser editada na área de cliente
 	- O que fazer se for removido a checkbox e houver um nº guardado? Manter o mesmo em user meta ou remover?
@@ -10,14 +12,18 @@ PRO ADD-ON PAGO:
 			- Se escolher outro, aparece campo e dá opção de usar este nº a partir de agora
 	- Workflow opção 2:
 		- Só checkbox "Guardar este número para futuras compras. Será associado à sua conta e substituirá outro, se existir. Pode gerir o número associado à sua conta aqui."
-- Depois de expirar o MBWAY, mudar para Multibanco automaticamente e enviar referência ao cliente -> Feito
+- Depois de expirar o MBWAY, mudar para Multibanco automaticamente e enviar referência ao cliente -> FEITO
 	- Ou enviar email para escolher outro método
 	- Ou ambos
-- Email quando há falhas de callback
-- Olhar para outros hooks disponíveis no plugin e "inventar" funcionalidades
 
 
 FREE:
+- MB WAY:
+	- Aceitar nºs estrangeiros
+- Gateway:
+	- Passar PIX para método isolado e migrar configurações
+	- Opção de icones de cada método em vez do Ifthenpay, e o mesmo no banner
+	- Definir validade do pagamento
 - Passar strings repetidas a únicas com placeholders:
 	- Fill out all the details (Cofidis Pay Key) provided by <strong>IfthenPay</strong> in the fields below.
 	- Set the Cofidis Pay Key and Save changes to set other plugin options.

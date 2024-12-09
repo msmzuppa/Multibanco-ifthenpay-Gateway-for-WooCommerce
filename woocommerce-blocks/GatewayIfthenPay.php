@@ -1,6 +1,6 @@
 <?php
 /**
- * Cofidis Pay blocks class
+ * IfthenPay Gateway blocks class
  */
 
 namespace Automattic\WooCommerce\Blocks\Payments\Integrations;
@@ -9,15 +9,15 @@ use Automattic\WooCommerce\Blocks\Assets\Api;
 use Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema;
 
 /**
- * Cofidis Pay payment method integration
+ * IfthenPay Gateway payment method integration
  */
-final class CofidisPayIfthenPay extends AbstractPaymentMethodType {
+final class GatewayIfthenPay extends AbstractPaymentMethodType {
 	/**
 	 * Payment method name defined by payment methods extending this class.
 	 *
 	 * @var string
 	 */
-	protected $name = 'cofidispay_ifthen_for_woocommerce';
+	protected $name = 'gateway_ifthen_ifthen_for_woocommerce';
 
 	/**
 	 * Constructor
@@ -29,7 +29,7 @@ final class CofidisPayIfthenPay extends AbstractPaymentMethodType {
 	 * Initializes the payment method type.
 	 */
 	public function initialize() {
-		$this->settings = WC_IfthenPay_Webdados()->cofidispay_settings;
+		$this->settings = WC_IfthenPay_Webdados()->gateway_ifthen_settings;
 		// WooCommerce Blocks - Store API
 		woocommerce_store_api_register_endpoint_data(
 			array(
@@ -58,13 +58,13 @@ final class CofidisPayIfthenPay extends AbstractPaymentMethodType {
 	 */
 	public function get_payment_method_script_handles() {
 		wp_register_script(
-			'wc-payment-method-cofidispay-ifthenpay',
-			plugins_url( 'build/cofidispay-block.js', __FILE__ ),
+			'wc-payment-method-gateway-ifthenpay',
+			plugins_url( 'build/gateway-block.js', __FILE__ ),
 			array(),
 			WC_IfthenPay_Webdados()->get_version() . ( WP_DEBUG ? '.' . wp_rand( 0, 9999 ) : '' ),
 			true
 		);
-		return array( 'wc-payment-method-cofidispay-ifthenpay' );
+		return array( 'wc-payment-method-gateway-ifthenpay' );
 	}
 
 	/**
@@ -76,11 +76,11 @@ final class CofidisPayIfthenPay extends AbstractPaymentMethodType {
 		return array(
 			'title'         => isset( $this->settings['title'] ) ? $this->settings['title'] : '',
 			'description'   => isset( $this->settings['description'] ) ? $this->settings['description'] : '',
-			'icon'          => WC_IfthenPay_Webdados()->cofidispay_icon,
+			'icon'          => WC_IfthenPay_Webdados()->gateway_ifthen_icon,
 			'only_portugal' => $this->settings['only_portugal'] === 'yes',
 			'only_above'    => floatval( $this->settings['only_above'] ) > 0 ? floatval( $this->settings['only_above'] ) : null,
 			'only_bellow'   => floatval( $this->settings['only_bellow'] ) > 0 ? floatval( $this->settings['only_bellow'] ) : null,
-			// We do not declare subscriptions support on Cofidis
+			// We do not declare subscriptions support on Apple, Google, Pix, ...
 			// 'support_woocommerce_subscriptions' => isset( $this->settings['support_woocommerce_subscriptions'] ) && ( 'yes' === $this->settings['support_woocommerce_subscriptions'] ), // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			// More settings needed?
 		);
@@ -93,8 +93,8 @@ final class CofidisPayIfthenPay extends AbstractPaymentMethodType {
 	 */
 	public function store_api_schema_callback() {
 		return array(
-			'cofidisFailedPayment' => array(
-				'description' => 'If the payment failed at Cofidis',
+			'gatewayFailedPayment' => array(
+				'description' => 'If the payment failed at the IfthenPay Gateway',
 				'type'        => array( 'float', 'null' ),
 				'readonly'    => true,
 			),
@@ -120,7 +120,7 @@ final class CofidisPayIfthenPay extends AbstractPaymentMethodType {
 			}
 		}
 		return array(
-			'cofidisFailedPayment' => $failed_payment,
+			'gatewayFailedPayment' => $failed_payment,
 		);
 	}
 }

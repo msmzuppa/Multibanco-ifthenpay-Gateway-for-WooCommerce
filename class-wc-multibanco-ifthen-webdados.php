@@ -7,11 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Multibanco IfThen Class.
- */
 if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 
+	/**
+	 * Multibanco IfThen Class.
+	 */
 	class WC_Multibanco_IfThen_Webdados extends WC_Payment_Gateway {
 
 		/* Single instance */
@@ -42,12 +42,12 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 		 */
 		public function __construct() {
 
-			self::$instances++;
+			++self::$instances;
 
 			$this->id = WC_IfthenPay_Webdados()->multibanco_id;
 
 			// Logs
-			$this->debug       = ( $this->get_option( 'debug' ) == 'yes' ? true : false );
+			$this->debug       = ( $this->get_option( 'debug' ) === 'yes' ? true : false );
 			$this->debug_email = $this->get_option( 'debug_email' );
 
 			// Check version and upgrade
@@ -58,7 +58,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 
 			$this->method_title       = __( 'Pagamento de Serviços no Multibanco (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			$this->method_description = __( 'Easy and simple payment using “Pagamento de Serviços” at any “Multibanco” ATM terminal or your homebanking service. (Only available to customers of Portuguese banks - Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			if ( WC_IfthenPay_Webdados()->wc_subscriptions_active && $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
+			if ( WC_IfthenPay_Webdados()->wc_subscriptions_active && $this->get_option( 'support_woocommerce_subscriptions' ) === 'yes' ) {
 				$this->supports = array(
 					'products',
 					'subscription_suspension',
@@ -69,7 +69,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				); // products is by default
 			}
 			$this->secret_key = $this->get_option( 'secret_key' );
-			if ( trim( $this->secret_key ) == '' ) {
+			if ( trim( $this->secret_key ) === '' ) {
 				// First load?
 				$this->secret_key = md5( home_url() . time() . wp_rand( 0, 999 ) );
 				// Save
@@ -91,8 +91,8 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			$this->subent             = $this->get_option( 'subent' );
 			$this->mbkey              = $this->get_option( 'mbkey' );
 			$this->settings_saved     = $this->get_option( 'settings_saved' );
-			$this->send_to_admin      = ( $this->get_option( 'send_to_admin' ) == 'yes' ? true : false );
-			$this->only_portugal      = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
+			$this->send_to_admin      = ( $this->get_option( 'send_to_admin' ) === 'yes' ? true : false );
+			$this->only_portugal      = ( $this->get_option( 'only_portugal' ) === 'yes' ? true : false );
 			$this->only_above         = $this->get_option( 'only_above' );
 			$this->only_below         = $this->get_option( 'only_bellow' );
 			$this->stock_when         = $this->get_option( 'stock_when' );
@@ -165,7 +165,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 		/**
 		 * Upgrades (if needed)
 		 */
-		function upgrade() {
+		private function upgrade() {
 			if ( $this->get_option( 'version' ) < $this->version ) {
 				$current_options = get_option( 'woocommerce_' . $this->id . '_settings', '' );
 				if ( ! is_array( $current_options ) ) {
@@ -173,7 +173,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				}
 				// Upgrade
 				$this->debug_log( 'Upgrade to ' . $this->version . ' started' );
-				if ( $this->version == '1.0.1' ) {
+				if ( $this->version === '1.0.1' ) {
 					// Only change is to set the version on the database. It's done below
 				}
 				if ( $this->get_option( 'version' ) < '1.7.9.2' && $this->version >= '1.7.9.2' && ! WC_IfthenPay_Webdados()->hpos_enabled ) {
@@ -246,15 +246,15 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 		 *      'default' => 'default value'
 		 *  ),
 		 */
-		function init_form_fields() {
+		public function init_form_fields() {
 			// Fix bug when the plugin is in Entity/Sub-entity mode but settings haven't been saved at least once
 			$api_mode_default = '';
 			if (
-				$this->get_option( 'api_mode' ) == ''
+				$this->get_option( 'api_mode' ) === ''
 				&&
 				( ! WC_IfthenPay_Webdados()->multibanco_api_mode_enabled )
 				&&
-				strlen( trim( $this->get_option( 'ent' ) ) ) == 5
+				strlen( trim( $this->get_option( 'ent' ) ) ) === 5
 				&&
 				strlen( trim( $this->get_option( 'subent' ) ) ) <= 3
 				&&
@@ -419,7 +419,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					),
 				)
 			);
-			if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) {
+			if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() === 'incremental_expire' ) {
 				$this->form_fields = array_merge(
 					$this->form_fields,
 					array(
@@ -592,19 +592,38 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						<small>v.<?php echo $this->version; ?></small>
 						<?php
 						if ( function_exists( 'wc_back_link' ) ) {
-							echo wc_back_link( __( 'Return to payments', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );}
+							wc_back_link( __( 'Return to payments', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );
+						}
 						?>
 					</h2>
 					<?php echo wp_kses_post( wpautop( $this->get_method_description() ) ); ?>
-					<p><strong><?php _e( 'In order to use this plugin you <u>must</u>:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+					<p><strong><?php esc_html_e( 'In order to use this plugin you need to:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 					<ul class="wc_ifthen_list">
-						<li><?php printf( __( 'Set WooCommerce currency to <strong>Euros (&euro;)</strong> %1$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<a href="admin.php?page=wc-settings&amp;tab=general">&gt;&gt;</a>.' ); ?></li>
-						<li><?php printf( __( 'Sign a contract with %1$s. To know more about this service, please go to %2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a></strong>', '<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">https://ifthenpay.com</a>' ); ?></li>
-						<li><?php _e( 'Fill out all the details (MB Key or Entity and Subentity) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> <?php _e( 'We recommend you specifically request for a MB Key, and mention you’re using WooCommerce, as it allows for reference expiration and will allow for further developments in the future.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
+						<li>
+							<?php
+							printf(
+								/* translators: %1$s: Euro, %2$s: link to WooCommerce settings */
+								esc_html__( 'Set WooCommerce currency to %1$s %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								'<strong>Euro (&euro;)</strong>',
+								'<a href="admin.php?page=wc-settings&amp;tab=general">' . esc_html__( 'here', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>.'
+							);
+							?>
+						</li>
+						<li>
+							<?php
+							printf(
+								/* translators: %1$s: link to Ifthenpay, %2$s: link to IfthenPay */
+								esc_html__( 'Sign a contract with %1$s. To learn more about this service, please go to %2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								'<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a></strong>',
+								'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">https://ifthenpay.com</a>'
+							);
+							?>
+						</li>
+						<li><?php echo wp_kses_post( __( 'Fill out all the details (MB Key or Entity and Subentity) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?> <?php esc_html_e( 'We recommend you specifically request for a MB Key, and mention you’re using WooCommerce, as it allows for reference expiration and will allow for further developments in the future.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
 						<li>
 						<?php
 						printf(
-							__( 'Never use the same %1$s or %2$s on more than one website or any other system, online or offline. Ask %3$s for new ones for each single platform.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							__( 'Do not use the same %1$s or %2$s on multiple websites or any other system, online or offline. Ask %3$s for new ones for every single platform.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							__( 'MB Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							__( 'Entity and Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a>'
@@ -615,12 +634,12 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					</ul>
 					<?php
 					do_action( 'multibanco_ifthen_after_settings_intro' );
-					WC_IfthenPay_Webdados()->multibanco_api_mode_enabled = isset( $this->settings['api_mode'] ) && $this->settings['api_mode'] == 'yes';
+					WC_IfthenPay_Webdados()->multibanco_api_mode_enabled = isset( $this->settings['api_mode'] ) && $this->settings['api_mode'] === 'yes';
 					if (
 						(
 							( ! WC_IfthenPay_Webdados()->multibanco_api_mode_enabled )
 							&&
-							strlen( trim( $this->ent ) ) == 5
+							strlen( trim( $this->ent ) ) === 5
 							&&
 							strlen( trim( $this->subent ) ) <= 3
 							&&
@@ -632,86 +651,86 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						(
 							WC_IfthenPay_Webdados()->multibanco_api_mode_enabled
 							&&
-							strlen( trim( $this->mbkey ) ) == 10
+							strlen( trim( $this->mbkey ) ) === 10
 						)
 						&&
-						trim( $this->secret_key ) != ''
+						trim( $this->secret_key ) !== ''
 					) {
 						if ( $callback_email_sent = get_option( $this->id . '_callback_email_sent' ) ) { // No notice for older versions
-							if ( $callback_email_sent == 'no' ) {
+							if ( $callback_email_sent === 'no' ) {
 								if ( ! isset( $_GET['callback_warning'] ) ) {
 									?>
 									<div id="message" class="error">
-										<p><strong><?php _e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+										<p><strong><?php esc_html_e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 									</div>
 									<?php
 								}
 							}
 						}
 						?>
-						<p id="wc_ifthen_callback_open_p"><a href="#" id="wc_ifthen_callback_open" class="button button-small"><?php _e( 'Click here to ask IfthenPay to activate the “Callback”', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a></p>
+						<p id="wc_ifthen_callback_open_p"><a href="#" id="wc_ifthen_callback_open" class="button button-small"><?php esc_html_e( 'Click here to ask IfthenPay to activate the “Callback”', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a></p>
 						<div id="wc_ifthen_callback_div">
-							<p><?php _e( 'This will submit a request to IfthenPay, asking them to activate the “Callback” on your account. The following details will be sent to IfthenPay:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
+							<p><?php esc_html_e( 'This will submit a request to IfthenPay, asking them to activate the “Callback” on your account. The following details will be sent to IfthenPay:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
 							<table class="form-table">
 								<tr valign="top">
-									<th scope="row" class="titledesc"><?php _e( 'Email', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Email', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
 									<td class="forminp">
 										<?php echo get_option( 'admin_email' ); ?>
 									</td>
 								</tr>
 								<tr valign="top">
-									<th scope="row" class="titledesc"><?php _e( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> / <?php _e( 'Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> / <?php esc_html_e( 'Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
 									<td class="forminp">
 										<?php echo WC_IfthenPay_Webdados()->multibanco_api_mode_enabled ? 'MB / ' . $this->mbkey : $this->ent . ' / ' . $this->subent; ?>
 									</td>
 								</tr>
 								<tr valign="top">
-									<th scope="row" class="titledesc"><?php _e( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (Multibanco)'; ?></th>
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (Multibanco)'; ?></th>
 									<td class="forminp">
 										<?php echo $this->secret_key; ?>
 									</td>
 								</tr>
 								<tr valign="top">
-									<th scope="row" class="titledesc"><?php _e( 'Callback URL', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Callback URL', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
 									<td class="forminp">
 										<?php echo WC_IfthenPay_Webdados()->multibanco_notify_url; ?>
 									</td>
 								</tr>
 							</table>
 							<p style="text-align: center;">
-								<strong><?php _e( 'Attention: if you ever change from HTTP to HTTPS or vice versa, or the permalinks structure,<br/>you may have to ask IfthenPay to update the callback URL.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+								<strong><?php echo wp_kses_post( __( 'Attention: if you ever change from HTTP to HTTPS or vice versa, or the permalinks structure,<br/>you may have to ask IfthenPay to update the callback URL.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?></strong>
 							</p>
 							<p style="text-align: center; margin-bottom: 0px;">
 								<input type="hidden" id="wc_ifthen_callback_send" name="wc_ifthen_callback_send" value="0"/>
 								<input type="hidden" id="wc_ifthen_callback_bo_key" name="wc_ifthen_callback_bo_key" value=""/>
-								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php _e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php _e( 'Via webservice (recommended)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', '' ); ?></button>
 								<br/><br/>
-								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php _e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php _e( 'Via email (old method)', '' ); ?></button>
-								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php _e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
+								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', '' ); ?></button>
+								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php esc_html_e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
 								<input type="hidden" name="save" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"/> <!-- Force action woocommerce_update_options_payment_gateways_ to run, from WooCommerce 3.5.5 -->
 							</p>
 						</div>
 						<?php
 					} else {
-						if ( $this->settings_saved == 1 ) {
+						if ( intval( $this->settings_saved ) === 1 ) {
 							if ( WC_IfthenPay_Webdados()->multibanco_api_mode_enabled ) {
 								?>
 								<div id="message" class="error">
-									<p><strong><?php _e( 'Invalid Entity / MB Key (exactly 3 letters and 6 numeric characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+									<p><strong><?php esc_html_e( 'Invalid Entity / MB Key (exactly 3 letters and 6 numeric characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 								</div>
 								<?php
 
 							} else {
 								?>
 								<div id="message" class="error">
-									<p><strong><?php _e( 'Invalid Entity (exactly 5 numeric characters) and/or Subentity (1 to 3 numeric characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+									<p><strong><?php esc_html_e( 'Invalid Entity (exactly 5 numeric characters) and/or Subentity (1 to 3 numeric characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 								</div>
 								<?php
 							}
 						} else {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Set the Entity/Subentity and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php esc_html_e( 'Set the Entity/Subentity and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						}
@@ -722,10 +741,10 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					if ( trim( get_woocommerce_currency() ) === 'EUR' || apply_filters( 'ifthen_allow_settings_woocommerce_not_euro', false ) ) {
 						?>
 						<table class="form-table">
-							<?php if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) { ?>
+							<?php if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() === 'incremental_expire' ) { ?>
 								<tr valign="top" id="wc_ifthen_mb_mode">
 									<th>
-										<label><?php _e( 'Mode', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></label>
+										<label><?php esc_html_e( 'Mode', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></label>
 									</th>
 									<td>
 										<?php
@@ -742,7 +761,19 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						<?php
 					} else {
 						?>
-						<p><strong><?php _e( 'ERROR!', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> <?php printf( __( 'Set WooCommerce currency to <strong>Euros (&euro;)</strong> %1$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<a href="admin.php?page=wc-settings&amp;tab=general">' . __( 'here', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>.' ); ?></strong></p>
+						<p>
+							<strong>
+								<?php esc_html_e( 'ERROR!', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+								<?php
+								printf(
+									/* translators: %1$s: Euro, %2$s: link to WooCommerce settings */
+									esc_html__( 'Set WooCommerce currency to %1$s %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<strong>Euro (&euro;)</strong>',
+									'<a href="admin.php?page=wc-settings&amp;tab=general">' . esc_html__( 'here', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>.'
+								);
+								?>
+							</strong>
+						</p>
 						<style type="text/css">
 							#mainform .submit,
 							.wp-core-ui .button-primary.woocommerce-save-button {
@@ -765,7 +796,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				$ent    = 'MB';
 				$subent = $this->mbkey;
 			}
-			if ( isset( $_POST['wc_ifthen_callback_send'] ) && intval( $_POST['wc_ifthen_callback_send'] ) == 2 && trim( $_POST['wc_ifthen_callback_bo_key'] ) != '' ) {
+			if ( isset( $_POST['wc_ifthen_callback_send'] ) && intval( $_POST['wc_ifthen_callback_send'] ) === 2 && trim( $_POST['wc_ifthen_callback_bo_key'] ) !== '' ) {
 				// Webservice
 				$result = WC_IfthenPay_Webdados()->callback_webservice( trim( $_POST['wc_ifthen_callback_bo_key'] ), $ent, $subent, $this->secret_key, WC_IfthenPay_Webdados()->multibanco_notify_url );
 				if ( $result['success'] ) {
@@ -778,7 +809,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						$result['message']
 					);
 				}
-			} elseif ( isset( $_POST['wc_ifthen_callback_send'] ) && intval( $_POST['wc_ifthen_callback_send'] ) == 1 ) {
+			} elseif ( isset( $_POST['wc_ifthen_callback_send'] ) && intval( $_POST['wc_ifthen_callback_send'] ) === 1 ) {
 				// Email
 				$to      = WC_IfthenPay_Webdados()->callback_email;
 				$cc      = get_option( 'admin_email' );
@@ -797,7 +828,7 @@ Chave anti-phishing (Multibanco):
 URL:
 ' . WC_IfthenPay_Webdados()->multibanco_notify_url . '
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Payshop and Cofidis Pay (IfthenPay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
+Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, and Cofidis Pay (IfthenPay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
 				$headers = array(
 					'From: ' . get_option( 'admin_email' ) . ' <' . get_option( 'admin_email' ) . '>',
 					'Cc: ' . $cc,
@@ -822,8 +853,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Thank you page
+		 *
+		 * @param mixed $order_id The order.
 		 */
-		function thankyou( $order_id ) {
+		public function thankyou( $order_id ) {
 			if ( is_object( $order_id ) ) {
 				$order = $order_id;
 			} else {
@@ -837,7 +870,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						echo $this->thankyou_instructions_table_html( $ref['ent'], $ref['ref'], WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), $order->get_id() );
 					} else {
 						?>
-						<p><strong><?php _e( 'Error getting Multibanco payment details', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>.</strong></p>
+						<p><strong><?php esc_html_e( 'Error getting Multibanco payment details', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>.</strong></p>
 						<?php
 						if ( is_string( $ref ) ) {
 							?>
@@ -848,44 +881,48 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				}
 			}
 		}
-		function thankyou_instructions_table_html_css() {
+
+		/**
+		 * Thank you page instructions table CSS
+		 */
+		private function thankyou_instructions_table_html_css() {
 			ob_start();
 			?>
 			<style type="text/css">
-				table.<?php echo $this->id; ?>_table {
+				table.<?php echo esc_html( $this->id ); ?>_table {
 					width: auto !important;
 					margin: auto;
 					margin-top: 2em;
 					margin-bottom: 2em;
 					max-width: 325px !important;
 				}
-				table.<?php echo $this->id; ?>_table td,
-				table.<?php echo $this->id; ?>_table th {
+				table.<?php echo esc_html( $this->id ); ?>_table td,
+				table.<?php echo esc_html( $this->id ); ?>_table th {
 					background-color: #FFFFFF;
 					color: #000000;
 					padding: 10px;
 					vertical-align: middle;
 					white-space: nowrap;
 				}
-				table.<?php echo $this->id; ?>_table td.mb_value {
+				table.<?php echo esc_html( $this->id ); ?>_table td.mb_value {
 					text-align: right;
 				}
 				@media only screen and (max-width: 450px)  {
-					table.<?php echo $this->id; ?>_table td,
-					table.<?php echo $this->id; ?>_table th {
+					table.<?php echo esc_html( $this->id ); ?>_table td,
+					table.<?php echo esc_html( $this->id ); ?>_table th {
 						white-space: normal;
 					}
 				}
-				table.<?php echo $this->id; ?>_table th {
+				table.<?php echo esc_html( $this->id ); ?>_table th {
 					text-align: center;
 					font-weight: bold;
 				}
-				table.<?php echo $this->id; ?>_table th img {
+				table.<?php echo esc_html( $this->id ); ?>_table th img {
 					margin: auto;
 					margin-top: 10px;
 					max-height: 48px;
 				}
-				table.<?php echo $this->id; ?>_table td.extra_instructions {
+				table.<?php echo esc_html( $this->id ); ?>_table td.extra_instructions {
 					font-size: small;
 					white-space: normal;
 				}
@@ -893,40 +930,47 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<?php
 			return ob_get_clean();
 		}
-		function thankyou_instructions_table_html( $ent, $ref, $order_total, $order_id ) {
+
+		/**
+		 * Thank you page instructions table HTML
+		 *
+		 * @param int   $order_id    The order ID.
+		 * @param float $order_total The order total.
+		 */
+		private function thankyou_instructions_table_html( $order_id, $order_total ) {
 			$alt                = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			$extra_instructions = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_extra_instructions', $this->extra_instructions ) : $this->extra_instructions );
 			// We actually do not use $ent, $ref or $order_total - We'll just get the details
 			$multibanco_order_details = WC_IfthenPay_Webdados()->get_multibanco_order_details( $order_id );
 			ob_start();
-			echo $this->thankyou_instructions_table_html_css();
+			echo $this->thankyou_instructions_table_html_css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
-			<table class="<?php echo $this->id; ?>_table" cellpadding="0" cellspacing="0">
+			<table class="<?php echo esc_attr( $this->id ); ?>_table" cellpadding="0" cellspacing="0">
 				<tr>
 					<th colspan="2">
-						<?php _e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						<br/>
 						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->multibanco_banner ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>"/>
 					</th>
 				</tr>
 				<tr>
-					<td><?php _e( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td><?php esc_html_e( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td class="mb_value"><?php echo $multibanco_order_details['ent']; ?></td>
 				</tr>
 				<tr>
-					<td><?php _e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td><?php esc_html_e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td class="mb_value"><?php echo WC_IfthenPay_Webdados()->format_multibanco_ref( $multibanco_order_details['ref'] ); ?></td>
 				</tr>
 				<tr>
-					<td><?php _e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td><?php esc_html_e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td class="mb_value"><?php echo wc_price( $multibanco_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
 				</tr>
 				<?php
-				if ( isset( $multibanco_order_details['exp'] ) && trim( $multibanco_order_details['exp'] ) != '' ) {
+				if ( isset( $multibanco_order_details['exp'] ) && trim( $multibanco_order_details['exp'] ) !== '' ) {
 					?>
 					<tr>
-						<td><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
-						<td class="mb_value"><?php echo WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ); ?></td>
+						<td><?php esc_html_e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+						<td class="mb_value"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
 				}
@@ -938,23 +982,40 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<?php
 			return apply_filters( 'multibanco_ifthen_thankyou_instructions_table_html', ob_get_clean(), $ent, $ref, $order_total, $order_id );
 		}
-		function order_details_after_order_table( $order ) {
+
+		/**
+		 * Thank you page instructions table HTML
+		 *
+		 * @param WC_Order $order The order.
+		 */
+		public function order_details_after_order_table( $order ) {
 			if ( is_wc_endpoint_url( 'view-order' ) ) {
 				$this->thankyou( $order );
 			}
 		}
 
-
-
-
 		/**
 		 * Email instructions
+		 *
+		 * @param WC_Order $order         The order.
+		 * @param bool     $sent_to_admin If it's sent to admin.
+		 * @param bool     $plain_text    If it's plain text format.
+		 * @param WC_Email $email         The email being sent.
 		 */
-		function email_instructions_1( $order, $sent_to_admin, $plain_text, $email = null ) {
+		public function email_instructions_1( $order, $sent_to_admin, $plain_text, $email = null ) {
 			// "Hyyan WooCommerce Polylang" Integration removes "email_instructions" so we use "email_instructions_1"
 			$this->email_instructions( $order, $sent_to_admin, $plain_text, $email );
 		}
-		function email_instructions( $order, $sent_to_admin, $plain_text, $email = null ) {
+
+		/**
+		 * Email instructions
+		 *
+		 * @param WC_Order $order         The order.
+		 * @param bool     $sent_to_admin If it's sent to admin.
+		 * @param bool     $plain_text    If it's plain text format.
+		 * @param WC_Email $email         The email being sent.
+		 */
+		private function email_instructions( $order, $sent_to_admin, $plain_text, $email = null ) {
 			// Avoid duplicate email instructions on some edge cases
 			$send = false;
 			if ( ( $sent_to_admin ) ) {
@@ -976,7 +1037,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			// Send
 			if ( $send ) {
 				// Go
-				if ( $this->id === $order->get_payment_method() || $order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id ) ) {
+				$order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id );
+				if ( $this->id === $order->get_payment_method() || $order_deposit ) {
 					if ( isset( $order_deposit ) && $order_deposit ) {
 						$order = $order_deposit;
 					}
@@ -994,7 +1056,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						// On Hold or pending
 						$this->debug_log_extra( 'Email (' . $email_id . ') instructions show: ' . ( $show ? 'true' : 'false' ) . ' - Status ' . $order->get_status() . ' - Order ' . $order->get_id() );
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
-							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
+							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 								// WooCommerce deposits - No instructions
 							} else {
 								$ref = WC_IfthenPay_Webdados()->multibanco_get_ref( $order->get_id() );
@@ -1005,7 +1067,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 									}
 								} else {
 									?>
-									<p><strong><?php _e( 'Error getting Multibanco payment details', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>.</strong></p>
+									<p><strong><?php esc_html_e( 'Error getting Multibanco payment details', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>.</strong></p>
 									<?php
 									if ( is_string( $ref ) ) {
 										?>
@@ -1018,7 +1080,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'multibanco_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
-									echo $this->email_instructions_payment_received( $order->get_id() );
+									echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							}
 						}
@@ -1036,29 +1098,29 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<table cellpadding="10" cellspacing="0" align="center" border="0" style="margin: auto; margin-top: 2em; margin-bottom: 2em; border-collapse: collapse; border: 1px solid #1465AA; border-radius: 4px !important; background-color: #FFFFFF;">
 				<tr>
 					<td style="border: 1px solid #1465AA; border-top-right-radius: 4px !important; border-top-left-radius: 4px !important; text-align: center; color: #000000; font-weight: bold;" colspan="2">
-						<?php _e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						<br/>
 						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->multibanco_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin-top: 10px; max-height: 48px;"/>
 					</td>
 				</tr>
 				<tr>
-					<td style="border-top: 1px solid #1465AA; color: #000000;"><?php _e( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td style="border-top: 1px solid #1465AA; color: #000000;"><?php esc_html_e( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo $multibanco_order_details['ent']; ?></td>
 				</tr>
 				<tr>
-					<td style="border-top: 1px solid #1465AA; color: #000000;"><?php _e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td style="border-top: 1px solid #1465AA; color: #000000;"><?php esc_html_e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo WC_IfthenPay_Webdados()->format_multibanco_ref( $multibanco_order_details['ref'] ); ?></td>
 				</tr>
 				<tr>
-					<td style="border-top: 1px solid #1465AA; color: #000000;"><?php _e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td style="border-top: 1px solid #1465AA; color: #000000;"><?php esc_html_e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo wc_price( $multibanco_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
 				</tr>
 				<?php
-				if ( isset( $multibanco_order_details['exp'] ) && trim( $multibanco_order_details['exp'] ) != '' ) {
+				if ( isset( $multibanco_order_details['exp'] ) && trim( $multibanco_order_details['exp'] ) !== '' ) {
 					?>
 					<tr>
-						<td style="border-top: 1px solid #1465AA; color: #000000;"><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
-						<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ); ?></td>
+						<td style="border-top: 1px solid #1465AA; color: #000000;"><?php esc_html_e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+						<td style="border-top: 1px solid #1465AA; color: #000000; white-space: nowrap; text-align: right;"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->multibanco_format_expiration( $multibanco_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
 				}
@@ -1070,16 +1132,22 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<?php
 			return apply_filters( 'multibanco_ifthen_email_instructions_table_html', ob_get_clean(), $ent, $ref, $order_total, $order_id );
 		}
-		function email_instructions_payment_received( $order_id ) {
+
+		/**
+		 * Email instructions - payment received
+		 *
+		 * @param int $order_id The order ID.
+		 */
+		private function email_instructions_payment_received( $order_id ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
-			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;">
+			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->multibanco_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
-				<strong><?php _e( 'Multibanco payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+				<strong><?php esc_html_e( 'Multibanco payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
-				<?php _e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+				<?php esc_html_e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 			</p>
 			<?php
 			return apply_filters( 'multibanco_ifthen_email_instructions_payment_received', ob_get_clean(), $order_id );
@@ -1104,15 +1172,17 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Process it
+		 *
+		 * @param  int $order_id Order ID.
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 
 			$order = wc_get_order( $order_id );
 			do_action( 'multibanco_ifthen_before_process_payment', $order );
 			$this->debug_log_extra( 'process_payment - Order ' . $order->get_id() );
 
 			// WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
-			if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
+			if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 				add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
 				add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 			}
@@ -1138,14 +1208,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						$this->debug_log( 'process_payment - Is pay form, clear details from database to force new ref because its a special entity with no repetition of references - Order ' . $order->get_id() );
 					} else {
 						// Check if value changed - not very likely
-						if ( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) != floatval( $order_mb_details['val'] ) ) {
+						if ( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) !== floatval( $order_mb_details['val'] ) ) {
 							$clear_details = true;
 							$this->debug_log( 'process_payment - Is pay form, clear details from database to force new ref because the value has changed - Order ' . $order->get_id() );
 						} else {
 							// The value hasn't changed - Is it incremental?
-							if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() == 'incremental_expire' ) {
+							if ( WC_IfthenPay_Webdados()->get_multibanco_ref_mode() === 'incremental_expire' ) {
 								// Is it expired already?
-								if ( isset( $order_mb_details['exp'] ) && trim( $order_mb_details['exp'] ) != '' ) {
+								if ( isset( $order_mb_details['exp'] ) && trim( $order_mb_details['exp'] ) !== '' ) {
 									if ( trim( $order_mb_details['exp'] ) <= date_i18n( 'Y-m-d H:i' ) ) {
 										// It's expired
 										$clear_details = true;
@@ -1216,18 +1286,19 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		}
 
-
 		/**
 		 * Disable if key not correctly set
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_settings_missing( $available_gateways ) {
+		public function disable_if_settings_missing( $available_gateways ) {
 			if (
-				trim( $this->enabled ) == 'yes'
+				trim( $this->enabled ) === 'yes'
 				&&
 				(
 					( ! WC_IfthenPay_Webdados()->multibanco_api_mode_enabled )
 					&&
-					strlen( trim( $this->ent ) ) == 5
+					strlen( trim( $this->ent ) ) === 5
 					&&
 					strlen( trim( $this->subent ) ) <= 3
 					&&
@@ -1239,10 +1310,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				(
 					WC_IfthenPay_Webdados()->multibanco_api_mode_enabled
 					&&
-					strlen( trim( $this->mbkey ) ) == 10
+					strlen( trim( $this->mbkey ) ) === 10
 				)
 				&&
-				trim( $this->secret_key ) != ''
+				trim( $this->secret_key ) !== ''
 			) {
 				// OK
 			} else {
@@ -1253,35 +1324,46 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * Just for €
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_currency_not_euro( $available_gateways ) {
+		public function disable_if_currency_not_euro( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_if_currency_not_euro( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just for Portugal
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_unless_portugal( $available_gateways ) {
+		public function disable_unless_portugal( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_unless_portugal( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just above/below certain amounts
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_only_above_or_below( $available_gateways ) {
-			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->multibanco_min_value, WC_IfthenPay_Webdados()->multibanco_max_value );
+		public function disable_only_above_or_below( $available_gateways ) {
+			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-
-		/* Payment complete - Stolen from PayPal method */
-		function payment_complete( $order, $txn_id = '', $note = '' ) {
+		/**
+		 * Payment complete
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @param  string   $txn_id Transaction ID.
+		 * @param  string   $note Payment note.
+		 */
+		public function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 		}
 		/* Reduce stock on 'wc_maybe_reduce_stock_levels'? */
 		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
 			$order = wc_get_order( $order_id );
-			if ( $order->get_payment_method() == $this->id ) {
+			if ( $order->get_payment_method() === $this->id ) {
 				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
 			} else {
 				return $bool;
@@ -1291,7 +1373,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/**
 		 * Callback
 		 */
-		function callback() {
+		public function callback() {
 			@ob_clean();
 			// We must 1st check the situation and then process it and send email to the store owner in case of error.
 			if (
@@ -1310,7 +1392,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				$val             = floatval( $_GET['valor'] );
 				$arguments_ok    = true;
 				$arguments_error = '';
-				if ( trim( $_GET['chave'] ) != trim( $this->secret_key ) ) {
+				if ( trim( $_GET['chave'] ) !== trim( $this->secret_key ) ) {
 					$arguments_ok     = false;
 					$arguments_error .= ' - Key';
 				}
@@ -1318,7 +1400,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					$arguments_ok     = false;
 					$arguments_error .= ' - Ref (numeric)';
 				}
-				if ( strlen( $ref ) != 9 ) {
+				if ( strlen( $ref ) !== 9 ) {
 					$arguments_ok     = false;
 					$arguments_error .= ' - Ref (length)';
 				}
@@ -1326,7 +1408,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					$arguments_ok     = false;
 					$arguments_error .= ' - Ent (numeric)';
 				}
-				if ( strlen( $ent ) != 5 ) {
+				if ( strlen( $ent ) !== 5 ) {
 					$arguments_ok     = false;
 					$arguments_error .= ' - Ent (length)';
 				}
@@ -1351,26 +1433,26 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					if ( count( $orders ) > 0 ) {
 						$orders_exist = true;
 						$orders_count = count( $orders );
-						foreach ( $orders as $order ) {
+						foreach ( $orders as $order ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
 							// Just getting the last one
 						}
 					}
 					if ( $orders_exist ) {
-						if ( $orders_count == 1 ) {
-							if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
+						if ( $orders_count === 1 ) {
+							if ( floatval( $val ) === floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 								$note = __( 'Multibanco payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-								if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] ) != '' ) {
+								if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] ) !== '' ) {
 									$note .= ' ' . trim( $_GET['datahorapag'] );
 								}
-								if ( isset( $_GET['terminal'] ) && trim( $_GET['terminal'] ) != '' ) {
+								if ( isset( $_GET['terminal'] ) && trim( $_GET['terminal'] ) !== '' ) {
 									$note .= ' ' . trim( $_GET['terminal'] );
 								}
 								// WooCommerce Deposits second payment?
 								if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
-									if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { // Has deposit
-										if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) { // First payment - OK!
-											if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { // Second payment - not ok
-												if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $val ) ) { // This really seems like the second payment
+									if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) === 'yes' ) { // Has deposit
+										if ( $order->get_meta( '_wc_deposits_deposit_paid' ) === 'yes' ) { // First payment - OK!
+											if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) !== 'yes' ) { // Second payment - not ok
+												if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) === floatval( $val ) ) { // This really seems like the second payment
 													// Set the current order status temporarly back to partially-paid, but first stop the emails
 													add_filter( 'woocommerce_email_enabled_customer_partially_paid', '__return_false' );
 													add_filter( 'woocommerce_email_enabled_partial_payment', '__return_false' );
@@ -1383,14 +1465,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 								$this->payment_complete( $order, '', $note );
 								// Force resending "New Order" email to the store owner (before 3.4.2 we had a "bug" that made this email duplicate - and people are used to it)
 								if ( apply_filters( 'multibanco_ifthen_set_on_hold', true, $order->get_id() ) ) { // Only if we set it on hold in the first place
-									if ( $this->get_option( 'resend_new_order_when_paid' ) == 'yes' ) { // And the option is activated
+									if ( $this->get_option( 'resend_new_order_when_paid' ) === 'yes' ) { // And the option is activated
 										// From WooCommerce 5.0 we need to force it
 										add_filter( 'woocommerce_new_order_email_allows_resend', '__return_true' );
 										WC()->mailer()->emails['WC_Email_New_Order']->trigger( $order->get_id(), $order );
 										remove_filter( 'woocommerce_new_order_email_allows_resend', '__return_true' );
 									}
 								}
-								do_action( 'multibanco_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+								do_action( 'multibanco_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 								header( 'HTTP/1.1 200 OK' );
 								$this->debug_log( '-- Multibanco payment received - Order ' . $order->get_id(), 'notice' );
@@ -1399,60 +1481,76 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 								header( 'HTTP/1.1 200 OK' );
 								$err = 'Error: The value does not match';
 								$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-								echo $err;
-								do_action( 'multibanco_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET );
+								echo esc_html( $err );
+								do_action( 'multibanco_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );
 							$err = 'Error: More than 1 order found awaiting payment with these details';
 							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-							echo $err;
-							do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
+							echo esc_html( $err );
+							do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
 					} else {
 						header( 'HTTP/1.1 200 OK' );
 						$err = 'Error: No orders found awaiting payment with these details';
 						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') from ' . $_SERVER['REMOTE_ADDR'] );
-						echo $err;
-						do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
+						echo esc_html( $err );
+						do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					}
 				} else {
 					// header("Status: 400");
 					$err = 'Argument errors';
 					$this->debug_log( '-- ' . $err . $arguments_error, 'warning', true, 'Callback (' . $_SERVER['HTTP_HOST'] . ' ' . $_SERVER['REQUEST_URI'] . ') with argument errors from ' . $_SERVER['REMOTE_ADDR'] . $arguments_error );
-					do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
-					wp_die( $err, 'WC_Multibanco_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
+					do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					wp_die( esc_html( $err ), 'WC_Multibanco_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 				}
 			} else {
 				// header("Status: 400");
 				$err = 'Callback (' . $_SERVER['REQUEST_URI'] . ') with missing arguments from ' . $_SERVER['REMOTE_ADDR'];
 				$this->debug_log( '- ' . $err, 'warning', true );
-				do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET );
+				do_action( 'multibanco_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				wp_die( 'Error: Something is missing...', 'WC_Multibanco_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 			}
 		}
 
-		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
+		/**
+		 * Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
+
+		/**
+		 * Debug / Log Extra
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
 
 		/* Global admin notices - For example if callback email activation is still not sent */
 		function admin_notices() {
 			if (
-				trim( $this->enabled ) == 'yes'
+				trim( $this->enabled ) === 'yes'
 				&&
 				(
 					( ! WC_IfthenPay_Webdados()->multibanco_api_mode_enabled )
 					&&
-					strlen( trim( $this->ent ) ) == 5
+					strlen( trim( $this->ent ) ) === 5
 					&&
 					strlen( trim( $this->subent ) ) <= 3
 					&&
@@ -1464,13 +1562,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				(
 					WC_IfthenPay_Webdados()->multibanco_api_mode_enabled
 					&&
-					strlen( trim( $this->mbkey ) ) == 10
+					strlen( trim( $this->mbkey ) ) === 10
 				)
 				&&
-				trim( $this->secret_key ) != ''
+				trim( $this->secret_key ) !== ''
 			) {
 				if ( $callback_email_sent = get_option( $this->id . '_callback_email_sent' ) ) { // No notice for older versions
-					if ( $callback_email_sent == 'no' ) {
+					if ( $callback_email_sent === 'no' ) {
 						if ( ! isset( $_GET['callback_warning'] ) ) {
 							if ( apply_filters( 'multibanco_ifthen_show_callback_notice', true ) ) {
 								?>
@@ -1478,9 +1576,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 									<p>
 										<strong>Multibanco (IfthenPay)</strong>
 										<br/>
-										<?php _e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+										<?php esc_html_e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 										<br/>
-										<strong><?php _e( 'This is important', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>! <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=multibanco_ifthen_for_woocommerce&amp;callback_warning=1"><?php _e( 'Do it here', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a>!</strong>
+										<strong><?php esc_html_e( 'This is important', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>! <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=multibanco_ifthen_for_woocommerce&amp;callback_warning=1"><?php esc_html_e( 'Do it here', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a>!</strong>
 									</p>
 								</div>
 								<?php

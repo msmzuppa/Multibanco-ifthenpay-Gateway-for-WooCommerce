@@ -7,11 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * CreditCard IfThen Class.
- */
 if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
+	/**
+	 * CreditCard IfThen Class.
+	 */
 	class WC_CreditCard_IfThen_Webdados extends WC_Payment_Gateway {
 
 		/* Single instance */
@@ -43,12 +43,12 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		 */
 		public function __construct() {
 
-			self::$instances++;
+			++self::$instances;
 
 			$this->id = WC_IfthenPay_Webdados()->creditcard_id;
 
 			// Logs
-			$this->debug       = ( $this->get_option( 'debug' ) == 'yes' ? true : false );
+			$this->debug       = ( $this->get_option( 'debug' ) === 'yes' ? true : false );
 			$this->debug_email = $this->get_option( 'debug_email' );
 
 			// Check version and upgrade
@@ -60,7 +60,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$this->method_title       = __( 'Credit or debit card (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			$this->method_description = __( 'Easy and simple payment using a Credit or debit card. (Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			/*
-			if ( $this->get_option( 'support_woocommerce_subscriptions' ) == 'yes' ) {
+			if ( $this->get_option( 'support_woocommerce_subscriptions' ) === 'yes' ) {
 				$this->supports = array(
 					'products',
 					'subscription_suspension',
@@ -85,13 +85,13 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$this->description               = $this->get_option( 'description' );
 			$this->creditcardkey             = $this->get_option( 'creditcardkey' );
 			$this->settings_saved            = $this->get_option( 'settings_saved' );
-			$this->send_to_admin             = ( $this->get_option( 'send_to_admin' ) == 'yes' ? true : false );
-			$this->only_portugal             = ( $this->get_option( 'only_portugal' ) == 'yes' ? true : false );
+			$this->send_to_admin             = ( $this->get_option( 'send_to_admin' ) === 'yes' ? true : false );
+			$this->only_portugal             = ( $this->get_option( 'only_portugal' ) === 'yes' ? true : false );
 			$this->only_above                = $this->get_option( 'only_above' );
 			$this->only_below                = $this->get_option( 'only_bellow' );
-			$this->do_refunds                = ( $this->get_option( 'do_refunds' ) == 'yes' ? true : false );
+			$this->do_refunds                = ( $this->get_option( 'do_refunds' ) === 'yes' ? true : false );
 			$this->do_refunds_backoffice_key = $this->get_option( 'do_refunds_backoffice_key' );
-			if ( $this->do_refunds && trim( $this->do_refunds_backoffice_key ) != '' ) {
+			if ( $this->do_refunds && trim( $this->do_refunds_backoffice_key ) !== '' ) {
 				$this->supports[] = 'refunds';
 			}
 
@@ -160,7 +160,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		/**
 		 * Upgrades (if needed)
 		 */
-		function upgrade() {
+		private function upgrade() {
 			if ( $this->get_option( 'version' ) < $this->version ) {
 				$current_options = get_option( 'woocommerce_' . $this->id . '_settings', '' );
 				if ( ! is_array( $current_options ) ) {
@@ -203,7 +203,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		 *      'default' => 'default value'
 		 *  ),
 		 */
-		function init_form_fields() {
+		public function init_form_fields() {
 
 			$this->form_fields = array(
 				'enabled'       => array(
@@ -225,7 +225,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					),
 				),
 			);
-			// if ( strlen( trim( $this->get_option( 'creditcardkey' ) ) ) == 10 && trim( $this->secret_key ) != '' ) {
+			// if ( strlen( trim( $this->get_option( 'creditcardkey' ) ) ) === 10 && trim( $this->secret_key ) !== '' ) {
 				$this->form_fields = array_merge(
 					$this->form_fields,
 					array(
@@ -368,19 +368,38 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						<small>v.<?php echo $this->version; ?></small>
 						<?php
 						if ( function_exists( 'wc_back_link' ) ) {
-							echo wc_back_link( __( 'Return to payments', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );}
+							wc_back_link( __( 'Return to payments', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );
+						}
 						?>
 					</h2>
 					<?php echo wp_kses_post( wpautop( $this->get_method_description() ) ); ?>
-					<p><strong><?php _e( 'In order to use this plugin you <u>must</u>:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+					<p><strong><?php esc_html_e( 'In order to use this plugin you need to:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 					<ul class="wc_ifthen_list">
-						<li><?php printf( __( 'Set WooCommerce currency to <strong>Euros (&euro;)</strong> %1$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<a href="admin.php?page=wc-settings&amp;tab=general">&gt;&gt;</a>.' ); ?></li>
-						<li><?php printf( __( 'Sign a contract with %1$s. To know more about this service, please go to %2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a></strong>', '<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">https://ifthenpay.com</a>' ); ?></li>
-						<li><?php _e( 'Fill out all the details (Credit card Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<li>
+							<?php
+							printf(
+								/* translators: %1$s: Euro, %2$s: link to WooCommerce settings */
+								esc_html__( 'Set WooCommerce currency to %1$s %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								'<strong>Euro (&euro;)</strong>',
+								'<a href="admin.php?page=wc-settings&amp;tab=general">' . esc_html__( 'here', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>.'
+							);
+							?>
+						</li>
+						<li>
+							<?php
+							printf(
+								/* translators: %1$s: link to Ifthenpay, %2$s: link to IfthenPay */
+								esc_html__( 'Sign a contract with %1$s. To learn more about this service, please go to %2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								'<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a></strong>',
+								'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">https://ifthenpay.com</a>'
+							);
+							?>
+						</li>
+						<li><?php echo wp_kses_post( __( 'Fill out all the details (Credit card Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?>
 						<li>
 						<?php
 						printf(
-							__( 'Never use the same %1$s on more than one website or any other system, online or offline. Ask %2$s for new ones for each single platform.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							__( 'Do not use the same %1$s on multiple websites or any other system, online or offline. Ask %2$s for new ones for every single platform.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							__( 'Credit card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a>'
 						);
@@ -389,20 +408,20 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					</ul>
 					<?php
 					if (
-						strlen( trim( $this->creditcardkey ) ) == 10
+						strlen( trim( $this->creditcardkey ) ) === 10
 					) {
 						// OK
 					} else {
-						if ( $this->settings_saved == 1 ) {
+						if ( intval( $this->settings_saved ) === 1 ) {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php esc_html_e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						} else {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php esc_html_e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						}
@@ -418,7 +437,19 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						<?php
 					} else {
 						?>
-						<p><strong><?php _e( 'ERROR!', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> <?php printf( __( 'Set WooCommerce currency to <strong>Euros (&euro;)</strong> %1$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<a href="admin.php?page=wc-settings&amp;tab=general">' . __( 'here', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>.' ); ?></strong></p>
+						<p>
+							<strong>
+								<?php esc_html_e( 'ERROR!', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+								<?php
+								printf(
+									/* translators: %1$s: Euro, %2$s: link to WooCommerce settings */
+									esc_html__( 'Set WooCommerce currency to %1$s %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<strong>Euro (&euro;)</strong>',
+									'<a href="admin.php?page=wc-settings&amp;tab=general">' . esc_html__( 'here', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>.'
+								);
+								?>
+							</strong>
+						</p>
 						<style type="text/css">
 							#mainform .submit,
 							.wp-core-ui .button-primary.woocommerce-save-button {
@@ -445,8 +476,10 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		/**
 		 * Thank you page
+		 *
+		 * @param mixed $order_id The order.
 		 */
-		function thankyou( $order_id ) {
+		public function thankyou( $order_id ) {
 			if ( is_object( $order_id ) ) {
 				$order = $order_id;
 			} else {
@@ -460,49 +493,53 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				} else {
 					// Processing
 					if ( ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) && ! is_wc_endpoint_url( 'view-order' ) ) {
-						echo $this->email_instructions_payment_received( $order->get_id() );
+						echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 				}
 			}
 		}
-		function thankyou_instructions_table_html_css() {
+
+		/**
+		 * Thank you page instructions table CSS
+		 */
+		private function thankyou_instructions_table_html_css() {
 			ob_start();
 			?>
 			<style type="text/css">
-				table.<?php echo $this->id; ?>_table {
+				table.<?php echo esc_html( $this->id ); ?>_table {
 					width: auto !important;
 					margin: auto;
 					margin-top: 2em;
 					margin-bottom: 2em;
 					max-width: 325px !important;
 				}
-				table.<?php echo $this->id; ?>_table td,
-				table.<?php echo $this->id; ?>_table th {
+				table.<?php echo esc_html( $this->id ); ?>_table td,
+				table.<?php echo esc_html( $this->id ); ?>_table th {
 					background-color: #FFFFFF;
 					color: #000000;
 					padding: 10px;
 					vertical-align: middle;
 					white-space: nowrap;
 				}
-				table.<?php echo $this->id; ?>_table td.mb_value {
+				table.<?php echo esc_html( $this->id ); ?>_table td.mb_value {
 					text-align: right;
 				}
 				@media only screen and (max-width: 450px)  {
-					table.<?php echo $this->id; ?>_table td,
-					table.<?php echo $this->id; ?>_table th {
+					table.<?php echo esc_html( $this->id ); ?>_table td,
+					table.<?php echo esc_html( $this->id ); ?>_table th {
 						white-space: normal;
 					}
 				}
-				table.<?php echo $this->id; ?>_table th {
+				table.<?php echo esc_html( $this->id ); ?>_table th {
 					text-align: center;
 					font-weight: bold;
 				}
-				table.<?php echo $this->id; ?>_table th img {
+				table.<?php echo esc_html( $this->id ); ?>_table th img {
 					margin: auto;
 					margin-top: 10px;
 					max-height: 48px;
 				}
-				table.<?php echo $this->id; ?>_table td.barcode_img {
+				table.<?php echo esc_html( $this->id ); ?>_table td.barcode_img {
 					text-align: center;
 				}
 			</style>
@@ -510,7 +547,12 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			return ob_get_clean();
 		}
 
-		function order_details_after_order_table( $order ) {
+		/**
+		 * Thank you page instructions table HTML
+		 *
+		 * @param WC_Order $order The order.
+		 */
+		public function order_details_after_order_table( $order ) {
 			if ( is_wc_endpoint_url( 'view-order' ) ) {
 				$this->thankyou( $order );
 			}
@@ -518,12 +560,26 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		/**
 		 * Email instructions
+		 *
+		 * @param WC_Order $order         The order.
+		 * @param bool     $sent_to_admin If it's sent to admin.
+		 * @param bool     $plain_text    If it's plain text format.
+		 * @param WC_Email $email         The email being sent.
 		 */
-		function email_instructions_1( $order, $sent_to_admin, $plain_text, $email = null ) {
+		public function email_instructions_1( $order, $sent_to_admin, $plain_text, $email = null ) {
 			// "Hyyan WooCommerce Polylang" Integration removes "email_instructions" so we use "email_instructions_1"
 			$this->email_instructions( $order, $sent_to_admin, $plain_text, $email );
 		}
-		function email_instructions( $order, $sent_to_admin, $plain_text, $email = null ) {
+
+		/**
+		 * Email instructions
+		 *
+		 * @param WC_Order $order         The order.
+		 * @param bool     $sent_to_admin If it's sent to admin.
+		 * @param bool     $plain_text    If it's plain text format.
+		 * @param WC_Email $email         The email being sent.
+		 */
+		private function email_instructions( $order, $sent_to_admin, $plain_text, $email = null ) {
 			// Avoid duplicate email instructions on some edge cases
 			$send = false;
 			if ( ( $sent_to_admin ) ) {
@@ -542,7 +598,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			// Send
 			if ( $send ) {
 				// Go
-				if ( $this->id === $order->get_payment_method() || $order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id ) ) {
+				$order_deposit = WC_IfthenPay_Webdados()->deposit_is_ifthenpay( $order, $this->id );
+				if ( $this->id === $order->get_payment_method() || $order_deposit ) {
 					if ( isset( $order_deposit ) && $order_deposit ) {
 						$order = $order_deposit;
 					}
@@ -559,7 +616,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						WC_IfthenPay_Webdados()->maybe_change_locale( $order );
 						// On Hold or pending
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
-							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
+							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 								// WooCommerce deposits - No instructions
 							} else {
 								// We should not be here because there's no email for pending orders
@@ -568,7 +625,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 							// Processing
 							if ( $order->has_status( 'processing' ) || $order->has_status( 'completed' ) ) {
 								if ( apply_filters( 'creditcard_ifthen_email_instructions_payment_received_send', true, $order->get_id() ) ) {
-									echo $this->email_instructions_payment_received( $order->get_id() );
+									echo $this->email_instructions_payment_received( $order->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							}
 						}
@@ -576,20 +633,22 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				}
 			}
 		}
-		/*
-		function email_instructions_table_html( $order_id, $order_total ) {
-			return apply_filters( 'creditcard_ifthen_email_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
-		}*/
-		function email_instructions_payment_received( $order_id ) {
+
+		/**
+		 * Email instructions - payment received
+		 *
+		 * @param int $order_id The order ID.
+		 */
+		private function email_instructions_payment_received( $order_id ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			ob_start();
 			?>
-			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;">
+			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
-				<strong><?php _e( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+				<strong><?php esc_html_e( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
-				<?php _e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+				<?php esc_html_e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 			</p>
 			<?php
 			return apply_filters( 'creditcard_ifthen_email_instructions_payment_received', ob_get_clean(), $order_id );
@@ -599,7 +658,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		 * API Init Payment
 		 */
 		function api_init_payment( $order_id ) {
-			$id            = $order_id; // We could randomize this...
+			$id            = $order_id;
 			$order         = wc_get_order( $order_id );
 			$valor         = round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
 			$creditcardkey = apply_filters( 'multibanco_ifthen_base_creditcardkey', $this->creditcardkey, $order );
@@ -618,7 +677,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					'language'   => substr( trim( get_locale() ), 0, 2 ),
 				),
 			);
-			$args['body']  = json_encode( $args['body'] ); // Json not post variables
+			$args['body']  = wp_json_encode( $args['body'] ); // Json not post variables
 			$response      = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
 				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
@@ -626,10 +685,10 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
 			} else {
-				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) == 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
+				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
 					if ( $body = json_decode( trim( $response['body'] ) ) ) {
-						if ( intval( $body->Status ) == 0 ) {
-							WC_IfthenPay_Webdados()->multibanco_set_order_creditcard_details(
+						if ( intval( $body->Status ) === 0 ) {
+							WC_IfthenPay_Webdados()->set_order_creditcard_details(
 								$order->get_id(),
 								array(
 									'creditcardkey' => $creditcardkey,
@@ -665,15 +724,18 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		/**
 		 * Process it
+		 *
+		 * @param  int $order_id Order ID.
+		 * @throws Exception     Error message.
 		 */
-		function process_payment( $order_id ) {
+		public function process_payment( $order_id ) {
 			// Webservice
 			$order = wc_get_order( $order_id );
 			do_action( 'creditcard_ifthen_before_process_payment', $order );
 			if ( $order->get_total() > 0 ) {
 				if ( $redirect_url = $this->api_init_payment( $order->get_id() ) ) {
 					// WooCommerce Deposits - When generating second payment reference the order goes from partially paid to on hold, and that has an email (??!)
-					if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() == 'partially-paid' ) {
+					if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 						add_filter( 'woocommerce_email_enabled_customer_processing_order', '__return_false' );
 						add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 					}
@@ -683,21 +745,22 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					throw new Exception(
 						sprintf(
 							/* translators: %s: payment method */
-							__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							__( 'Credit or debit card', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+							esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							esc_html__( 'Credit or debit card', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 						)
 					);
 				}
+				// Remove cart - not now, only after paid
 			} else {
 				// Value = 0
 				$order->payment_complete();
+				// Remove cart
+				if ( isset( WC()->cart ) ) {
+					WC()->cart->empty_cart();
+				}
+				// Empty awaiting payment session - not now, only after paid
+				unset( WC()->session->order_awaiting_payment );
 			}
-			// Remove cart - not now, only after paid
-			// if ( isset( WC()->cart ) ) {
-			// WC()->cart->empty_cart();
-			// }
-			// Empty awaiting payment session - not now, only after paid
-			// unset( WC()->session->order_awaiting_payment );
 			// Return payment url redirect
 			return array(
 				'result'   => 'success',
@@ -705,15 +768,16 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			);
 		}
 
-
 		/**
 		 * Disable if key not correctly set
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_settings_missing( $available_gateways ) {
+		public function disable_if_settings_missing( $available_gateways ) {
 			if (
-				strlen( trim( $this->creditcardkey ) ) != 10
+				strlen( trim( $this->creditcardkey ) ) !== 10
 				||
-				trim( $this->enabled ) != 'yes'
+				trim( $this->enabled ) !== 'yes'
 			) {
 				unset( $available_gateways[ $this->id ] );
 			}
@@ -722,27 +786,39 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		/**
 		 * Just for €
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_if_currency_not_euro( $available_gateways ) {
+		public function disable_if_currency_not_euro( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_if_currency_not_euro( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just for Portugal
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_unless_portugal( $available_gateways ) {
+		public function disable_unless_portugal( $available_gateways ) {
 			return WC_IfthenPay_Webdados()->disable_unless_portugal( $available_gateways, $this->id );
 		}
 
 		/**
 		 * Just above/below certain amounts
+		 *
+		 * @param array $available_gateways The available payment gateways.
 		 */
-		function disable_only_above_or_below( $available_gateways ) {
-			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->creditcard_min_value, WC_IfthenPay_Webdados()->creditcard_max_value );
+		public function disable_only_above_or_below( $available_gateways ) {
+			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-		/* Payment complete - Stolen from PayPal method */
-		function payment_complete( $order, $txn_id = '', $note = '' ) {
+		/**
+		 * Payment complete
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @param  string   $txn_id Transaction ID.
+		 * @param  string   $note Payment note.
+		 */
+		public function payment_complete( $order, $txn_id = '', $note = '' ) {
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 			// As in PayPal, we only empty the cart if it was paid
@@ -756,7 +832,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		/**
 		 * Callback - Return from the payment gateway
 		 */
-		function callback() {
+		public function callback() {
 
 			$redirect_url = '';
 			$error        = false;
@@ -788,15 +864,15 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 							$order_details = WC_IfthenPay_Webdados()->get_creditcard_order_details( $order->get_id() );
 							$sk            = isset( $_GET['sk'] ) ? trim( sanitize_text_field( $_GET['sk'] ) ) : '';
 							$hash          = hash_hmac( 'sha256', $id . $val . $request_id, $order_details['creditcardkey'] );
-							if ( $sk == $hash ) {
+							if ( $sk === $hash ) {
 								$this->debug_log_extra( 'Order found: ' . $order->get_id() . ' - Hash ok' );
 								$note = __( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 								// WooCommerce Deposits second payment?
 								if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
-									if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) == 'yes' ) { // Has deposit
-										if ( $order->get_meta( '_wc_deposits_deposit_paid' ) == 'yes' ) { // First payment - OK!
-											if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { // Second payment - not ok
-												if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) == floatval( $val ) ) { // This really seems like the second payment
+									if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) === 'yes' ) { // Has deposit
+										if ( $order->get_meta( '_wc_deposits_deposit_paid' ) === 'yes' ) { // First payment - OK!
+											if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) !== 'yes' ) { // Second payment - not ok
+												if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) === floatval( $val ) ) { // This really seems like the second payment
 													// Set the current order status temporarly back to partially-paid, but first stop the emails
 													add_filter( 'woocommerce_email_enabled_customer_partially_paid', '__return_false' );
 													add_filter( 'woocommerce_email_enabled_partial_payment', '__return_false' );
@@ -808,11 +884,11 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 								}
 								$url = $this->get_return_url( $order );
 								$this->payment_complete( $order, '', $note );
-								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id(), $_GET );
+								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								$debug_order = wc_get_order( $order->get_id() );
 								$this->debug_log( '-- Credit card payment received - Order ' . $order->get_id(), 'notice' );
 								$this->debug_log_extra( 'payment_complete - Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
-								wp_redirect( $url );
+								wp_safe_redirect( $url );
 								exit;
 							} else {
 								$error = 'Error: IfthenPay security hash validation failed';
@@ -877,11 +953,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			// Error and redirect
 			if ( $error ) {
 				$this->debug_log( '- ' . $error, 'warning', true, $error );
-				do_action( 'creditcard_ifthen_callback_payment_failed', $order_id, $error, $_GET );
-				if ( $redirect_url ) {
-					wp_redirect( $redirect_url );
-				} else {
-					// ???
+				do_action( 'creditcard_ifthen_callback_payment_failed', $order_id, $error, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( $redirect_url ) { // What if we don't have a redirect?
+					wp_safe_redirect( $redirect_url );
 				}
 				exit;
 			}
@@ -899,7 +973,14 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			return $result;
 		}
 
-		function callback_helper_get_pending_order( $request_id, $id, $val, $wd_secret = null ) {
+		/**
+		 * Helper to get pending order on calback
+		 *
+		 * @param mixed  $id        The unique ID, normally Order ID.
+		 * @param float  $val       The order value.
+		 * @param string $wd_secret The secret set to validate callbacks.
+		 */
+		private function callback_helper_get_pending_order( $id, $val, $wd_secret = null ) {
 			$return         = array(
 				'success' => false,
 				'error'   => false,
@@ -926,8 +1007,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				}
 			}
 			if ( $orders_exist ) {
-				if ( $orders_count == 1 ) {
-					if ( floatval( $val ) == floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
+				if ( $orders_count === 1 ) {
+					if ( floatval( $val ) === floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 						$return['success'] = true;
 						$return['order']   = $order;
 						return $return;
@@ -945,26 +1026,44 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/* Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument */
+		/**
+		 * Debug / Log - MOVED TO WC_IfthenPay_Webdados with gateway id as first argument
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
 		public function debug_log( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
 			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
-			}
-		}
-		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
-			if ( $this->debug ) {
-				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) != '' && $to_email ? $this->debug_email : false ), $email_message );
+				WC_IfthenPay_Webdados()->debug_log( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
 			}
 		}
 
-		/* Global admin notices */
-		function admin_notices() {
+		/**
+		 * Debug / Log Extra
+		 *
+		 * @param string $message       The message to debug.
+		 * @param string $level         The debug level.
+		 * @param bool   $to_email      Send to email.
+		 * @param string $email_message Email message.
+		 */
+		public function debug_log_extra( $message, $level = 'debug', $to_email = false, $email_message = '' ) {
+			if ( $this->debug ) {
+				WC_IfthenPay_Webdados()->debug_log_extra( $this->id, $message, $level, ( trim( $this->debug_email ) !== '' && $to_email ? $this->debug_email : false ), $email_message );
+			}
+		}
+
+		/**
+		 * Global admin notices
+		 */
+		public function admin_notices() {
 			// New method
 			if (
 				(
-					strlen( trim( $this->creditcardkey ) ) != 10
+					strlen( trim( $this->creditcardkey ) ) !== 10
 					||
-					trim( $this->enabled ) != 'yes'
+					trim( $this->enabled ) !== 'yes'
 				)
 				&&
 				( ! apply_filters( 'multibanco_ifthen_hide_newmethod_notifications', false ) )
@@ -974,17 +1073,26 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner ); ?>" style="float: left; margin-top: 0.5em; margin-bottom: 0.5em; margin-right: 1em; max-height: 48px; max-width: 68px;"/>
 					<p>
 						<?php
-							echo sprintf(
-								__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong>Credit or debit card (IfthenPay)</strong>'
+							echo wp_kses_post(
+								printf(
+									/* translators: %s: payment method */
+									__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<strong>Credit or debit card (IfthenPay)</strong>'
+								)
 							);
 						?>
 						<br/>
 						<?php
-						echo sprintf(
-							__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=creditcard_ifthen_for_woocommerce">',
-							'</a></strong>'
+						echo wp_kses_post(
+							sprintf(
+							/* translators: %1$s: open link, %2$s: close link */
+								esc_html__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								sprintf(
+									'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=%s">',
+									$this->id
+								),
+								'</a></strong>'
+							)
 						);
 						?>
 					</p>
@@ -992,11 +1100,11 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				<script type="text/javascript">
 				(function () {
 					notice    = jQuery( '#creditcard_ifthen_newmethod_notice');
-					dismissed = localStorage.getItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss' );
+					dismissed = localStorage.getItem( '<?php echo esc_attr( $this->id ); ?>_newmethod_notice_dismiss' );
 					if ( !dismissed ) {
 						jQuery( notice ).show();
 						jQuery( notice ).on( 'click', 'button.notice-dismiss', function() {
-							localStorage.setItem( '<?php echo $this->id; ?>_newmethod_notice_dismiss', 1 );
+							localStorage.setItem( '<?php echo esc_attr( $this->id ); ?>_newmethod_notice_dismiss', 1 );
 						});
 					}
 				}());

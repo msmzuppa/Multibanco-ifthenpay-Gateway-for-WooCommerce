@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <ruleset name="IfthenPay">
 	<config name="testVersion" value="7.0-"/>
-	<exclude-pattern type="relative">^/woocommerce-blocks/_build/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/woocommerce-blocks/build/*</exclude-pattern>
+	<exclude-pattern>/woocommerce-blocks/*/src/*</exclude-pattern>
+	<exclude-pattern>/assets/_*</exclude-pattern>
 	<rule ref="PHPCompatibilityWP"/>
 	<rule ref="WordPress">
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
@@ -11,6 +14,7 @@
 		<exclude name="Squiz.Commenting.VariableComment.WrongStyle"/>
 		<exclude name="Squiz.Commenting.VariableComment.Missing"/>
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+		<exclude name="Generic.CodeAnalysis.AssignmentInCondition.Found"/><!-- There's already the WordPress one -->
 		<!-- No Yoda conditions! -->
 		<exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
 	</rule>

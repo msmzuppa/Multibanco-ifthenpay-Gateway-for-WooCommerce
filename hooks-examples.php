@@ -206,7 +206,7 @@ function my_payshop_ifthen_callback_payment_failed( $order_id, $error, $get ) {
 // Multibanco - Change the icon html
 add_filter( 'woocommerce_gateway_icon', 'my_woocommerce_gateway_icon_mb', 1, 2 );
 function my_woocommerce_gateway_icon_mb( $html, $id ) {
-	if ( $id == WC_IfthenPay_Webdados()->multibanco_id ) {
+	if ( $id === WC_IfthenPay_Webdados()->multibanco_id ) {
 		$html = 'No icon'; // Any html you want here
 	}
 	return $html;
@@ -216,7 +216,7 @@ function my_woocommerce_gateway_icon_mb( $html, $id ) {
 // MB WAY - Change the icon html
 add_filter( 'woocommerce_gateway_icon', 'my_woocommerce_gateway_icon_mbway', 1, 2 );
 function my_woocommerce_gateway_icon_mbway( $html, $id ) {
-	if ( $id == WC_IfthenPay_Webdados()->mbway_id ) {
+	if ( $id === WC_IfthenPay_Webdados()->mbway_id ) {
 		$html = 'No icon'; // Any html you want here
 	}
 	return $html;
