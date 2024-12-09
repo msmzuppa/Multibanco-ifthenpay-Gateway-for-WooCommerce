@@ -85,10 +85,10 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			$this->init_settings();
 
 			// User settings
-			$this->title          = $this->get_option( 'title' );
-			$this->description    = $this->get_option( 'description' );
-			$this->backoffice_key = $this->get_option( 'backoffice_key' );
-			$this->gatewaykey     = $this->get_option( 'gatewaykey' );
+			$this->title          = trim( $this->get_option( 'title' ) );
+			$this->description    = trim( $this->get_option( 'description' ) );
+			$this->backoffice_key = trim( $this->get_option( 'backoffice_key' ) );
+			$this->gatewaykey     = trim( $this->get_option( 'gatewaykey' ) );
 			$this->settings_saved = $this->get_option( 'settings_saved' );
 			$this->send_to_admin  = ( $this->get_option( 'send_to_admin' ) === 'yes' ? true : false );
 			$this->only_portugal  = ( $this->get_option( 'only_portugal' ) === 'yes' ? true : false );

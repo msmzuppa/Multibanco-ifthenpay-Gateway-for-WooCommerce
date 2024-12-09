@@ -1,8 +1,10 @@
 (function( $ ) {
 
-	if ( ifthenpay.gateway != '' ) {
+	if ( ifthenpay.gateway !== '' ) {
 
 		var hide_extra_fields = true;
+
+		console.log( ifthenpay );
 
 		switch ( ifthenpay.gateway ) {
 			case 'multibanco':
@@ -14,9 +16,9 @@
 				);
 				if (
 					(
-						( $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() == '' || $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() == 'no' )
+						( $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() === '' || $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() === 'no' )
 						&&
-						$( '#woocommerce_multibanco_ifthen_for_woocommerce_ent' ).val().trim().length == 5
+						$( '#woocommerce_multibanco_ifthen_for_woocommerce_ent' ).val().trim().length === 5
 						&&
 						$( '#woocommerce_multibanco_ifthen_for_woocommerce_subent' ).val().trim().length <= 3
 						&&
@@ -24,15 +26,15 @@
 						&&
 						parseInt( $( '#woocommerce_multibanco_ifthen_for_woocommerce_subent' ).val() ) > 0
 						&&
-						$( '#woocommerce_multibanco_ifthen_for_woocommerce_secret_key' ).val().trim() != ''
+						$( '#woocommerce_multibanco_ifthen_for_woocommerce_secret_key' ).val().trim() !== ''
 					)
 					||
 					(
-						$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() == 'yes'
+						$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() === 'yes'
 						&&
-						$( '#woocommerce_multibanco_ifthen_for_woocommerce_mbkey' ).val().trim().length == 10
+						$( '#woocommerce_multibanco_ifthen_for_woocommerce_mbkey' ).val().trim().length === 10
 						&&
-						$( '#woocommerce_multibanco_ifthen_for_woocommerce_secret_key' ).val().trim() != ''
+						$( '#woocommerce_multibanco_ifthen_for_woocommerce_secret_key' ).val().trim() !== ''
 					)
 				) {
 					hide_extra_fields = false;
@@ -40,9 +42,9 @@
 				break;
 			case 'mbway':
 				if (
-					$( '#woocommerce_mbway_ifthen_for_woocommerce_mbwaykey' ).val().trim().length == 10
+					$( '#woocommerce_mbway_ifthen_for_woocommerce_mbwaykey' ).val().trim().length === 10
 					&&
-					$( '#woocommerce_mbway_ifthen_for_woocommerce_secret_key' ).val().trim() != ''
+					$( '#woocommerce_mbway_ifthen_for_woocommerce_secret_key' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
 				}
@@ -56,41 +58,41 @@
 				break;
 			case 'creditcard':
 				if (
-					$( '#woocommerce_creditcard_ifthen_for_woocommerce_creditcardkey' ).val().trim().length == 10
+					$( '#woocommerce_creditcard_ifthen_for_woocommerce_creditcardkey' ).val().trim().length === 10
 					&&
-					$( '#woocommerce_creditcard_ifthen_for_woocommerce_creditcardkey' ).val().trim() != ''
+					$( '#woocommerce_creditcard_ifthen_for_woocommerce_creditcardkey' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
 				}
 				break;
 			case 'payshop':
 				if (
-					$( '#woocommerce_payshop_ifthen_for_woocommerce_payshopkey' ).val().trim().length == 10
+					$( '#woocommerce_payshop_ifthen_for_woocommerce_payshopkey' ).val().trim().length === 10
 					&&
-					$( '#woocommerce_payshop_ifthen_for_woocommerce_secret_key' ).val().trim() != ''
+					$( '#woocommerce_payshop_ifthen_for_woocommerce_secret_key' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
 				}
 				break;
 			case 'cofidispay':
 				if (
-					$( '#woocommerce_cofidispay_ifthen_for_woocommerce_cofidispaykey' ).val().trim().length == 10
+					$( '#woocommerce_cofidispay_ifthen_for_woocommerce_cofidispaykey' ).val().trim().length === 10
 					&&
-					$( '#woocommerce_cofidispay_ifthen_for_woocommerce_cofidispaykey' ).val().trim() != ''
+					$( '#woocommerce_cofidispay_ifthen_for_woocommerce_cofidispaykey' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
 				}
 				break;
 			case 'gateway_ifthen':
 				if (
-					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val().trim().length == 19
+					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val().trim().length === 19
 					&&
-					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val().trim() != ''
+					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val().trim() !== ''
 				) {
 					if (
-						$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).val().trim().length == 11
+						$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).val().trim().length === 11
 						&&
-						$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).val().trim() != ''
+						$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).val().trim() !== ''
 					) {
 						if ( $( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_no_methods' ).length ) {
 							var number_fields = 5;
@@ -107,6 +109,11 @@
 						}
 					);
 				} else {
+					// Auto set backoffice key
+					if ( $( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val().trim() === '' && ifthenpay.backoffice_key !== '' ) {
+						$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val( ifthenpay.backoffice_key );
+						$( '#mainform p.submit button' ).removeAttr('disabled').click();
+					}
 					var number_fields = 3;
 				}
 				break;
@@ -189,10 +196,10 @@
 		);
 		setTimeout(
 			function() {
-				if ( ifthenpay.callback_email_sent == 'no' ) {
+				if ( ifthenpay.callback_email_sent === 'no' ) {
 					  $( '#wc_ifthen_callback_open' ).addClass( 'button-link-delete' );
 					  ifthen_callback_open();
-					if ( ifthenpay.callback_auto_open == '1' ) {
+					if ( ifthenpay.callback_auto_open === '1' ) {
 						setTimeout(
 							function() {
 								$( '#wc_ifthen_callback_div' ).addClass( 'focus' );
@@ -219,7 +226,7 @@
 	}
 
 	function ifthen_toogle_mb_api_mode() {
-		if ( $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() == 'yes' ) {
+		if ( $( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).val() === 'yes' ) {
 			$( '#woocommerce_multibanco_ifthen_for_woocommerce_ent' ).closest( 'tr' ).hide();
 			$( '#woocommerce_multibanco_ifthen_for_woocommerce_subent' ).closest( 'tr' ).hide();
 			$( '#woocommerce_multibanco_ifthen_for_woocommerce_mbkey' ).closest( 'tr' ).show();
