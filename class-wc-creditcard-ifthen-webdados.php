@@ -146,7 +146,6 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = $this;
 			}
-
 		}
 
 		/* Ensures only one instance of our plugin is loaded or can be loaded */
@@ -344,7 +343,6 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_creditcard_settings_fields', array() ) );
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_creditcard_settings_fields_all', $this->form_fields );
-
 		}
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
@@ -411,20 +409,19 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						strlen( trim( $this->creditcardkey ) ) === 10
 					) {
 						// OK
-					} else {
-						if ( intval( $this->settings_saved ) === 1 ) {
-							?>
+					} elseif ( intval( $this->settings_saved ) === 1 ) {
+						?>
 							<div id="message" class="error">
 								<p><strong><?php esc_html_e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
-						} else {
-							?>
+					} else {
+						?>
 							<div id="message" class="error">
 								<p><strong><?php esc_html_e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
-						}
+
 					}
 					?>
 					<hr/>
@@ -586,12 +583,10 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				// if ( ( $sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_admin ) ) { //Fixed by checking class instances
 				// WC_IfthenPay_Webdados()->instructions_sent_to_admin = true;
 				$send = true;
-			} else {
-				if ( ( ! $sent_to_admin ) ) {
+			} elseif ( ( ! $sent_to_admin ) ) {
 					// if ( ( !$sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_client ) ) { //Fixed by checking class instances
 					// WC_IfthenPay_Webdados()->instructions_sent_to_client = true;
 					$send = true;
-				}
 			}
 			// Apply filter
 			$send = apply_filters( 'creditcard_ifthen_send_email_instructions', $send, $order, $sent_to_admin, $plain_text, $email );
@@ -606,10 +601,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 					$show = false;
 					if ( ! $sent_to_admin ) {
 						$show = true;
-					} else {
-						if ( $this->send_to_admin ) {
+					} elseif ( $this->send_to_admin ) {
 							$show = true;
-						}
 					}
 					if ( $show ) {
 						// Force correct language
@@ -684,40 +677,38 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
-			} else {
-				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
-					if ( $body = json_decode( trim( $response['body'] ) ) ) {
-						if ( intval( $body->Status ) === 0 ) {
-							WC_IfthenPay_Webdados()->set_order_creditcard_details(
-								$order->get_id(),
-								array(
-									'creditcardkey' => $creditcardkey,
-									'request_id'    => $body->RequestId,
-									'id'            => apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id(),
-									'val'           => $valor,
-									'payment_url'   => $body->PaymentUrl,
-									'wd_secret'     => $wd_secret,
-								)
-							);
-							$this->debug_log( '- Credit card payment request created on IfthenPay servers - Redirecting to payment gateway - Order ' . $order->get_id() . ' - RequestId: ' . $body->RequestId );
-							do_action( 'creditcard_ifthen_created_reference', $body->RequestId, $order->get_id() );
-							return $body->PaymentUrl;
-						} else {
-							$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Error code and message: ' . $body->Status . ' / ' . $body->Message;
-							$this->debug_log( $debug_msg, 'error', true, $debug_msg );
-							return false;
-						}
+			} elseif ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
+				if ( $body = json_decode( trim( $response['body'] ) ) ) {
+					if ( intval( $body->Status ) === 0 ) {
+						WC_IfthenPay_Webdados()->set_order_creditcard_details(
+							$order->get_id(),
+							array(
+								'creditcardkey' => $creditcardkey,
+								'request_id'    => $body->RequestId,
+								'id'            => apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id(),
+								'val'           => $valor,
+								'payment_url'   => $body->PaymentUrl,
+								'wd_secret'     => $wd_secret,
+							)
+						);
+						$this->debug_log( '- Credit card payment request created on IfthenPay servers - Redirecting to payment gateway - Order ' . $order->get_id() . ' - RequestId: ' . $body->RequestId );
+						do_action( 'creditcard_ifthen_created_reference', $body->RequestId, $order->get_id() );
+						return $body->PaymentUrl;
 					} else {
-						$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Can not json_decode body';
+						$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Error code and message: ' . $body->Status . ' / ' . $body->Message;
 						$this->debug_log( $debug_msg, 'error', true, $debug_msg );
 						return false;
 					}
 				} else {
-					$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
-					$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
-					$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+					$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Can not json_decode body';
+					$this->debug_log( $debug_msg, 'error', true, $debug_msg );
 					return false;
 				}
+			} else {
+				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
+				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+				return false;
 			}
 			return false;
 		}
@@ -929,13 +920,13 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 								wc_add_notice( $error, 'error' ); // Notice OK, not block based page
 							} else {
 								// We got the order but are not going to cancel it - Default behavior since 9.4.1
-								$error = __( 'Payment cancelled by the customer at the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+								$error        = __( 'Payment cancelled by the customer at the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 								$redirect_url = wc_get_checkout_url();
 								wc_add_notice( $error, 'error' ); // Not working on the blocks checkout, we need to check how we did it on the Cofidis gateway
 							}
 						} else {
 							// We can't get the order so we just redirect the customer to the checkout
-							$error = __( 'Payment cancelled by the customer at the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - ' . $get_order['error'];
+							$error        = __( 'Payment cancelled by the customer at the gateway. Please try again.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - ' . $get_order['error'];
 							$redirect_url = wc_get_checkout_url();
 							wc_add_notice( $error, 'error' ); // Not working on the blocks checkout, we need to check how we did it on the Cofidis gateway
 						}
@@ -959,7 +950,6 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				}
 				exit;
 			}
-
 		}
 
 		/* Do refunds */
@@ -1112,6 +1102,5 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				<?php
 			}
 		}
-
 	}
 }

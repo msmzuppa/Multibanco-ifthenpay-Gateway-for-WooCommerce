@@ -155,7 +155,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = $this;
 			}
-
 		}
 
 		/* Ensures only one instance of our plugin is loaded or can be loaded */
@@ -407,16 +406,16 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 					'disabled' => true,
 				),
 			);
-			foreach( $pro_fake_fields as $key => $temp ) {
-				$pro_fake_fields[$key]['title'] = '⭐️ ' . $pro_fake_fields[$key]['title'];
-				if ( isset( $pro_fake_fields[$key]['description'] ) ) {
-					$pro_fake_fields[$key]['description'] .= '<br/>';
+			foreach ( $pro_fake_fields as $key => $temp ) {
+				$pro_fake_fields[ $key ]['title'] = '⭐️ ' . $pro_fake_fields[ $key ]['title'];
+				if ( isset( $pro_fake_fields[ $key ]['description'] ) ) {
+					$pro_fake_fields[ $key ]['description'] .= '<br/>';
 				} else {
-					$pro_fake_fields[$key]['description'] = '';
+					$pro_fake_fields[ $key ]['description'] = '';
 				}
-				$pro_fake_fields[$key]['description'] .= sprintf(
-					__( 'Available on the %sPRO Add-on%s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">',
+				$pro_fake_fields[ $key ]['description'] .= sprintf(
+					__( 'Available on the %1$sPRO Add-on%2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">',
 					'</a>'
 				);
 			}
@@ -439,7 +438,6 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_payshop_settings_fields', array() ) );
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_payshop_settings_fields_all', $this->form_fields );
-
 		}
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
@@ -561,20 +559,19 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 							</p>
 						</div>
 						<?php
-					} else {
-						if ( intval( $this->settings_saved ) === 1 ) {
-							?>
+					} elseif ( intval( $this->settings_saved ) === 1 ) {
+						?>
 							<div id="message" class="error">
 								<p><strong><?php esc_html_e( 'Invalid Payshop Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
-						} else {
-							?>
+					} else {
+						?>
 							<div id="message" class="error">
 								<p><strong><?php esc_html_e( 'Set the Payshop Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
-						}
+
 					}
 					?>
 					<hr/>
@@ -621,10 +618,10 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 				$result = WC_IfthenPay_Webdados()->callback_webservice( trim( $_POST['wc_ifthen_callback_bo_key'] ), 'PAYSHOP', $this->payshopkey, $this->secret_key, WC_IfthenPay_Webdados()->payshop_notify_url );
 				if ( $result['success'] ) {
 					update_option( $this->id . '_callback_email_sent', 'yes' );
-					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay via webservice and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				} else {
 					WC_Admin_Settings::add_error(
-						__( 'The “Callback” activation request via webservice has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+						__( 'The “Callback” activation request via API has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 						. ' - ' .
 						$result['message']
 					);
@@ -871,12 +868,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				// if ( ( $sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_admin ) ) { //Fixed by checking class instances
 				// WC_IfthenPay_Webdados()->instructions_sent_to_admin = true;
 				$send = true;
-			} else {
-				if ( ( ! $sent_to_admin ) ) {
+			} elseif ( ( ! $sent_to_admin ) ) {
 					// if ( ( !$sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_client ) ) { //Fixed by checking class instances
 					// WC_IfthenPay_Webdados()->instructions_sent_to_client = true;
 					$send = true;
-				}
 			}
 			// $this->debug_log( 'Email instructions send: '.( $send ? 'true' : 'false' ) );
 			// Apply filter
@@ -892,10 +887,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					$show = false;
 					if ( ! $sent_to_admin ) {
 						$show = true;
-					} else {
-						if ( $this->send_to_admin ) {
+					} elseif ( $this->send_to_admin ) {
 							$show = true;
-						}
 					}
 					if ( $show ) {
 						// Force correct language
@@ -904,10 +897,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 								// WooCommerce deposits - No instructions
-							} else {
-								if ( apply_filters( 'payshop_ifthen_email_instructions_pending_send', true, $order->get_id() ) ) {
+							} elseif ( apply_filters( 'payshop_ifthen_email_instructions_pending_send', true, $order->get_id() ) ) {
 									echo $this->email_instructions_table_html( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) );
-								}
 							}
 						} else {
 							// Processing
@@ -1021,42 +1012,40 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
-			} else {
-				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
+			} elseif ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
 
-					if ( $response_data = json_decode( $response['body'] ) ) {
-						if ( trim( $response_data->Reference ) !== '' && trim( $response_data->RequestId ) !== '' ) {
-							$details = array(
-								'payshopkey' => $payshopkey,
-								'ref'        => trim( $response_data->Reference ),
-								'request_id' => trim( $response_data->RequestId ),
-								'id'         => $id_for_backoffice,
-								'val'        => WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ),
-							);
-							if ( $date_exp ) {
-								$details['exp'] = $date_exp->format( 'Y-m-d' );
-							}
-							WC_IfthenPay_Webdados()->set_order_payshop_details( $order->get_id(), $details );
-							$this->debug_log( '- Payshop payment request created on IfthenPay servers - Order ' . $order->get_id() );
-							do_action( 'payshop_ifthen_created_reference', trim( $response_data->Reference ), $order->get_id() );
-							return true;
-						} else {
-							$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Missing "Reference" or "RequestId"';
-							$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
-							$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
-							return false;
+				if ( $response_data = json_decode( $response['body'] ) ) {
+					if ( trim( $response_data->Reference ) !== '' && trim( $response_data->RequestId ) !== '' ) {
+						$details = array(
+							'payshopkey' => $payshopkey,
+							'ref'        => trim( $response_data->Reference ),
+							'request_id' => trim( $response_data->RequestId ),
+							'id'         => $id_for_backoffice,
+							'val'        => WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ),
+						);
+						if ( $date_exp ) {
+							$details['exp'] = $date_exp->format( 'Y-m-d' );
 						}
+						WC_IfthenPay_Webdados()->set_order_payshop_details( $order->get_id(), $details );
+						$this->debug_log( '- Payshop payment request created on IfthenPay servers - Order ' . $order->get_id() );
+						do_action( 'payshop_ifthen_created_reference', trim( $response_data->Reference ), $order->get_id() );
+						return true;
 					} else {
-						$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - "json_decode" failed';
-						$this->debug_log( $debug_msg, 'error', true, $debug_msg );
+						$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Missing "Reference" or "RequestId"';
+						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+						$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 						return false;
 					}
 				} else {
-					$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
-					$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
-					$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+					$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - "json_decode" failed';
+					$this->debug_log( $debug_msg, 'error', true, $debug_msg );
 					return false;
 				}
+			} else {
+				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
+				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
+				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
+				return false;
 			}
 			return false;
 		}
@@ -1461,6 +1450,5 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				<?php
 			}
 		}
-
 	}
 }

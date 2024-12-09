@@ -151,7 +151,6 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = $this;
 			}
-
 		}
 
 		/* Ensures only one instance of our plugin is loaded or can be loaded */
@@ -178,9 +177,9 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				}
 				if ( $this->get_option( 'version' ) < '1.7.9.2' && $this->version >= '1.7.9.2' && ! WC_IfthenPay_Webdados()->hpos_enabled ) {
 					/*
-					 THIS SHOULD BE ABSTRACTED FROM POST / POST META - START - Not really because on these versions orders will always be posts */
+					THIS SHOULD BE ABSTRACTED FROM POST / POST META - START - Not really because on these versions orders will always be posts */
 					/*
-					 https://github.com/woocommerce/woocommerce/issues/12677 */
+					https://github.com/woocommerce/woocommerce/issues/12677 */
 					// Update all order totals
 					$args = array(
 						'post_type'      => 'shop_order',
@@ -510,44 +509,44 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					'disabled' => true,
 				),
 				// Remove from email
-				'_pro_remove_emails' => array(
+				'_pro_remove_emails'    => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Remove from email', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'label'    => __( 'Remove IfthenPay payment methods information from the selected email notifications', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
 				// Entities per category
-				'_pro_ent_cat_enabled' => array(
+				'_pro_ent_cat_enabled'  => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Enable the "Entities per category" mode', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'label'    => __( 'Simplified marketplace - Set different payment entities per category and get paid in different accounts based on the cart contents', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
 				// REST API
-				'_pro_rest_trigger' => array(
+				'_pro_rest_trigger'     => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Trigger payments for REST API orders', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'label'    => __( 'Trigger the payment for Multibanco and MB WAY for orders created with the REST API', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
 				// Fees
-				'_pro_fees_save' => array(
+				'_pro_fees_save'        => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Store/show fees on order', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'label'    => __( 'Get the charged IfthenPay fee from the callback (Multibanco, MB WAY and Payshop) and show it on the backend', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
 			);
-			foreach( $pro_fake_fields as $key => $temp ) {
-				$pro_fake_fields[$key]['title'] = '⭐️ ' . $pro_fake_fields[$key]['title'];
-				if ( isset( $pro_fake_fields[$key]['description'] ) ) {
-					$pro_fake_fields[$key]['description'] .= '<br/>';
+			foreach ( $pro_fake_fields as $key => $temp ) {
+				$pro_fake_fields[ $key ]['title'] = '⭐️ ' . $pro_fake_fields[ $key ]['title'];
+				if ( isset( $pro_fake_fields[ $key ]['description'] ) ) {
+					$pro_fake_fields[ $key ]['description'] .= '<br/>';
 				} else {
-					$pro_fake_fields[$key]['description'] = '';
+					$pro_fake_fields[ $key ]['description'] = '';
 				}
-				$pro_fake_fields[$key]['description'] .= sprintf(
-					__( 'Available on the %sPRO Add-on%s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">',
+				$pro_fake_fields[ $key ]['description'] .= sprintf(
+					__( 'Available on the %1$sPRO Add-on%2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">',
 					'</a>'
 				);
 			}
@@ -570,7 +569,6 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_multibanco_settings_fields', array() ) );
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_multibanco_settings_fields_all', $this->form_fields );
-
 		}
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
@@ -711,29 +709,28 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 							</p>
 						</div>
 						<?php
-					} else {
-						if ( intval( $this->settings_saved ) === 1 ) {
-							if ( WC_IfthenPay_Webdados()->multibanco_api_mode_enabled ) {
-								?>
+					} elseif ( intval( $this->settings_saved ) === 1 ) {
+						if ( WC_IfthenPay_Webdados()->multibanco_api_mode_enabled ) {
+							?>
 								<div id="message" class="error">
 									<p><strong><?php esc_html_e( 'Invalid Entity / MB Key (exactly 3 letters and 6 numeric characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 								</div>
 								<?php
 
-							} else {
-								?>
+						} else {
+							?>
 								<div id="message" class="error">
 									<p><strong><?php esc_html_e( 'Invalid Entity (exactly 5 numeric characters) and/or Subentity (1 to 3 numeric characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 								</div>
 								<?php
-							}
-						} else {
-							?>
+						}
+					} else {
+						?>
 							<div id="message" class="error">
 								<p><strong><?php esc_html_e( 'Set the Entity/Subentity and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
-						}
+
 					}
 					?>
 					<hr/>
@@ -801,10 +798,10 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				$result = WC_IfthenPay_Webdados()->callback_webservice( trim( $_POST['wc_ifthen_callback_bo_key'] ), $ent, $subent, $this->secret_key, WC_IfthenPay_Webdados()->multibanco_notify_url );
 				if ( $result['success'] ) {
 					update_option( $this->id . '_callback_email_sent', 'yes' );
-					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay via webservice and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				} else {
 					WC_Admin_Settings::add_error(
-						__( 'The “Callback” activation request via webservice has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+						__( 'The “Callback” activation request via API has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 						. ' - ' .
 						$result['message']
 					);
@@ -1022,12 +1019,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				// if ( ( $sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_admin ) ) { //Fixed by checking class instances
 				// WC_IfthenPay_Webdados()->instructions_sent_to_admin = true;
 				$send = true;
-			} else {
-				if ( ( ! $sent_to_admin ) ) {
+			} elseif ( ( ! $sent_to_admin ) ) {
 					// if ( ( !$sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_client ) ) { //Fixed by checking class instances
 					// WC_IfthenPay_Webdados()->instructions_sent_to_client = true;
 					$send = true;
-				}
 			}
 			$email_id = $email ? $email->id : '';
 			$this->debug_log_extra( 'Email (' . $email_id . ') instructions send: ' . ( $send ? 'true' : 'false' ) );
@@ -1045,10 +1040,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					$show = false;
 					if ( ! $sent_to_admin ) {
 						$show = true;
-					} else {
-						if ( $this->send_to_admin ) {
+					} elseif ( $this->send_to_admin ) {
 							$show = true;
-						}
 					}
 					if ( $show ) {
 						// Force correct language
@@ -1283,7 +1276,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				'result'   => 'success',
 				'redirect' => $url,
 			);
-
 		}
 
 		/**
@@ -1588,6 +1580,5 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				}
 			}
 		}
-
 	}
 }

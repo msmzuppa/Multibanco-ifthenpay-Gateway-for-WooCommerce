@@ -153,7 +153,6 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = $this;
 			}
-
 		}
 
 		/* Ensures only one instance of our plugin is loaded or can be loaded */
@@ -353,11 +352,11 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 						),
 						/*
 						'update_ref_client' => array(
-									   'title' => __( 'Email reference update to client? - THIS SHOULD GENERATE A NEW WEBSERVICE CALL', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									   'type' => 'checkbox',
-									   'label' => __( 'If the payment details change because of an update on the backend, should the client be notified?', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									   'default' => 'no'
-								   ),*/
+										'title' => __( 'Email reference update to client? - THIS SHOULD GENERATE A NEW WEBSERVICE CALL', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'type' => 'checkbox',
+										'label' => __( 'If the payment details change because of an update on the backend, should the client be notified?', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										'default' => 'no'
+									),*/
 						'debug'         => array(
 							'title'       => __( 'Debug Log', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'type'        => 'checkbox',
@@ -385,14 +384,14 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			// PRO fake fields
 			$pro_fake_fields = array(
 				// Cancel upaid
-				'_pro_mbway_cancel_expired' => array(
+				'_pro_mbway_cancel_expired'        => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Cancel or Recover unpaid orders', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'label'    => __( 'Cancel MB WAY unpaid orders after the reference expires or set them to Multibanco and send new payment details to customer', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
 				// Save number
-				'_pro_checkout_save_number' => array(
+				'_pro_checkout_save_number'        => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Save number to user profile', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'label'    => __( 'Offer the option to save the MB WAY mobile number to the user profile for future orders', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
@@ -406,16 +405,16 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 					'disabled' => true,
 				),
 			);
-			foreach( $pro_fake_fields as $key => $temp ) {
-				$pro_fake_fields[$key]['title'] = '⭐️ ' . $pro_fake_fields[$key]['title'];
-				if ( isset( $pro_fake_fields[$key]['description'] ) ) {
-					$pro_fake_fields[$key]['description'] .= '<br/>';
+			foreach ( $pro_fake_fields as $key => $temp ) {
+				$pro_fake_fields[ $key ]['title'] = '⭐️ ' . $pro_fake_fields[ $key ]['title'];
+				if ( isset( $pro_fake_fields[ $key ]['description'] ) ) {
+					$pro_fake_fields[ $key ]['description'] .= '<br/>';
 				} else {
-					$pro_fake_fields[$key]['description'] = '';
+					$pro_fake_fields[ $key ]['description'] = '';
 				}
-				$pro_fake_fields[$key]['description'] .= sprintf(
-					__( 'Available on the %sPRO Add-on%s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/'.esc_attr( WC_IfthenPay_Webdados()->out_link_utm ).'" target="_blank">',
+				$pro_fake_fields[ $key ]['description'] .= sprintf(
+					__( 'Available on the %1$sPRO Add-on%2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">',
 					'</a>'
 				);
 			}
@@ -438,7 +437,6 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			$this->form_fields = array_merge( $this->form_fields, apply_filters( 'multibanco_ifthen_mbway_settings_fields', array() ) );
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_mbway_settings_fields_all', $this->form_fields );
-
 		}
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
@@ -561,20 +559,19 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 							</p>
 						</div>
 						<?php
-					} else {
-						if ( intval( $this->settings_saved ) === 1 ) {
-							?>
+					} elseif ( intval( $this->settings_saved ) === 1 ) {
+						?>
 							<div id="message" class="error">
 								<p><strong><?php esc_html_e( 'Invalid MB WAY Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
-						} else {
-							?>
+					} else {
+						?>
 							<div id="message" class="error">
 								<p><strong><?php esc_html_e( 'Set the MB WAY Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
-						}
+
 					}
 					?>
 					<hr/>
@@ -621,10 +618,10 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 				$result = WC_IfthenPay_Webdados()->callback_webservice( trim( $_POST['wc_ifthen_callback_bo_key'] ), 'MBWAY', $this->mbwaykey, $this->secret_key, WC_IfthenPay_Webdados()->mbway_notify_url );
 				if ( $result['success'] ) {
 					update_option( $this->id . '_callback_email_sent', 'yes' );
-					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay via webservice and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				} else {
 					WC_Admin_Settings::add_error(
-						__( 'The “Callback” activation request via webservice has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+						__( 'The “Callback” activation request via API has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 						. ' - ' .
 						$result['message']
 					);
@@ -847,7 +844,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				?>
 				<tr>
 					<td colspan="2" class="extra_instructions"><?php echo nl2br( $extra_instructions ); ?><br/>
-																		  <?php
+																			<?php
 																			printf(
 																				__( 'You only have %d minutes to approve the payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 																				WC_IfthenPay_Webdados()->mbway_minutes
@@ -861,8 +858,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		}
 		function thankyou_instructions_table_html_expired( $order_id, $order_total ) {
 			// Missing MB WAY email or phone number?
-			$alt               = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
-			$order             = wc_get_order( $order_id );
+			$alt   = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
+			$order = wc_get_order( $order_id );
 			ob_start();
 			echo $this->thankyou_instructions_table_html_css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
@@ -933,12 +930,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				// if ( ( $sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_admin ) ) { //Fixed by checking class instances
 				// WC_IfthenPay_Webdados()->instructions_sent_to_admin = true;
 				$send = true;
-			} else {
-				if ( ( ! $sent_to_admin ) ) {
+			} elseif ( ( ! $sent_to_admin ) ) {
 					// if ( ( !$sent_to_admin ) && ( !WC_IfthenPay_Webdados()->instructions_sent_to_client ) ) { //Fixed by checking class instances
 					// WC_IfthenPay_Webdados()->instructions_sent_to_client = true;
 					$send = true;
-				}
 			}
 			// $this->debug_log( 'Email instructions send: '.( $send ? 'true' : 'false' ) );
 			// Apply filter
@@ -954,10 +949,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					$show = false;
 					if ( ! $sent_to_admin ) {
 						$show = true;
-					} else {
-						if ( $this->send_to_admin ) {
+					} elseif ( $this->send_to_admin ) {
 							$show = true;
-						}
 					}
 					if ( $show ) {
 						// Force correct language
@@ -966,10 +959,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 						if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 							if ( WC_IfthenPay_Webdados()->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 								// WooCommerce deposits - No instructions
-							} else {
-								if ( apply_filters( 'mbway_ifthen_email_instructions_pending_send', true, $order->get_id() ) ) {
+							} elseif ( apply_filters( 'mbway_ifthen_email_instructions_pending_send', true, $order->get_id() ) ) {
 									echo $this->email_instructions_table_html( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) ); // Missing MB WAY email or phone number?
-								}
+
 							}
 						} else {
 							// Processing
@@ -1021,12 +1013,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				?>
 				<tr>
 					<td style="font-size: x-small; border: 1px solid #1465AA; border-bottom-right-radius: 4px !important; border-bottom-left-radius: 4px !important; color: #000000; text-align: center;" colspan="2"><?php echo nl2br( $extra_instructions ); ?><br/>
-																																																								 <?php
+																																																								<?php
 																																																									printf(
 																																																										__( 'You only have %d minutes to approve payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 																																																										WC_IfthenPay_Webdados()->mbway_minutes
 																																																									);
-																																																									?>
+																																																								?>
 					</td>
 				</tr>
 			</table>
@@ -1057,7 +1049,8 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		/**
 		 * Webservice SetPedido
 		 */
-		/*private function webservice_filter_descricao( $desc ) {
+		/*
+		private function webservice_filter_descricao( $desc ) {
 			// Trim and decode
 			$desc = htmlspecialchars_decode( trim( $desc ), ENT_QUOTES );
 			// Remove '
@@ -1200,13 +1193,11 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			if ( empty( $phone ) ) {
 				wc_add_notice( sprintf( __( '%s is required', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong>' . __( 'Phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong>' ), 'error' );
 				return false;
-			} else {
-				if ( strlen( $phone ) === 9 && intval( substr( $phone, 0, 1 ) ) === 9 && ctype_digit( $phone ) ) {
+			} elseif ( strlen( $phone ) === 9 && intval( substr( $phone, 0, 1 ) ) === 9 && ctype_digit( $phone ) ) {
 					return true;
-				} else {
-					wc_add_notice( sprintf( __( '%s must be a valid portuguese mobile phone number', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong>' . __( 'Phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong>' ), 'error' );
-					return false;
-				}
+			} else {
+				wc_add_notice( sprintf( __( '%s must be a valid portuguese mobile phone number', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong>' . __( 'Phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong>' ), 'error' );
+				return false;
 			}
 		}
 
@@ -1578,6 +1569,5 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				<?php
 			}
 		}
-
 	}
 }

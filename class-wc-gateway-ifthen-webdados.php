@@ -672,7 +672,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 													WC_Admin_Settings::add_message(
 														sprintf(
 															/* translators: %s: payment account */
-															__( 'The “Callback” activation request for account %s has been submited to IfthenPay via webservice and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+															__( 'The “Callback” activation request for account %s has been submited to IfthenPay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 															$method_key
 														)
 													);
@@ -686,7 +686,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 														.
 														sprintf(
 															/* translators: %s: payment account */
-															__( 'The “Callback” activation request for account %s via webservice has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+															__( 'The “Callback” activation request for account %s via API has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 															$method_key
 														)
 														.
