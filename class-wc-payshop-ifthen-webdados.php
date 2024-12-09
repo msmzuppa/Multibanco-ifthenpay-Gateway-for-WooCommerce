@@ -466,7 +466,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 						?>
 					</h2>
 					<?php echo wp_kses_post( wpautop( $this->get_method_description() ) ); ?>
-					<p><strong><?php _e( 'In order to use this plugin you need to:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+					<p><strong><?php esc_html_e( 'In order to use this plugin you need to:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 					<ul class="wc_ifthen_list">
 						<li>
 							<?php
@@ -488,7 +488,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 							);
 							?>
 						</li>
-						<li><?php _e( 'Fill out all the details (Payshop Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<li><?php echo wp_kses_post( __( 'Fill out all the details (Payshop Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?>
 						<li>
 						<?php
 						printf(
@@ -511,19 +511,19 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 								if ( ! isset( $_GET['callback_warning'] ) ) {
 									?>
 									<div id="message" class="error">
-										<p><strong><?php _e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+										<p><strong><?php esc_html_e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 									</div>
 									<?php
 								}
 							}
 						}
 						?>
-						<p id="wc_ifthen_callback_open_p"><a href="#" id="wc_ifthen_callback_open" class="button button-small"><?php _e( 'Click here to ask IfthenPay to activate the “Callback”', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a></p>
+						<p id="wc_ifthen_callback_open_p"><a href="#" id="wc_ifthen_callback_open" class="button button-small"><?php esc_html_e( 'Click here to ask IfthenPay to activate the “Callback”', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a></p>
 						<div id="wc_ifthen_callback_div">
-							<p><?php _e( 'This will submit a request to IfthenPay, asking them to activate the “Callback” on your account. The following details will be sent to IfthenPay:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
+							<p><?php esc_html_e( 'This will submit a request to IfthenPay, asking them to activate the “Callback” on your account. The following details will be sent to IfthenPay:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
 							<table class="form-table">
 								<tr valign="top">
-									<th scope="row" class="titledesc"><?php _e( 'Email', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Email', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
 									<td class="forminp">
 										<?php echo get_option( 'admin_email' ); ?>
 									</td>
@@ -535,28 +535,28 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 									</td>
 								</tr>
 								<tr valign="top">
-									<th scope="row" class="titledesc"><?php _e( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (Payshop)'; ?></th>
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (Payshop)'; ?></th>
 									<td class="forminp">
 										<?php echo $this->secret_key; ?>
 									</td>
 								</tr>
 								<tr valign="top">
-									<th scope="row" class="titledesc"><?php _e( 'Callback URL', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Callback URL', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
 									<td class="forminp">
 										<?php echo WC_IfthenPay_Webdados()->payshop_notify_url; ?>
 									</td>
 								</tr>
 							</table>
 							<p style="text-align: center;">
-								<strong><?php _e( 'Attention: if you ever change from HTTP to HTTPS or vice versa, or the permalinks structure,<br/>you may have to ask IfthenPay to update the callback URL.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+								<strong><?php echo wp_kses_post( __( 'Attention: if you ever change from HTTP to HTTPS or vice versa, or the permalinks structure,<br/>you may have to ask IfthenPay to update the callback URL.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?></strong>
 							</p>
 							<p style="text-align: center; margin-bottom: 0px;">
 								<input type="hidden" id="wc_ifthen_callback_send" name="wc_ifthen_callback_send" value="0"/>
 								<input type="hidden" id="wc_ifthen_callback_bo_key" name="wc_ifthen_callback_bo_key" value=""/>
-								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php _e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php _e( 'Via webservice (recommended)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', '' ); ?></button>
 								<br/><br/>
-								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php _e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php _e( 'Via email (old method)', '' ); ?></button>
-								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php _e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
+								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', '' ); ?></button>
+								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php esc_html_e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
 								<input type="hidden" name="save" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"/> <!-- Force action woocommerce_update_options_payment_gateways_ to run, from WooCommerce 3.5.5 -->
 							</p>
 						</div>
@@ -565,13 +565,13 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 						if ( intval( $this->settings_saved ) === 1 ) {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Invalid Payshop Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php esc_html_e( 'Invalid Payshop Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						} else {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Set the Payshop Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php esc_html_e( 'Set the Payshop Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						}
@@ -770,24 +770,24 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<table class="<?php echo esc_attr( $this->id ); ?>_table" cellpadding="0" cellspacing="0">
 				<tr>
 					<th colspan="2">
-						<?php _e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						<br/>
 						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>"/>
 					</th>
 				</tr>
 				<tr>
-					<td><?php _e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td><?php esc_html_e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td class="mb_value"><?php echo WC_IfthenPay_Webdados()->format_payshop_ref( $payshop_order_details['ref'] ); ?></td>
 				</tr>
 				<tr>
-					<td><?php _e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td><?php esc_html_e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td class="mb_value"><?php echo wc_price( $payshop_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
 				</tr>
 				<?php
 				if ( isset( $payshop_order_details['exp'] ) && trim( $payshop_order_details['exp'] ) != '' ) {
 					?>
 					<tr>
-						<td><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+						<td><?php esc_html_e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 						<td class="mb_value"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->payshop_format_expiration( $payshop_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
@@ -811,7 +811,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<table class="<?php echo esc_attr( $this->id ); ?>_table" cellpadding="0" cellspacing="0">
 				<tr>
 					<th colspan="2">
-						<?php _e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						<br/>
 						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>"/>
 					</th>
@@ -932,24 +932,24 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<table cellpadding="10" cellspacing="0" align="center" border="0" style="margin: auto; margin-top: 2em; margin-bottom: 2em; border-collapse: collapse; border: 1px solid #E60000; border-radius: 4px !important; background-color: #FFFFFF;">
 				<tr>
 					<td style="border: 1px solid #E60000; border-top-right-radius: 4px !important; border-top-left-radius: 4px !important; text-align: center; color: #000000; font-weight: bold;" colspan="2">
-						<?php _e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Payment instructions', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 						<br/>
 						<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin-top: 10px; max-height: 48px;"/>
 					</td>
 				</tr>
 				<tr>
-					<td style="border-top: 1px solid #E60000; color: #000000;"><?php _e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td style="border-top: 1px solid #E60000; color: #000000;"><?php esc_html_e( 'Reference', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td style="border-top: 1px solid #E60000; color: #000000; white-space: nowrap; text-align: right;"><?php echo WC_IfthenPay_Webdados()->format_payshop_ref( $payshop_order_details['ref'] ); ?></td>
 				</tr>
 				<tr>
-					<td style="border-top: 1px solid #E60000; color: #000000;"><?php _e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+					<td style="border-top: 1px solid #E60000; color: #000000;"><?php esc_html_e( 'Value', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 					<td style="border-top: 1px solid #E60000; color: #000000; white-space: nowrap; text-align: right;"><?php echo wc_price( $payshop_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
 				</tr>
 				<?php
 				if ( isset( $payshop_order_details['exp'] ) && trim( $payshop_order_details['exp'] ) != '' ) {
 					?>
 					<tr>
-						<td style="border-top: 1px solid #E60000; color: #000000;"><?php _e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
+						<td style="border-top: 1px solid #E60000; color: #000000;"><?php esc_html_e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
 						<td style="border-top: 1px solid #E60000; color: #000000; white-space: nowrap; text-align: right;"><?php echo wp_kses_post( WC_IfthenPay_Webdados()->payshop_format_expiration( $payshop_order_details['exp'], $order_id ) ); ?></td>
 					</tr>
 					<?php
@@ -977,9 +977,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->payshop_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
-				<strong><?php _e( 'Payshop payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+				<strong><?php esc_html_e( 'Payshop payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
-				<?php _e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+				<?php esc_html_e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 			</p>
 			<?php
 			return apply_filters( 'payshop_ifthen_email_instructions_payment_received', ob_get_clean(), $order_id );
@@ -1396,9 +1396,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 									<p>
 										<strong>Payshop (IfthenPay)</strong>
 										<br/>
-										<?php _e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+										<?php esc_html_e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 										<br/>
-										<strong><?php _e( 'This is important', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>! <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=payshop_ifthen_for_woocommerce&amp;callback_warning=1"><?php _e( 'Do it here', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a>!</strong>
+										<strong><?php esc_html_e( 'This is important', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>! <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=payshop_ifthen_for_woocommerce&amp;callback_warning=1"><?php esc_html_e( 'Do it here', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a>!</strong>
 									</p>
 								</div>
 								<?php

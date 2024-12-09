@@ -4,8 +4,6 @@
 
 		var hide_extra_fields = true;
 
-		console.log( ifthenpay );
-
 		switch ( ifthenpay.gateway ) {
 			case 'multibanco':
 				ifthen_toogle_mb_api_mode();

@@ -373,7 +373,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						?>
 					</h2>
 					<?php echo wp_kses_post( wpautop( $this->get_method_description() ) ); ?>
-					<p><strong><?php _e( 'In order to use this plugin you need to:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+					<p><strong><?php esc_html_e( 'In order to use this plugin you need to:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 					<ul class="wc_ifthen_list">
 						<li>
 							<?php
@@ -395,7 +395,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 							);
 							?>
 						</li>
-						<li><?php _e( 'Fill out all the details (Credit card Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<li><?php echo wp_kses_post( __( 'Fill out all the details (Credit card Key) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?>
 						<li>
 						<?php
 						printf(
@@ -415,13 +415,13 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						if ( intval( $this->settings_saved ) === 1 ) {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php esc_html_e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						} else {
 							?>
 							<div id="message" class="error">
-								<p><strong><?php _e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								<p><strong><?php esc_html_e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 							</div>
 							<?php
 						}
@@ -646,9 +646,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
-				<strong><?php _e( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+				<strong><?php esc_html_e( 'Credit or debit card payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
-				<?php _e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+				<?php esc_html_e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 			</p>
 			<?php
 			return apply_filters( 'creditcard_ifthen_email_instructions_payment_received', ob_get_clean(), $order_id );
