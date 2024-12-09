@@ -1,5 +1,9 @@
+/**
+ * The IfthenPay Gateway frontend javascript
+ */
+
 jQuery(
-	function( $ ) {
+	function ( $ ) {
 
 		var order_id;
 		var order_key;
@@ -11,7 +15,7 @@ jQuery(
 			order_id  = $( '#gatewayifthenpay-order-id' ).val();
 			order_key = $( '#gatewayifthenpay-order-key' ).val();
 			setTimeout(
-				function(){
+				function () {
 					gateway_ifthen_order_check_status();
 				},
 				interval
@@ -31,17 +35,17 @@ jQuery(
 			$.post(
 				woocommerce_params.ajax_url,
 				data,
-				function( response ) {
+				function ( response ) {
 					var response = JSON.parse( response );
 					console.log( 'Status: ' + response.order_status );
-					if ( response.order_status && ( response.order_status == 'processing' || response.order_status == 'completed' || response.expired ) ) {
+					if ( response.order_status && ( response.order_status === 'processing' || response.order_status === 'completed' || response.expired ) ) {
 						// DONE
 						window.location.href = page_url.toString() + '#ifthenpay_payment_received';
 					} else {
 						interval = Math.round( interval * 1.2 );
 						if ( total_interval <= gateway_expire ) {
 							setTimeout(
-								function(){
+								function () {
 									gateway_ifthen_order_check_status();
 								},
 								interval

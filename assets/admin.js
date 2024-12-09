@@ -1,4 +1,8 @@
-(function( $ ) {
+/**
+ * The backend javascript
+ */
+
+(function ( $ ) {
 
 	if ( ifthenpay.gateway !== '' ) {
 
@@ -7,8 +11,9 @@
 		switch ( ifthenpay.gateway ) {
 			case 'multibanco':
 				ifthen_toogle_mb_api_mode();
-				$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).on( 'change',
-					function() {
+				$( '#woocommerce_multibanco_ifthen_for_woocommerce_api_mode' ).on(
+					'change',
+					function () {
 						ifthen_toogle_mb_api_mode();
 					}
 				);
@@ -49,7 +54,7 @@
 				ifthen_toogle_mbway_refunds();
 				$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).on(
 					'change',
-					function() {
+					function () {
 						ifthen_toogle_mbway_refunds();
 					}
 				);
@@ -101,16 +106,17 @@
 						var number_fields = 4;
 					}
 					// Auto submit when changing gateway key
-					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).on( 'change',
-						function() {
-							$( '#mainform p.submit button' ).removeAttr('disabled').click();
+					$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_gatewaykey' ).on(
+						'change',
+						function () {
+							$( '#mainform p.submit button' ).removeAttr( 'disabled' ).click();
 						}
 					);
 				} else {
 					// Auto set backoffice key
 					if ( $( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val().trim() === '' && ifthenpay.backoffice_key !== '' ) {
 						$( '#woocommerce_gateway_ifthen_ifthen_for_woocommerce_backoffice_key' ).val( ifthenpay.backoffice_key );
-						$( '#mainform p.submit button' ).removeAttr('disabled').click();
+						$( '#mainform p.submit button' ).removeAttr( 'disabled' ).click();
 					}
 					var number_fields = 3;
 				}
@@ -151,14 +157,14 @@
 		// Callback activation
 		$( '#wc_ifthen_callback_open' ).on(
 			'click',
-			function() {
+			function () {
 				ifthen_callback_open();
 				return false;
 			}
 		);
 		$( '#wc_ifthen_callback_cancel' ).on(
 			'click',
-			function() {
+			function () {
 				$( '#wc_ifthen_callback_div' ).toggle();
 				$( '#wc_ifthen_callback_open_p' ).toggle();
 				return false;
@@ -167,7 +173,7 @@
 		// Callback send
 		$( '#wc_ifthen_callback_submit' ).on(
 			'click',
-			function() {
+			function () {
 				if ( confirm( ifthenpay.callback_confirm ) ) {
 					$( '#wc_ifthen_callback_send' ).val( 1 );
 					$( '#mainform' ).submit()
@@ -180,7 +186,7 @@
 		// Callback webservice
 		$( '#wc_ifthen_callback_submit_webservice' ).on(
 			'click',
-			function() {
+			function () {
 				var bo_key = prompt( ifthenpay.callback_bo_key, ifthenpay.backoffice_key );
 				if ( bo_key ) {
 					$( '#wc_ifthen_callback_bo_key' ).val( $.trim( bo_key ) );
@@ -193,19 +199,19 @@
 			}
 		);
 		setTimeout(
-			function() {
+			function () {
 				if ( ifthenpay.callback_email_sent === 'no' ) {
-					  $( '#wc_ifthen_callback_open' ).addClass( 'button-link-delete' );
-					  ifthen_callback_open();
+						$( '#wc_ifthen_callback_open' ).addClass( 'button-link-delete' );
+						ifthen_callback_open();
 					if ( ifthenpay.callback_auto_open === '1' ) {
 						setTimeout(
-							function() {
+							function () {
 								$( '#wc_ifthen_callback_div' ).addClass( 'focus' );
 							},
 							250
 						);
 						setTimeout(
-							function() {
+							function () {
 								$( '#wc_ifthen_callback_div' ).removeClass( 'focus' );
 							},
 							1500

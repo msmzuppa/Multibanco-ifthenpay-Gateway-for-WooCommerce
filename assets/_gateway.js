@@ -1,5 +1,5 @@
 jQuery(
-	function( $ ) {
+	function ( $ ) {
 
 		console.log( gateway_ifthenpay );
 
@@ -28,13 +28,16 @@ jQuery(
 				.catch( function( err ) {
 					// show error in developer console for debugging
 					console.error(err);
-	  			} );*/
+					} );*/
 			return true;
 		}
 
-		$( '#google-pay-js').on( 'load', function() {
-			console.log('google loaded');
-		});
+		$( '#google-pay-js' ).on(
+			'load',
+			function () {
+				console.log( 'google loaded' );
+			}
+		);
 
 		// We need to first know if the gateway has a Apple or Google Pay entity chosen and only run validations depending on that
 		var available_methods = [];
@@ -50,24 +53,27 @@ jQuery(
 		}
 		console.log( available_methods );
 
-		$( document.body ).on( 'updated_checkout', function() {
+		$( document.body ).on(
+			'updated_checkout',
+			function () {
 
-			// Manipulate payment method option - If === 2 we don't do anything?
-			if ( available_methods.length === 0 ) {
-				// Remove payment method
-				$( '.payment_method_apple_google_ifthen_for_woocommerce' ).remove();
-			} else if ( available_methods.length === 1 ) {
-				// Change title and icon
-				if ( available_methods[0] === 'apple' ) {
-					console.log( 'apple' );
-					$( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html( $( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html().replace( gateway_ifthenpay.general.method_title, gateway_ifthenpay.apple.method_title ) );
-				} else if ( available_methods[0] === 'google' ) {
-					console.log( 'google' );
-					$( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html( $( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html().replace( gateway_ifthenpay.general.method_title, gateway_ifthenpay.google.method_title ) );
+				// Manipulate payment method option - If === 2 we don't do anything?
+				if ( available_methods.length === 0 ) {
+					// Remove payment method
+					$( '.payment_method_apple_google_ifthen_for_woocommerce' ).remove();
+				} else if ( available_methods.length === 1 ) {
+					// Change title and icon
+					if ( available_methods[0] === 'apple' ) {
+						console.log( 'apple' );
+						$( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html( $( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html().replace( gateway_ifthenpay.general.method_title, gateway_ifthenpay.apple.method_title ) );
+					} else if ( available_methods[0] === 'google' ) {
+						console.log( 'google' );
+						$( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html( $( 'label[for=payment_method_apple_google_ifthen_for_woocommerce]' ).html().replace( gateway_ifthenpay.general.method_title, gateway_ifthenpay.google.method_title ) );
+					}
 				}
-			}
 
-		} );
+			}
+		);
 
 	}
 );

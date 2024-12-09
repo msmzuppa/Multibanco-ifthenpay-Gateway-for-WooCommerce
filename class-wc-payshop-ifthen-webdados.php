@@ -240,7 +240,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 					),
 				),
 			);
-			// if ( strlen( trim( $this->get_option( 'payshopkey' ) ) ) === 10 && trim( $this->secret_key ) != '' ) {
+			// if ( strlen( trim( $this->get_option( 'payshopkey' ) ) ) === 10 && trim( $this->secret_key ) !== '' ) {
 				$this->form_fields = array_merge(
 					$this->form_fields,
 					array(
@@ -504,7 +504,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 					if (
 						strlen( trim( $this->payshopkey ) ) === 10
 						&&
-						trim( $this->secret_key ) != ''
+						trim( $this->secret_key ) !== ''
 					) {
 						if ( $callback_email_sent = get_option( $this->id . '_callback_email_sent' ) ) { // No notice for older versions
 							if ( $callback_email_sent === 'no' ) {
@@ -616,7 +616,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 		}
 
 		public function send_callback_email() {
-			if ( isset( $_POST['wc_ifthen_callback_send'] ) && intval( $_POST['wc_ifthen_callback_send'] ) === 2 && trim( $_POST['wc_ifthen_callback_bo_key'] ) != '' ) {
+			if ( isset( $_POST['wc_ifthen_callback_send'] ) && intval( $_POST['wc_ifthen_callback_send'] ) === 2 && trim( $_POST['wc_ifthen_callback_bo_key'] ) !== '' ) {
 				// Webservice
 				$result = WC_IfthenPay_Webdados()->callback_webservice( trim( $_POST['wc_ifthen_callback_bo_key'] ), 'PAYSHOP', $this->payshopkey, $this->secret_key, WC_IfthenPay_Webdados()->payshop_notify_url );
 				if ( $result['success'] ) {
@@ -682,7 +682,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			if ( $this->id === $order->get_payment_method() ) {
 				if ( WC_IfthenPay_Webdados()->order_needs_payment( $order ) ) {
 					// We might have to deal with deposits...
-					if ( $order->get_meta( '_' . WC_IfthenPay_Webdados()->payshop_id . '_exp' ) != '' && date_i18n( 'Y-m-d' ) > $order->get_meta( '_' . WC_IfthenPay_Webdados()->payshop_id . '_exp' ) ) {
+					if ( $order->get_meta( '_' . WC_IfthenPay_Webdados()->payshop_id . '_exp' ) !== '' && date_i18n( 'Y-m-d' ) > $order->get_meta( '_' . WC_IfthenPay_Webdados()->payshop_id . '_exp' ) ) {
 						// Expired
 						$expired = true;
 						echo $this->thankyou_instructions_table_html_expired( $order->get_id(), round( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ), 2 ) );
@@ -784,7 +784,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					<td class="mb_value"><?php echo wc_price( $payshop_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
 				</tr>
 				<?php
-				if ( isset( $payshop_order_details['exp'] ) && trim( $payshop_order_details['exp'] ) != '' ) {
+				if ( isset( $payshop_order_details['exp'] ) && trim( $payshop_order_details['exp'] ) !== '' ) {
 					?>
 					<tr>
 						<td><?php esc_html_e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
@@ -946,7 +946,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					<td style="border-top: 1px solid #E60000; color: #000000; white-space: nowrap; text-align: right;"><?php echo wc_price( $payshop_order_details['val'], array( 'currency' => 'EUR' ) ); ?></td>
 				</tr>
 				<?php
-				if ( isset( $payshop_order_details['exp'] ) && trim( $payshop_order_details['exp'] ) != '' ) {
+				if ( isset( $payshop_order_details['exp'] ) && trim( $payshop_order_details['exp'] ) !== '' ) {
 					?>
 					<tr>
 						<td style="border-top: 1px solid #E60000; color: #000000;"><?php esc_html_e( 'Expiration', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</td>
@@ -1022,10 +1022,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
 			} else {
-				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) != '' ) {
+				if ( isset( $response['response']['code'] ) && intval( $response['response']['code'] ) === 200 && isset( $response['body'] ) && trim( $response['body'] ) !== '' ) {
 
 					if ( $response_data = json_decode( $response['body'] ) ) {
-						if ( trim( $response_data->Reference ) != '' && trim( $response_data->RequestId ) != '' ) {
+						if ( trim( $response_data->Reference ) !== '' && trim( $response_data->RequestId ) !== '' ) {
 							$details = array(
 								'payshopkey' => $payshopkey,
 								'ref'        => trim( $response_data->Reference ),
@@ -1132,9 +1132,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		 */
 		public function disable_if_settings_missing( $available_gateways ) {
 			if (
-				strlen( trim( $this->payshopkey ) ) != 10
+				strlen( trim( $this->payshopkey ) ) !== 10
 				||
-				trim( $this->enabled ) != 'yes'
+				trim( $this->enabled ) !== 'yes'
 			) {
 				unset( $available_gateways[ $this->id ] );
 			}
@@ -1218,7 +1218,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				$estado          = trim( $_GET['estado'] );
 				$arguments_ok    = true;
 				$arguments_error = '';
-				if ( trim( $_GET['chave'] ) != trim( $this->secret_key ) ) {
+				if ( trim( $_GET['chave'] ) !== trim( $this->secret_key ) ) {
 					$arguments_ok     = false;
 					$arguments_error .= ' - Key';
 				}
@@ -1239,7 +1239,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 					$arguments_error .= ' - Value';
 				}
 				/*
-				if ( trim( $estado ) != 'PAGO' ) {
+				if ( trim( $estado ) !== 'PAGO' ) {
 					$arguments_ok = false;
 					$arguments_error .= ' - Estado';
 				}*/
@@ -1270,14 +1270,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 							if ( $orders_count === 1 ) {
 								if ( floatval( $val ) === floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 									$note = __( 'Payshop payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-									if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] ) != '' ) {
+									if ( isset( $_GET['datahorapag'] ) && trim( $_GET['datahorapag'] ) !== '' ) {
 										$note .= ' ' . trim( $_GET['datahorapag'] );
 									}
 									// WooCommerce Deposits second payment?
 									if ( WC_IfthenPay_Webdados()->wc_deposits_active ) {
 										if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) === 'yes' ) { // Has deposit
 											if ( $order->get_meta( '_wc_deposits_deposit_paid' ) === 'yes' ) { // First payment - OK!
-												if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) != 'yes' ) { // Second payment - not ok
+												if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) !== 'yes' ) { // Second payment - not ok
 													if ( floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) === floatval( $val ) ) { // This really seems like the second payment
 														// Set the current order status temporarly back to partially-paid, but first stop the emails
 														add_filter( 'woocommerce_email_enabled_customer_partially_paid', '__return_false' );
@@ -1385,7 +1385,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				&&
 				strlen( trim( $this->payshopkey ) ) === 10
 				&&
-				trim( $this->secret_key ) != ''
+				trim( $this->secret_key ) !== ''
 			) {
 				if ( $callback_email_sent = get_option( $this->id . '_callback_email_sent' ) ) { // No notice for older versions
 					if ( $callback_email_sent === 'no' ) {
@@ -1410,9 +1410,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			// New method
 			if (
 				(
-					strlen( trim( $this->payshopkey ) ) != 10
+					strlen( trim( $this->payshopkey ) ) !== 10
 					||
-					trim( $this->enabled ) != 'yes'
+					trim( $this->enabled ) !== 'yes'
 				)
 				&&
 				( ! apply_filters( 'multibanco_ifthen_hide_newmethod_notifications', false ) )

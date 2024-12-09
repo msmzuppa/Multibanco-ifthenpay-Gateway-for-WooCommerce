@@ -32,7 +32,7 @@ const Content = ( props ) => {
 			// Here we can do any processing we need, and then emit a response.
 			// For example, we might validate a custom field, or perform an AJAX request, and then emit a response indicating it is valid or not.
 			const mbway_ifthen_for_woocommerce_phone = mbwayPhoneNumber; // This will need to be the value of the input field
-			const customDataIsValid = ( mbway_ifthen_for_woocommerce_phone.length == 9 );
+			const customDataIsValid = ( mbway_ifthen_for_woocommerce_phone.length === 9 );
 
 			if ( customDataIsValid ) {
 				return {
