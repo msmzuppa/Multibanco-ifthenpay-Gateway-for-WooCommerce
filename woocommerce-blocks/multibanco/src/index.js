@@ -8,7 +8,7 @@ import { decodeEntities } from '@wordpress/html-entities';
 
 const settings     = getSetting( 'multibanco_ifthen_for_woocommerce_data', {} );
 const defaultLabel = __(
-	'Pagamento de Serviços no Multibanco (IfthenPay)',
+	'Pagamento de Serviços no Multibanco (ifthenpay)',
 	'multibanco-ifthen-software-gateway-for-woocommerce'
 );
 const label        = decodeEntities( settings.title ) || defaultLabel;

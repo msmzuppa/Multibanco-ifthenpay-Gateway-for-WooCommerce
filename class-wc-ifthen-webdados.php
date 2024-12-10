@@ -376,7 +376,7 @@ final class WC_IfthenPay_Webdados {
 		$settings_links          .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=' . $this->mbway_id . '">MB WAY</a>';
 		$settings_links          .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=' . $this->creditcard_id . '">' . esc_html__( 'Credit card', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>';
 		$settings_links          .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=' . $this->payshop_id . '">Payshop</a>';
-		$settings_links          .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=' . $this->gateway_ifthen_id . '">Gatewway IfthenPay</a>';
+		$settings_links          .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=' . $this->gateway_ifthen_id . '">' . esc_html__( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>';
 		$settings_links          .= ' - <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=' . $this->cofidispay_id . '">Cofidis Pay</a>';
 		$action_links['settings'] = $settings_links;
 		$action_links['support']  = '<a href="https://wordpress.org/support/plugin/multibanco-ifthen-software-gateway-for-woocommerce/" target="_blank">' . esc_html__( 'Technical support', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</a>';
@@ -453,7 +453,7 @@ final class WC_IfthenPay_Webdados {
 					$payment_method_registry->register( new \Automattic\WooCommerce\Blocks\Payments\Integrations\CofidisPayIfthenPay() );
 				}
 			);
-			// IfthenPay Gateway
+			// ifthenpay Gateway
 			require_once 'woocommerce-blocks/GatewayIfthenPay.php';
 			add_action(
 				'woocommerce_blocks_payment_method_type_registration',
@@ -823,7 +823,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * Get IfthenPay Gateway order details
+	 * Get ifthenpay Gateway order details
 	 *
 	 * @param integer $order_id The order ID.
 	 * @return array or false
@@ -858,13 +858,13 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * Order metabox registration to show IfthenPay payment details - HPOS compatible
+	 * Order metabox registration to show ifthenpay payment details - HPOS compatible
 	 */
 	public function multibanco_order_metabox() {
 		$screen = $this->hpos_enabled ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
 		add_meta_box(
 			$this->multibanco_id,
-			'IfthenPay',
+			'ifthenpay',
 			array( $this, 'multibanco_order_metabox_html' ),
 			$screen,
 			'side',
@@ -874,7 +874,7 @@ final class WC_IfthenPay_Webdados {
 		if ( $this->wc_deposits_active ) {
 			add_meta_box(
 				$this->multibanco_id,
-				'IfthenPay',
+				'ifthenpay',
 				array( $this, 'multibanco_order_metabox_html' ),
 				'wcdp_payment',
 				'side',
@@ -884,7 +884,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * Order metabox HTML output to show IfthenPay payment details - HPOS compatible
+	 * Order metabox HTML output to show ifthenpay payment details - HPOS compatible
 	 *
 	 * @param mixed $post_or_order_object Post or Order.
 	 * @return void
@@ -1279,7 +1279,7 @@ final class WC_IfthenPay_Webdados {
 
 				}
 				break;
-			// IfthenPay Gateway
+			// ifthenpay Gateway
 			case $this->gateway_ifthen_id:
 				$order_mb_details = $this->get_gatewayifthenpay_order_details( $order->get_id() );
 				if ( ! empty( $order_mb_details ) ) {
@@ -1290,7 +1290,7 @@ final class WC_IfthenPay_Webdados {
 						'PIX'    => '<img src="' . esc_url( plugins_url( 'images/pix_banner.svg', __FILE__ ) ) . '" style="display: block; margin: auto; max-width: auto; max-height: 24px;" alt="PIX" title="PIX"/>',
 					);
 					if ( trim( $order_mb_details['payment_method'] ) !== '' ) {
-						echo '<p><img src="' . esc_url( $this->gateway_ifthen_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 14px;" alt="IfthenPay Gateway" title="IfthenPay Gateway"/></p>';
+						echo '<p><img src="' . esc_url( $this->gateway_ifthen_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 14px;" alt="ifthenpay Gateway" title="ifthenpay Gateway"/></p>';
 						echo '<p style="text-align: center;">';
 						if ( isset( $payment_method_icons[ trim( $order_mb_details['payment_method'] ) ] ) ) {
 							echo wp_kses_post( $payment_method_icons[ trim( $order_mb_details['payment_method'] ) ] );
@@ -1299,7 +1299,7 @@ final class WC_IfthenPay_Webdados {
 						}
 						echo '</p>';
 					} else {
-						echo '<p><img src="' . esc_url( $this->gateway_ifthen_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 24px;" alt="IfthenPay Gateway" title="IfthenPay Gateway"/></p>';
+						echo '<p><img src="' . esc_url( $this->gateway_ifthen_banner ) . '" style="display: block; margin: auto; max-width: auto; max-height: 24px;" alt="ifthenpay Gateway" title="ifthenpay Gateway"/></p>';
 					}
 					echo '<p>' . esc_html__( 'Gateway Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . esc_html( trim( $order_mb_details['gatewaykey'] ) ) . '<br/>';
 					echo esc_html__( 'Pincode', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ': ' . esc_html( trim( $order_mb_details['pincode'] ) ) . '<br/>';
@@ -1314,12 +1314,12 @@ final class WC_IfthenPay_Webdados {
 						if ( $this->wc_deposits_active && $order->get_status() === 'partially-paid' ) {
 							echo '<p><strong>' . esc_html__( 'Partially paid.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
 							if ( $order->get_meta( '_wc_deposits_second_payment_paid' ) !== 'yes' && floatval( $order->get_meta( '_wc_deposits_second_payment' ) ) === floatval( $order_mb_details['val'] ) ) {
-								echo '<p><strong>' . esc_html__( 'Awaiting second IfthenPay Gateway payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
+								echo '<p><strong>' . esc_html__( 'Awaiting second ifthenpay Gateway payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
 							} else {
 								$show_debug = false;
 							}
 						} else {
-							echo '<p><strong>' . esc_html__( 'Awaiting IfthenPay Gateway confirmation.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
+							echo '<p><strong>' . esc_html__( 'Awaiting ifthenpay Gateway confirmation.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong></p>';
 						}
 						if ( $show_debug && WP_DEBUG ) {
 							$callback_url = $this->gateway_ifthen_notify_url;
@@ -1365,14 +1365,14 @@ final class WC_IfthenPay_Webdados {
 					echo '<p>' . esc_html__( 'No details available', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '.</p><p>' . sprintf(
 						/* translators: $s: payment method */
 						esc_html__( 'This must be an error because the payment method of this order is %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'IfthenPay Gateway'
+						'ifthenpay Gateway'
 					) . '.</p>';
 
 				}
 				break;
 			// None
 			default:
-				echo '<p>' . esc_html__( 'No details available', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '.</p><p>' . esc_html__( 'The payment method of this order is not IfthenPay', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '.</p>';
+				echo '<p>' . esc_html__( 'No details available', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '.</p><p>' . esc_html__( 'The payment method of this order is not ifthenpay', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '.</p>';
 				echo '<style type="text/css">#' . esc_html( $this->multibanco_id ) . ' { display: none; }</style>';
 				$deleted = false;
 				// If we have Multibanco data, we should delete it
@@ -1415,7 +1415,7 @@ final class WC_IfthenPay_Webdados {
 						$deleted = true;
 					}
 				}
-				// If we have IfthenPayGateway data, we should delete it
+				// If we have ifthenpay Gateway data, we should delete it
 				$order_mb_details = $this->get_gatewayifthenpay_order_details( $order->get_id() );
 				if ( ! empty( $order_mb_details ) ) {
 					foreach ( $order_mb_details as $key => $value ) {
@@ -1630,7 +1630,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * Set new order IfthenPay Gateway details on meta
+	 * Set new order ifthenpay Gateway details on meta
 	 *
 	 * @param integer $order_id                 The order ID.
 	 * @param array   $order_gateway_details The Multibanco details.
@@ -1753,7 +1753,7 @@ final class WC_IfthenPay_Webdados {
 					$args['body'] = wp_json_encode( $args['body'] );
 					$response     = wp_remote_post( $url, $args );
 					if ( is_wp_error( $response ) ) {
-						$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
+						$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
 						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 						$this->debug_log( $this->multibanco_id, $debug_msg, 'error', true, $debug_msg_email );
 						return false;
@@ -1824,7 +1824,7 @@ final class WC_IfthenPay_Webdados {
 							return false;
 						}
 					} else {
-						$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
+						$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
 						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 						$this->debug_log( $this->multibanco_id, $debug_msg, 'error', true, $debug_msg_email );
 						if ( $throw_exception ) {
@@ -2030,7 +2030,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * Get/Create Payshop Reference from the IfthenPay API
+	 * Get/Create Payshop Reference from the ifthenpay API
 	 *
 	 * @param integer $order_id     The Order ID.
 	 * @param boolean $force_change If we should force a reference recreation.
@@ -2068,7 +2068,7 @@ final class WC_IfthenPay_Webdados {
 				if ( $payshop->webservice_set_pedido( $order->get_id() ) ) {
 					return $this->get_payshop_order_details( $order->get_id() );
 				} else {
-					return esc_html__( 'Error contacting IfthenPay servers to create Payshop Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+					return esc_html__( 'Error contacting ifthenpay servers to create Payshop Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 				}
 			}
 		} else {
@@ -2077,7 +2077,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * Create MB WAY payment on the IfthenPay API
+	 * Create MB WAY payment on the ifthenpay API
 	 *
 	 * @param integer $order_id The Order ID.
 	 * @param string  $phone    The phone number.
@@ -2114,7 +2114,7 @@ final class WC_IfthenPay_Webdados {
 		$this->debug_log_extra( $this->mbway_id, '- Request payment with args: ' . wp_json_encode( $args ) );
 		$response = wp_remote_post( $url, $args );
 		if ( is_wp_error( $response ) ) {
-			$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
+			$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
 			$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 			$this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
 			return false;
@@ -2138,12 +2138,12 @@ final class WC_IfthenPay_Webdados {
 								)
 							);
 							if ( $debug ) {
-								$this->debug_log( $this->mbway_id, '- MB WAY payment request created on IfthenPay servers - Order ' . $order->get_id() . ' - id_pedido: ' . $id_pedido );
+								$this->debug_log( $this->mbway_id, '- MB WAY payment request created on ifthenpay servers - Order ' . $order->get_id() . ' - id_pedido: ' . $id_pedido );
 							}
 							do_action( 'mbway_ifthen_created_reference', $id_pedido, $order->get_id(), $phone );
 							return true;
 						} else {
-							$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect "Valor"';
+							$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Incorrect "Valor"';
 							$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 							if ( $debug ) {
 								$this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
@@ -2151,7 +2151,7 @@ final class WC_IfthenPay_Webdados {
 							return false;
 						}
 					} else {
-						$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Missing "IdPedido" or "Valor"';
+						$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Missing "IdPedido" or "Valor"';
 						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 						if ( $debug ) {
 							$this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
@@ -2159,7 +2159,7 @@ final class WC_IfthenPay_Webdados {
 						return false;
 					}
 				} else {
-					$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . trim( $xmlData->Estado ) . ' ' . trim( $xmlData->MsgDescricao );
+					$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . trim( $xmlData->Estado ) . ' ' . trim( $xmlData->MsgDescricao );
 					$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 					if ( $debug ) {
 						$this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
@@ -2167,14 +2167,14 @@ final class WC_IfthenPay_Webdados {
 					return false;
 				}
 			} else {
-				$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - "simplexml_load_string" function does not exist';
+				$debug_msg = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - "simplexml_load_string" function does not exist';
 				if ( $debug ) {
 					$this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email );
 				}
 				return false;
 			}
 		} else {
-			$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
+			$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
 			$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 			if ( $debug ) {
 				$this->debug_log( $this->mbway_id, $debug_msg, 'error', $debug_email, $debug_msg_email );
@@ -2790,7 +2790,7 @@ final class WC_IfthenPay_Webdados {
 			'_' . $this->creditcard_id,
 			// Cofidis Pay
 			'_' . $this->cofidispay_id,
-			// IfthenPay Gateway
+			// ifthenpay Gateway
 			'_' . $this->gateway_ifthen_id,
 		);
 		foreach ( $meta_query as $key => $value ) {
@@ -2964,7 +2964,7 @@ final class WC_IfthenPay_Webdados {
 				$title = sprintf(
 					/* translators: %s: company name */
 					esc_html__( 'Please contact %s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					'IfthenPay'
+					'ifthenpay'
 				);
 				?>
 				<a href="https://ifthenpay.com/<?php echo esc_attr( $this->out_link_utm ); ?>" title="<?php echo esc_attr( $title ); ?>" target="_blank">
@@ -3016,7 +3016,7 @@ final class WC_IfthenPay_Webdados {
 				$premium_plugins = array(
 					array(
 						'url'         => 'https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/',
-						'title'       => esc_html__( 'Multibanco, MBWAY, Credit card, Payshop and Cofidis Pay (IfthenPay) for WooCommerce - PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'title'       => esc_html__( 'Multibanco, MBWAY, Credit card, Payshop and Cofidis Pay (ifthenpay) for WooCommerce - PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'short_title' => esc_html__( 'PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'image'       => 'multibanco.png',
 					),
@@ -3103,7 +3103,7 @@ final class WC_IfthenPay_Webdados {
 				<h4><?php esc_html_e( 'Want more features?', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>:</h4>
 				<p>
 					<a href="https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/<?php echo esc_attr( $this->out_link_utm ); ?>" target="_blank" style="font-weight: bold;">
-						<?php esc_html_e( 'Get the PRO add-on of Multibanco, MBWAY, Credit card, Payshop and Cofidis Pay (IfthenPay) for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Get the PRO add-on of Multibanco, MBWAY, Credit card, Payshop and Cofidis Pay (ifthenpay) for WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					</a>
 				</p>
 			</div>
@@ -3169,7 +3169,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * IfthenPay Gateway Ajax order status, for the thank you page
+	 * ifthenpay Gateway Ajax order status, for the thank you page
 	 */
 	public function gatewayifthenpay_ajax_order_status() {
 		$order_key = isset( $_POST['order_key'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['order_key'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -3210,7 +3210,7 @@ final class WC_IfthenPay_Webdados {
 					echo wp_json_encode(
 						array(
 							'status' => 0,
-							'error'  => esc_html__( 'Error contacting IfthenPay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							'error'  => esc_html__( 'Error contacting ifthenpay servers to create MB WAY Payment', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						)
 					);
 				}
@@ -3249,7 +3249,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * Valid IfthenPay method
+	 * Valid ifthenpay method
 	 *
 	 * @param WC_Order $order The order.
 	 */
@@ -3417,7 +3417,7 @@ final class WC_IfthenPay_Webdados {
 		$args['body'] = wp_json_encode( $args['body'] );
 		$response     = wp_remote_post( $this->refunds_url, $args );
 		if ( is_wp_error( $response ) ) {
-			$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
+			$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
 			$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 			$this->debug_log( $method_id, '-- ' . $debug_msg, 'error', true, $debug_msg_email );
 			return new WP_Error( 'error', $response->get_error_message() );
@@ -3427,12 +3427,12 @@ final class WC_IfthenPay_Webdados {
 				if ( trim( $body->Code ) === '1' ) {
 					return true;
 				} else {
-					$debug_msg       = '- Error from IfthenPay: ' . trim( $body->Message ) . ' - Order ' . $order->get_id();
+					$debug_msg       = '- Error from ifthenpay: ' . trim( $body->Message ) . ' - Order ' . $order->get_id();
 					$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 					$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
 					return new WP_Error(
 						'error',
-						__( 'We are sorry, but it was not possible to issue the refund. Please contact the IfthenPay support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - (' . trim( $body->Code ) . ')'
+						__( 'We are sorry, but it was not possible to issue the refund. Please contact the ifthenpay support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' - (' . trim( $body->Code ) . ')'
 					);
 				}
 			} else {
@@ -3442,7 +3442,7 @@ final class WC_IfthenPay_Webdados {
 				return new WP_Error( 'error', $debug_msg );
 			}
 		} else {
-			$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
+			$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
 			$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 			$this->debug_log( $method_id, $debug_msg, 'error', true, $debug_msg_email );
 			return new WP_Error( 'error', $debug_msg );
@@ -3604,8 +3604,8 @@ final class WC_IfthenPay_Webdados {
 			'ifthenpay',
 			array(
 				'gateway'             => $gateway,
-				'callback_confirm'    => esc_html__( 'Are you sure you want to ask IfthenPay to activate the “Callback”?', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-				'callback_bo_key'     => esc_html__( 'Please provide the IfthenPay backoffice key you got after signing the contract', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+				'callback_confirm'    => esc_html__( 'Are you sure you want to ask ifthenpay to activate the “Callback”?', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+				'callback_bo_key'     => esc_html__( 'Please provide the ifthenpay backoffice key you got after signing the contract', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 				'callback_email_sent' => $callback_email_sent,
 				'callback_auto_open'  => $callback_auto_open,
 				'backoffice_key'      => apply_filters( 'ifthen_backoffice_key', '' ),

@@ -56,8 +56,8 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 
 			$this->has_fields = false;
 
-			$this->method_title       = __( 'Pagamento de Serviços no Multibanco (IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			$this->method_description = __( 'Easy and simple payment using “Pagamento de Serviços” at any “Multibanco” ATM terminal or your homebanking service. (Only available to customers of Portuguese banks - Payment service provided by IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_title       = __( 'Pagamento de Serviços no Multibanco (ifthenpay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_description = __( 'Easy and simple payment using “Pagamento de Serviços” at any “Multibanco” ATM terminal or your homebanking service. (Only available to customers of Portuguese banks - Payment service provided by ifthenpay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			if ( WC_IfthenPay_Webdados()->wc_subscriptions_active && $this->get_option( 'support_woocommerce_subscriptions' ) === 'yes' ) {
 				$this->supports = array(
 					'products',
@@ -268,13 +268,13 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				'enabled'  => array(
 					'title'   => __( 'Enable/Disable', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'    => 'checkbox',
-					'label'   => __( 'Enable “Pagamento de Serviços no Multibanco” (using IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'   => __( 'Enable “Pagamento de Serviços no Multibanco” (using ifthenpay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'default' => 'no',
 				),
 				'api_mode' => array(
 					'title'       => __( 'MB Key or Entity and subentity?', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'        => 'select',
-					'description' => __( 'What kind of details did you get from IfthenPay? After changing this setting you need to request the callback activation again.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'description' => __( 'What kind of details did you get from ifthenpay? After changing this setting you need to request the callback activation again.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'default'     => $api_mode_default,
 					'options'     => array(
 						'yes' => __( 'A key with 3 letters and 6 digits - recommended', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
@@ -284,7 +284,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				'ent'      => array(
 					'title'             => __( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'              => 'number',
-					'description'       => __( 'Entity provided by IfthenPay when signing the contract. (E.g.: 10559, 11202, 11473, 11604)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'description'       => __( 'Entity provided by ifthenpay when signing the contract. (E.g.: 10559, 11202, 11473, 11604)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'default'           => '',
 					'css'               => 'width: 80px;',
 					'custom_attributes' => array(
@@ -296,7 +296,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				'subent'   => array(
 					'title'             => __( 'Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'              => 'number',
-					'description'       => __( 'Subentity provided by IfthenPay when signing the contract. (E.g.: 999)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'description'       => __( 'Subentity provided by ifthenpay when signing the contract. (E.g.: 999)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'default'           => '',
 					'css'               => 'width: 60px;',
 					'custom_attributes' => array(
@@ -308,7 +308,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				'mbkey'    => array(
 					'title'             => __( 'Entity', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' / ' . __( 'MB Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'              => 'text',
-					'description'       => __( 'MB Key provided by IfthenPay when signing the contract. (E.g.: AAA-000000) - If you have an entity and subentity and want to change to this new method, you should request IfthenPay for a MB Key.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'description'       => __( 'MB Key provided by ifthenpay when signing the contract. (E.g.: AAA-000000) - If you have an entity and subentity and want to change to this new method, you should request ifthenpay for a MB Key.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'default'           => '',
 					'css'               => 'width: 80px;',
 					'custom_attributes' => array(
@@ -347,7 +347,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					'secret_key'         => array(
 						'title'       => __( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (Multibanco)',
 						'type'        => 'hidden',
-						'description' => '<strong id="woocommerce_' . $this->id . '_secret_key_label">' . $this->secret_key . '</strong><br/>' . __( 'To ensure callback security, generated by the system and which must be provided to IfthenPay when asking for the callback activation.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'description' => '<strong id="woocommerce_' . $this->id . '_secret_key_label">' . $this->secret_key . '</strong><br/>' . __( 'To ensure callback security, generated by the system and which must be provided to ifthenpay when asking for the callback activation.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'default'     => $this->secret_key,
 					),
 					'title'              => array(
@@ -455,7 +455,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 							'title'       => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'type'        => 'checkbox',
 							'label'       => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'description' => __( 'Shows “Pagamento de Serviços no Multibanco” (using IfthenPay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with Multibanco if the original subscription used this payment method. If this option is not activated, Multibanco will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							'description' => __( 'Shows “Pagamento de Serviços no Multibanco” (using ifthenpay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with Multibanco if the original subscription used this payment method. If this option is not activated, Multibanco will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'default'     => 'no',
 						),
 					)
@@ -512,7 +512,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				'_pro_remove_emails'    => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Remove from email', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					'label'    => __( 'Remove IfthenPay payment methods information from the selected email notifications', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Remove ifthenpay payment methods information from the selected email notifications', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
 				// Entities per category
@@ -533,7 +533,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				'_pro_fees_save'        => array(
 					'type'     => 'checkbox',
 					'title'    => __( 'Store/show fees on order', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					'label'    => __( 'Get the charged IfthenPay fee from the callback (Multibanco, MB WAY and Payshop) and show it on the backend', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'    => __( 'Get the charged ifthenpay fee from the callback (Multibanco, MB WAY and Payshop) and show it on the backend', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'disabled' => true,
 				),
 			);
@@ -610,25 +610,25 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 						<li>
 							<?php
 							printf(
-								/* translators: %1$s: link to Ifthenpay, %2$s: link to IfthenPay */
+								/* translators: %1$s: link to Ifthenpay, %2$s: link to ifthenpay */
 								esc_html__( 'Sign a contract with %1$s. To learn more about this service, please go to %2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a></strong>',
+								'<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">ifthenpay</a></strong>',
 								'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">https://ifthenpay.com</a>'
 							);
 							?>
 						</li>
-						<li><?php echo wp_kses_post( __( 'Fill out all the details (MB Key or Entity and Subentity) provided by <strong>IfthenPay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?> <?php esc_html_e( 'We recommend you specifically request for a MB Key, and mention you’re using WooCommerce, as it allows for reference expiration and will allow for further developments in the future.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
+						<li><?php echo wp_kses_post( __( 'Fill out all the details (MB Key or Entity and Subentity) provided by <strong>ifthenpay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?> <?php esc_html_e( 'We recommend you specifically request for a MB Key, and mention you’re using WooCommerce, as it allows for reference expiration and will allow for further developments in the future.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
 						<li>
 						<?php
 						printf(
 							__( 'Do not use the same %1$s or %2$s on multiple websites or any other system, online or offline. Ask %3$s for new ones for every single platform.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							__( 'MB Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							__( 'Entity and Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a>'
+							'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">ifthenpay</a>'
 						);
 						?>
 						</li>
-						<li class="mb_hide_extra_fields"><?php printf( __( 'Ask IfthenPay to activate “Multibanco Callback” on your account using this exact URL: %1$s and this Anti-phishing key: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<br/><code><strong>' . WC_IfthenPay_Webdados()->multibanco_notify_url . '</strong></code><br/>', '<br/><code><strong>' . $this->secret_key . '</strong></code>' ); ?></li>
+						<li class="mb_hide_extra_fields"><?php printf( __( 'Ask ifthenpay to activate “Multibanco Callback” on your account using this exact URL: %1$s and this Anti-phishing key: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<br/><code><strong>' . WC_IfthenPay_Webdados()->multibanco_notify_url . '</strong></code><br/>', '<br/><code><strong>' . $this->secret_key . '</strong></code>' ); ?></li>
 					</ul>
 					<?php
 					do_action( 'multibanco_ifthen_after_settings_intro' );
@@ -659,16 +659,16 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 								if ( ! isset( $_GET['callback_warning'] ) ) {
 									?>
 									<div id="message" class="error">
-										<p><strong><?php esc_html_e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+										<p><strong><?php esc_html_e( 'You haven’t yet asked ifthenpay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
 									</div>
 									<?php
 								}
 							}
 						}
 						?>
-						<p id="wc_ifthen_callback_open_p"><a href="#" id="wc_ifthen_callback_open" class="button button-small"><?php esc_html_e( 'Click here to ask IfthenPay to activate the “Callback”', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a></p>
+						<p id="wc_ifthen_callback_open_p"><a href="#" id="wc_ifthen_callback_open" class="button button-small"><?php esc_html_e( 'Click here to ask ifthenpay to activate the “Callback”', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a></p>
 						<div id="wc_ifthen_callback_div">
-							<p><?php esc_html_e( 'This will submit a request to IfthenPay, asking them to activate the “Callback” on your account. The following details will be sent to IfthenPay:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
+							<p><?php esc_html_e( 'This will submit a request to ifthenpay, asking them to activate the “Callback” on your account. The following details will be sent to ifthenpay:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
 							<table class="form-table">
 								<tr valign="top">
 									<th scope="row" class="titledesc"><?php esc_html_e( 'Email', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
@@ -696,7 +696,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 								</tr>
 							</table>
 							<p style="text-align: center;">
-								<strong><?php echo wp_kses_post( __( 'Attention: if you ever change from HTTP to HTTPS or vice versa, or the permalinks structure,<br/>you may have to ask IfthenPay to update the callback URL.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?></strong>
+								<strong><?php echo wp_kses_post( __( 'Attention: if you ever change from HTTP to HTTPS or vice versa, or the permalinks structure,<br/>you may have to ask ifthenpay to update the callback URL.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?></strong>
 							</p>
 							<p style="text-align: center; margin-bottom: 0px;">
 								<input type="hidden" id="wc_ifthen_callback_send" name="wc_ifthen_callback_send" value="0"/>
@@ -798,7 +798,7 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 				$result = WC_IfthenPay_Webdados()->callback_webservice( trim( $_POST['wc_ifthen_callback_bo_key'] ), $ent, $subent, $this->secret_key, WC_IfthenPay_Webdados()->multibanco_notify_url );
 				if ( $result['success'] ) {
 					update_option( $this->id . '_callback_email_sent', 'yes' );
-					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to ifthenpay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				} else {
 					WC_Admin_Settings::add_error(
 						__( 'The “Callback” activation request via API has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
@@ -825,14 +825,14 @@ Chave anti-phishing (Multibanco):
 URL:
 ' . WC_IfthenPay_Webdados()->multibanco_notify_url . '
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, and Cofidis Pay (IfthenPay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
+Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, and Cofidis Pay (ifthenpay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
 				$headers = array(
 					'From: ' . get_option( 'admin_email' ) . ' <' . get_option( 'admin_email' ) . '>',
 					'Cc: ' . $cc,
 				);
 				if ( wp_mail( $to, $subject, $message, $headers ) ) {
 					update_option( $this->id . '_callback_email_sent', 'yes' );
-					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to IfthenPay. Wait for their feedback.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to ifthenpay. Wait for their feedback.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				} else {
 					WC_Admin_Settings::add_error( __( 'The “Callback” activation request could not be sent. Check if your WordPress install can send emails.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				}
@@ -1566,9 +1566,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 								?>
 								<div id="multibanco_ifthen_callback_notice" class="notice notice-error" style="padding-right: 38px; position: relative;">
 									<p>
-										<strong>Multibanco (IfthenPay)</strong>
+										<strong>Multibanco (ifthenpay)</strong>
 										<br/>
-										<?php esc_html_e( 'You haven’t yet asked IfthenPay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+										<?php esc_html_e( 'You haven’t yet asked ifthenpay for the “Callback” activation. The orders will NOT be automatically updated upon payment.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 										<br/>
 										<strong><?php esc_html_e( 'This is important', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>! <a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=multibanco_ifthen_for_woocommerce&amp;callback_warning=1"><?php esc_html_e( 'Do it here', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a>!</strong>
 									</p>

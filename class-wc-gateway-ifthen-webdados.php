@@ -1,6 +1,6 @@
 <?php
 /**
- * IfthenPay Gateway class
+ * ifthenpay Gateway class
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -60,8 +60,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 
 			$this->has_fields = false;
 
-			$this->method_title       = __( 'IfthenPay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			$this->method_description = __( 'Easy and simple payment using Apple Pay, Google Pay, or Pix. (Via the IfthenPay Gateway)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_title       = __( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+			$this->method_description = __( 'Easy and simple payment using Apple Pay, Google Pay, or Pix. (Via the ifthenpay Gateway)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 
 			// Anti-phishing key
 			$this->secret_key = $this->get_option( 'secret_key' );
@@ -140,7 +140,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				$this->api_url = apply_filters( 'gateway_ifthen_sandbox', false ) ? $this->api_url_sandbox : $this->api_url_production;
 
 				// Method title in frontend
-				$this->title .= ' - ' . __( 'IfthenPay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+				$this->title .= ' - ' . __( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 
 				// Method title in sandbox mode
 				if ( apply_filters( 'gateway_ifthen_sandbox', false ) ) {
@@ -257,14 +257,14 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				'enabled'        => array(
 					'title'   => __( 'Enable/Disable', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'    => 'checkbox',
-					'label'   => __( 'Enable “IfthenPay Gateway” (using IfthenPay)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					'label'   => __( 'Enable “ifthenpay Gateway”', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'default' => 'no',
 				),
 				'backoffice_key' => array(
 					'title'             => __( 'Backoffice key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'              => 'text',
 					'default'           => '',
-					'description'       => __( 'The IfthenPay backoffice key you got after signing the contract', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
+					'description'       => __( 'The ifthenpay backoffice key you got after signing the contract', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
 					'placeholder'       => '0000-0000-0000-0000',
 					'custom_attributes' => array(
 						'maxlength' => 19,
@@ -274,7 +274,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				'gatewaykey'     => array(
 					'title'             => __( 'Gateway Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'              => 'text',
-					'description'       => __( 'Gateway Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
+					'description'       => __( 'Gateway Key provided by ifthenpay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
 					'default'           => '',
 					'css'               => 'width: 130px;',
 					'placeholder'       => 'XXXX-000000',
@@ -290,7 +290,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 					$this->form_fields['gatewaykey'] = array(
 						'title'       => __( 'Gateway Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'type'        => 'select',
-						'description' => __( 'Gateway Key provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
+						'description' => __( 'Gateway Key provided by ifthenpay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
 						'default'     => '',
 						'options'     => array(
 							'' => '- ' . __( 'Select', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' -',
@@ -315,7 +315,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 									'type'        => 'select',
 									'description' => sprintf(
 										/* translators: %s: payment method */
-										__( '%s Key, that you want to use for this gateway, provided by IfthenPay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										__( '%s Key, that you want to use for this gateway, provided by ifthenpay when signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 										WC_IfthenPay_Webdados()->helper_format_method( $method )
 									) . '<br/>' . __( 'The callback will automatically be set for this key, on this website, so make sure you are not using it anywhere else.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 									'default'     => '',
@@ -332,7 +332,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 					if ( count( $available_methods ) === 0 ) {
 						$this->form_fields['no_methods'] = array(
 							'title'       => __( 'No methods available', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							'description' => __( 'There are no payment methods available on this Gateway. Please choose another one or request IfthenPay to create a static gateway on your account, specifically for WooCommerce, with the payment methods you want to use (Apple Pay, Google Pay, or Pix)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+							'description' => __( 'There are no payment methods available on this Gateway. Please choose another one or request ifthenpay to create a static gateway on your account, specifically for WooCommerce, with the payment methods you want to use (Apple Pay, Google Pay, or Pix)', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 							'type'        => 'hidden',
 							'value'       => '1',
 						);
@@ -344,9 +344,9 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				$this->form_fields,
 				array(
 					'secret_key'    => array(
-						'title'       => __( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (IfthenPay Gateway)',
+						'title'       => __( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (' . __( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ')',
 						'type'        => 'hidden',
-						'description' => '<strong id="woocommerce_' . $this->id . '_secret_key_label">' . $this->secret_key . '</strong><br/>' . __( 'To ensure callback security, generated by the system and which must be provided to IfthenPay when asking for the callback activation.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'description' => '<strong id="woocommerce_' . $this->id . '_secret_key_label">' . $this->secret_key . '</strong><br/>' . __( 'To ensure callback security, generated by the system and which must be provided to ifthenpay when asking for the callback activation.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'default'     => $this->secret_key,
 					),
 					'title'         => array(
@@ -496,24 +496,24 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 						<li>
 							<?php
 							printf(
-								/* translators: %1$s: link to Ifthenpay, %2$s: link to IfthenPay */
+								/* translators: %1$s: link to Ifthenpay, %2$s: link to ifthenpay */
 								esc_html__( 'Sign a contract with %1$s. To learn more about this service, please go to %2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a></strong>',
+								'<strong><a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">ifthenpay</a></strong>',
 								'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">https://ifthenpay.com</a>'
 							);
 							?>
 						</li>
 						<li><?php esc_html_e( 'Enter your backoffice key and select a gateway.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
-						<li><?php esc_html_e( 'If no gateways are available, or the available gateways do not have payment methods available, you need to request IfthenPay to create a static gateway on your account, specifically for WooCommerce, with the payment methods you want to use (Apple Pay, Google Pay, or Pix).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
+						<li><?php esc_html_e( 'If no gateways are available, or the available gateways do not have payment methods available, you need to request ifthenpay to create a static gateway on your account, specifically for WooCommerce, with the payment methods you want to use (Apple Pay, Google Pay, or Pix).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
 						<li><?php esc_html_e( 'Select the payment methods you want to make available.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
 						<li><?php esc_html_e( 'The callback for each of the chosen payment methods will automatically be activated once you save the options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
 						<li>
 							<?php
 							printf(
-								/* translators: %1$s: payment method keys, %2$s: link to IfthenPay */
+								/* translators: %1$s: payment method keys, %2$s: link to ifthenpay */
 								esc_html__( 'Do not use the same %1$s on multiple websites or any other system, online or offline. Ask %2$s for new ones for every single platform.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								esc_html__( 'payment method keys', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-								'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">IfthenPay</a>'
+								'<a href="https://ifthenpay.com/' . esc_attr( WC_IfthenPay_Webdados()->out_link_utm ) . '" target="_blank">ifthenpay</a>'
 							);
 							?>
 						</li>
@@ -677,7 +677,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 													WC_Admin_Settings::add_message(
 														sprintf(
 															/* translators: %s: payment account */
-															__( 'The “Callback” activation request for account %s has been submited to IfthenPay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+															__( 'The “Callback” activation request for account %s has been submited to ifthenpay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 															$method_key
 														)
 													);
@@ -845,7 +845,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				</tr>
 				<tr>
 					<td colspan="2" class="extra_instructions">
-						<?php esc_html_e( 'Waiting for confirmation from IfthenPay', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Waiting for confirmation from ifthenpay', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					</td>
 				</tr>
 			</table>
@@ -942,7 +942,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->gateway_ifthen_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
-				<strong><?php esc_html_e( 'IfthenPay Gateway payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
+				<strong><?php esc_html_e( 'ifthenpay Gateway payment received.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
 				<?php esc_html_e( 'We will now process your order.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 			</p>
@@ -1007,7 +1007,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			$args['body'] = wp_json_encode( $args['body'] ); // Json not post variables
 			$response     = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
-				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
+				$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
 				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
@@ -1025,16 +1025,16 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							'wd_secret'   => $wd_secret,
 						)
 					);
-					$this->debug_log( '- IfthenPay Gateway payment request created on IfthenPay servers - Redirecting to payment gateway - Order ' . $order->get_id() . ' - Pincode: ' . $body->PinCode );
+					$this->debug_log( '- ifthenpay Gateway payment request created on ifthenpay servers - Redirecting to payment gateway - Order ' . $order->get_id() . ' - Pincode: ' . $body->PinCode );
 					do_action( 'gateway_ifthen_created_reference', $body->PinCode, $order->get_id() );
 					return $body->RedirectUrl;
 				} else {
-					$debug_msg = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Can not json_decode body';
+					$debug_msg = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Can not json_decode body';
 					$this->debug_log( $debug_msg, 'error', true, $debug_msg );
 					return false;
 				}
 			} else {
-				$debug_msg       = '- Error contacting the IfthenPay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
+				$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Incorrect response code: ' . $response['response']['code'];
 				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
 				$this->debug_log( $debug_msg, 'error', true, $debug_msg_email );
 				return false;
@@ -1062,13 +1062,13 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 						add_filter( 'woocommerce_email_enabled_full_payment', '__return_false' );
 					}
 					// Mark pending
-					WC_IfthenPay_Webdados()->set_initial_order_status( $order, 'pending', __( 'IfthenPay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+					WC_IfthenPay_Webdados()->set_initial_order_status( $order, 'pending', __( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 				} else {
 					throw new Exception(
 						sprintf(
 							/* translators: %s: payment method */
 							esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-							esc_html__( 'IfthenPay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+							esc_html__( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' )
 						)
 					);
 				}
@@ -1193,11 +1193,11 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							$this->debug_log_extra( 'Order found: ' . $order->get_id() . ' - Status: ' . $order->get_status() );
 							$order_id      = $order->get_id();
 							$order_details = WC_IfthenPay_Webdados()->get_gatewayifthenpay_order_details( $order->get_id() );
-							$note          = __( 'IfthenPay Gateway payment pre-approval received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
+							$note          = __( 'ifthenpay Gateway payment pre-approval received.', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 							$url           = $this->get_return_url( $order );
 							do_action( 'gateway_ifthen_return_payment_gateway_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							$debug_order = wc_get_order( $order->get_id() );
-							$this->debug_log( '-- IfthenPay Gateway payment pre-approval received - Order ' . $order->get_id(), 'notice' );
+							$this->debug_log( '-- ifthenpay Gateway payment pre-approval received - Order ' . $order->get_id(), 'notice' );
 							$this->debug_log_extra( 'Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
 							$order->delete_meta_data( '_' . $this->id . '_checkouterror' );
 							$order->save();
@@ -1332,7 +1332,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 									if ( floatval( $val ) === floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ) ) {
 										$note = sprintf(
 											/* translators: %s payment method */
-											__( 'IfthenPay Gateway payment received via %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+											__( 'ifthenpay Gateway payment received via %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 											$payment_method
 										);
 										if ( isset( $_GET['payment_datetime'] ) ) {
@@ -1361,8 +1361,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 										$this->payment_complete( $order, '', $note );
 										do_action( 'gateway_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 										header( 'HTTP/1.1 200 OK' );
-										$this->debug_log( '-- IfthenPay Gateway payment received - Order ' . $order->get_id(), 'notice' );
-										echo 'OK - IfthenPay Gateway payment received';
+										$this->debug_log( '-- ifthenpay Gateway payment received - Order ' . $order->get_id(), 'notice' );
+										echo 'OK - ifthenpay Gateway payment received';
 									} else {
 										header( 'HTTP/1.1 200 OK' );
 										$err = 'Error: The value does not match';
@@ -1372,7 +1372,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 									}
 								} else {
 									header( 'HTTP/1.1 200 OK' );
-									$err = 'Error: IfthenPay Gateway payment received but order id or number does not match ID - Order callbak ID ' . $id . ' - Order id ' . $order->get_id() . ' - Order number ' . $order->get_order_number();
+									$err = 'Error: ifthenpay Gateway payment received but order id or number does not match ID - Order callbak ID ' . $id . ' - Order id ' . $order->get_id() . ' - Order number ' . $order->get_order_number();
 									$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 									echo esc_html( $err );
 									do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -1516,7 +1516,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 								printf(
 									/* translators: %s: payment method */
 									__( 'There’s a new payment method available: %s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-									'<strong>Apple Pay, Google Pay, or Pix (IfthenPay)</strong>'
+									'<strong>' . __( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (Apple Pay, Google Pay, PIX)</strong>'
 								)
 							);
 						?>
@@ -1525,7 +1525,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 						echo wp_kses_post(
 							sprintf(
 								/* translators: %1$s: open link, %2$s: close link */
-								esc_html__( 'Ask IfthenPay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+								esc_html__( 'Ask ifthenpay to activate it on your account and then %1$sconfigure it here%2$s.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								sprintf(
 									'<strong><a href="admin.php?page=wc-settings&amp;tab=checkout&amp;section=%s">',
 									$this->id

@@ -8,7 +8,7 @@ import { decodeEntities } from '@wordpress/html-entities';
 
 const settings = getSetting( 'creditcard_ifthen_for_woocommerce_data', {} );
 const defaultLabel = __(
-	'Credit or debit card (IfthenPay)',
+	'Credit or debit card (ifthenpay)',
 	'multibanco-ifthen-software-gateway-for-woocommerce'
 );
 const label = decodeEntities( settings.title ) || defaultLabel;

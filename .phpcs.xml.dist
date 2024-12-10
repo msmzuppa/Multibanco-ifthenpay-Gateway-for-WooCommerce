@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="IfthenPay">
+<ruleset name="ifthenpay">
 	<config name="testVersion" value="7.0-"/>
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 	<exclude-pattern>/woocommerce-blocks/build/*</exclude-pattern>

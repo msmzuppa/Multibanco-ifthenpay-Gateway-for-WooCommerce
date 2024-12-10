@@ -25,11 +25,11 @@ FREE:
 	- Opção de icones de cada método em vez do Ifthenpay, e o mesmo no banner
 	- Definir validade do pagamento
 - Passar strings repetidas a únicas com placeholders:
-	- Fill out all the details (Cofidis Pay Key) provided by <strong>IfthenPay</strong> in the fields below.
+	- Fill out all the details (Cofidis Pay Key) provided by <strong>ifthenpay</strong> in the fields below.
 	- Set the Cofidis Pay Key and Save changes to set other plugin options.
 	- Awaiting Cofidis Pay payment.
-	- Cofidis Pay Key provided by IfthenPay when signing the contract.
-	- Enable “Cofidis Pay” (using IfthenPay)
+	- Cofidis Pay Key provided by ifthenpay when signing the contract.
+	- Enable “Cofidis Pay” (using ifthenpay)
 	- 
 
 
@@ -43,7 +43,7 @@ FREE:
 		- Authentication OK - SUCCESS : Feito
 		- Authentication not realized - ATTEMPT : ERRO -> Vai para o SUCCESS
 	- Implementar e testar compatibilidade com o Deposits: Feito
-	- Enviar email à IfthenPay a explicar o funcionamento do novo método: Feito
+	- Enviar email à ifthenpay a explicar o funcionamento do novo método: Feito
 
 - Remover suporte WC < 3.0 de uma vez por todas (!!!): Feito
 
@@ -66,7 +66,7 @@ PAYHSOP:
 
 FEITO PRO:
 
-- Ter campos em cada método para o cliente inserir o que tem contratado com a IfthenPay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!
+- Ter campos em cada método para o cliente inserir o que tem contratado com a ifthenpay, por omissão com os valores que estão no site -> isto pode ser uma extensão premium!
 	- Na verdade isto deveria vir no callback (email enviado a 2020-12-10)
 	- Na encomenda, fazer como no Stripe e mostrar o valor pago em comissões
 	- Ter opção de ordenar os métodos de pagamento pela ordem do que fica mais barato

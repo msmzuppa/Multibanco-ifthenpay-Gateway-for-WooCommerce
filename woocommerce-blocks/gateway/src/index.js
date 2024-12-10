@@ -11,7 +11,7 @@ import React, { useEffect } from 'react';
 
 const settings = getSetting( 'gateway_ifthen_ifthen_for_woocommerce_data', {} );
 const defaultLabel = __(
-	'IfthenPay Gateway',
+	'ifthenpay Gateway',
 	'multibanco-ifthen-software-gateway-for-woocommerce'
 );
 const label = decodeEntities( settings.title ) || defaultLabel;

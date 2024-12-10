@@ -10,7 +10,7 @@ import { applyFilters } from '@wordpress/hooks';
 
 const settings = getSetting( 'mbway_ifthen_for_woocommerce_data', {} );
 const defaultLabel = __(
-	'MB WAY (IfthenPay)',
+	'MB WAY (ifthenpay)',
 	'multibanco-ifthen-software-gateway-for-woocommerce'
 );
 const label = decodeEntities( settings.title ) || defaultLabel;

@@ -1,5 +1,5 @@
 /**
- * The IfthenPay Gateway frontend javascript
+ * The ifthenpay Gateway frontend javascript
  */
 
 jQuery(
@@ -26,7 +26,7 @@ jQuery(
 			total_interval = total_interval + interval;
 			page_url       = new URL( window.location.href );
 			page_url.searchParams.set( 'cache_buster', Math.random() );
-			console.log( 'Checking Gateway IfthenPay payment status, after ' + interval + 'ms (total: ' + total_interval + 'ms)' );
+			console.log( 'Checking Gateway ifthenpay payment status, after ' + interval + 'ms (total: ' + total_interval + 'ms)' );
 			var data = {
 				action: 'wc_gateway_ifthenpay_order_status',
 				order_id: order_id,

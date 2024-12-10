@@ -1,6 +1,6 @@
 <?php
 /**
- * IfthenPay Gateway blocks class
+ * ifthenpay Gateway blocks class
  */
 
 namespace Automattic\WooCommerce\Blocks\Payments\Integrations;
@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Blocks\Assets\Api;
 use Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema;
 
 /**
- * IfthenPay Gateway payment method integration
+ * ifthenpay Gateway payment method integration
  */
 final class GatewayIfthenPay extends AbstractPaymentMethodType {
 	/**
@@ -94,7 +94,7 @@ final class GatewayIfthenPay extends AbstractPaymentMethodType {
 	public function store_api_schema_callback() {
 		return array(
 			'gatewayFailedPayment' => array(
-				'description' => 'If the payment failed at the IfthenPay Gateway',
+				'description' => 'If the payment failed at the ifthenpay Gateway',
 				'type'        => array( 'float', 'null' ),
 				'readonly'    => true,
 			),
