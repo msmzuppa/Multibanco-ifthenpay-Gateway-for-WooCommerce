@@ -1,6 +1,6 @@
 <?php
 /**
- * ifthenpay Gateway blocks class
+ * The ifthenpay Gateway blocks class
  */
 
 namespace Automattic\WooCommerce\Blocks\Payments\Integrations;
@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Blocks\Assets\Api;
 use Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema;
 
 /**
- * ifthenpay Gateway payment method integration
+ * The ifthenpay Gateway payment method integration
  */
 final class GatewayIfthenPay extends AbstractPaymentMethodType {
 	/**

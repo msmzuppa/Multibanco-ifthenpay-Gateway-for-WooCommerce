@@ -59,17 +59,6 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 			$this->method_title       = __( 'Credit or debit card (ifthenpay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 			$this->method_description = __( 'Easy and simple payment using a Credit or debit card. (Payment service provided by ifthenpay)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
-			/*
-			if ( $this->get_option( 'support_woocommerce_subscriptions' ) === 'yes' ) {
-				$this->supports = array(
-					'products',
-					'subscription_suspension',
-					'subscription_reactivation',
-					'subscription_date_changes',
-					'subscriptions',                           //Deprecated?
-					'subscription_payment_method_change_admin' //Deprecated?
-				); //products is by default
-			}*/
 
 			// Webservice
 			$this->api_url_production = 'https://ifthenpay.com/api/creditcard/init/'; // production mode
@@ -148,7 +137,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/* Ensures only one instance of our plugin is loaded or can be loaded */
+		/**
+		 * Ensures only one instance of our plugin is loaded or can be loaded
+		 */
 		public static function instance() {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = new self();
@@ -167,7 +158,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				}
 				// Upgrade
 				$this->debug_log( 'Upgrade to ' . $this->version . ' started' );
-				// Nothing so far
+				// Specific versions upgrades should be here
 				// ...
 				// Upgrade on the database - Risky?
 				$current_options['version'] = $this->version;
@@ -179,13 +170,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		/**
 		 * WPML compatibility
 		 */
-		function register_wpml_strings() {
-			// These are already registered by WooCommerce Multilingual
-			/*
-			$to_register=array(
-				'title',
-				'description',
-			);*/
+		public function register_wpml_strings() {
+			// Title and Descriptions are already registered by WooCommerce Multilingual
 			$to_register = array();
 			foreach ( $to_register as $string ) {
 				icl_register_string( $this->id, $this->id . '_' . $string, $this->settings[ $string ] );
@@ -272,19 +258,6 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						),
 					)
 				);
-				// Not implemented yet
-				/*
-				if ( WC_IfthenPay_Webdados()->wc_subscriptions_active ) {
-					$this->form_fields = array_merge( $this->form_fields, array(
-						'support_woocommerce_subscriptions' => array(
-										'title' => __( 'WooCommerce Subscriptions', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										'type' => 'checkbox',
-										'label' => __( 'Enable WooCommerce Subscriptions (experimental) support.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										'description' => __( 'Shows “Credit or debit card” (using ifthenpay) as a supported payment gateway, and automatically sets subscription renewal orders to be paid with Credit or debit card if the original subscription used this payment method. If this option is not activated, Credit or debit card will only be available as a payment method for subscriptions if the “Manual Renewal Payments” option is enabled on WooCommerce Subscriptions settings.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-										'default' => 'no'
-									),
-					) );
-				}*/
 				$this->form_fields = array_merge(
 					$this->form_fields,
 					array(
@@ -344,6 +317,10 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_creditcard_settings_fields_all', $this->form_fields );
 		}
+
+		/**
+		 * Admin options screen
+		 */
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
 			?>
@@ -405,23 +382,20 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 						</li>
 					</ul>
 					<?php
-					if (
-						strlen( trim( $this->creditcardkey ) ) === 10
-					) {
+					if ( strlen( trim( $this->creditcardkey ) ) === 10 ) {
 						// OK
 					} elseif ( intval( $this->settings_saved ) === 1 ) {
 						?>
-							<div id="message" class="error">
-								<p><strong><?php esc_html_e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
-							</div>
-							<?php
+						<div id="message" class="error">
+							<p><strong><?php esc_html_e( 'Invalid Credit card Key (exactly 10 characters).', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+						</div>
+						<?php
 					} else {
 						?>
-							<div id="message" class="error">
-								<p><strong><?php esc_html_e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
-							</div>
-							<?php
-
+						<div id="message" class="error">
+							<p><strong><?php esc_html_e( 'Set the Credit card Key and Save changes to set other plugin options.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+						</div>
+						<?php
 					}
 					?>
 					<hr/>
@@ -649,11 +623,14 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 		/**
 		 * API Init Payment
+		 *
+		 * @param integer $order_id The Order ID.
+		 * @return url or false
 		 */
-		function api_init_payment( $order_id ) {
+		private function api_init_payment( $order_id ) {
 			$id            = $order_id;
 			$order         = wc_get_order( $order_id );
-			$valor         = round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
+			$valor         = WC_IfthenPay_Webdados()->get_order_total_to_pay_for_gateway( $order );
 			$creditcardkey = apply_filters( 'multibanco_ifthen_base_creditcardkey', $this->creditcardkey, $order );
 			$wd_secret     = substr( strrev( md5( time() ) ), 0, 10 ); // Set a secret on our end for extra validation
 			$url           = $this->api_url . $creditcardkey;
@@ -671,8 +648,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				),
 			);
 			$this->debug_log_extra( '- Request payment with args: ' . wp_json_encode( $args ) );
-			$args['body']  = wp_json_encode( $args['body'] ); // Json not post variables
-			$response      = wp_remote_post( $url, $args );
+			$args['body'] = wp_json_encode( $args['body'] ); // Json not post variables
+			$response     = wp_remote_post( $url, $args );
 			if ( is_wp_error( $response ) ) {
 				$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
 				$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
@@ -953,7 +930,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/* Do refunds */
+		/**
+		 * Do refunds
+		 */
 		public function process_refund( $order_id, $amount = null, $reason = '' ) {
 			$result = WC_IfthenPay_Webdados()->process_refund( $order_id, $amount, $reason, $this->id );
 			if ( $result === true ) {

@@ -155,7 +155,9 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/* Ensures only one instance of our plugin is loaded or can be loaded */
+		/**
+		 * Ensures only one instance of our plugin is loaded or can be loaded
+		 */
 		public static function instance() {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = new self();
@@ -174,7 +176,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 				}
 				// Upgrade
 				$this->debug_log( 'Upgrade to ' . $this->version . ' started' );
-				// Nothing so far
+				// Specific versions upgrades should be here
 				// ...
 				// Upgrade on the database - Risky?
 				$current_options['version'] = $this->version;
@@ -186,13 +188,8 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 		/**
 		 * WPML compatibility
 		 */
-		function register_wpml_strings() {
-			// These are already registered by WooCommerce Multilingual
-			/*
-			$to_register=array(
-				'title',
-				'description',
-			);*/
+		public function register_wpml_strings() {
+			// Title and Descriptions are already registered by WooCommerce Multilingual
 			$to_register = array(
 				'extra_instructions',
 			);
@@ -438,6 +435,10 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_mbway_settings_fields_all', $this->form_fields );
 		}
+
+		/**
+		 * Admin options screen
+		 */
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
 			?>
@@ -551,9 +552,9 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 							<p style="text-align: center; margin-bottom: 0px;">
 								<input type="hidden" id="wc_ifthen_callback_send" name="wc_ifthen_callback_send" value="0"/>
 								<input type="hidden" id="wc_ifthen_callback_bo_key" name="wc_ifthen_callback_bo_key" value=""/>
-								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
 								<br/><br/>
-								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
 								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php esc_html_e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
 								<input type="hidden" name="save" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"/> <!-- Force action woocommerce_update_options_payment_gateways_ to run, from WooCommerce 3.5.5 -->
 							</p>
@@ -856,7 +857,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<?php
 			return apply_filters( 'mbway_ifthen_thankyou_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id ); // Missing MB WAY email or phone number?
 		}
-		function thankyou_instructions_table_html_expired( $order_id, $order_total ) {
+
+		/**
+		 * Thank you page instructions table HTML - Expired
+		 *
+		 * @param int   $order_id    The order ID.
+		 * @param float $order_total The order total.
+		 */
+		private function thankyou_instructions_table_html_expired( $order_id, $order_total ) {
 			// Missing MB WAY email or phone number?
 			$alt   = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			$order = wc_get_order( $order_id );
@@ -976,7 +984,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				}
 			}
 		}
-		function email_instructions_table_html( $order_id, $order_total ) {
+
+		/**
+		 * The instructions table
+		 *
+		 * @param integer $order_id    The order ID.
+		 * @param float   $order_total The order total.
+		 */
+		private function email_instructions_table_html( $order_id, $order_total ) {
 			// Missing MB WAY email or phone number?
 			$alt                = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			$extra_instructions = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_extra_instructions', $this->extra_instructions ) : $this->extra_instructions );
@@ -1062,7 +1077,15 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			$desc = substr( $desc, 0, MBWAY_IFTHEN_DESC_LEN );
 			return $desc;
 		}*/
-		function webservice_set_pedido( $order_id, $phone ) {
+
+		/**
+		 * Create MB WAY payment on the ifthenpay API
+		 *
+		 * @param integer $order_id The Order ID.
+		 * @param string  $phone    The phone number.
+		 * @return bool
+		 */
+		public function webservice_set_pedido( $order_id, $phone ) {
 			return WC_IfthenPay_Webdados()->mbway_webservice_set_pedido( $order_id, $phone );
 		}
 
@@ -1173,8 +1196,10 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			return WC_IfthenPay_Webdados()->disable_only_above_or_below( $available_gateways, $this->id, WC_IfthenPay_Webdados()->gateway_ifthen_min_value, WC_IfthenPay_Webdados()->gateway_ifthen_max_value );
 		}
 
-		/* Payment fields */
-		function payment_fields() {
+		/**
+		 * Payment fields
+		 */
+		public function payment_fields() {
 			echo wpautop( $this->description );
 			?>
 			<p class="form-row form-row-wide" id="<?php echo esc_attr( $this->id ); ?>_phone_field" style="display: block !important; margin-top: 1em;">
@@ -1188,7 +1213,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			</p>
 			<?php
 		}
-		function validate_fields() {
+
+		/**
+		 * Validate frontend fields.
+		 *
+		 * @return bool
+		 */
+		public function validate_fields() {
 			$phone = isset( $_POST[ $this->id . '_phone' ] ) ? trim( sanitize_text_field( $_POST[ $this->id . '_phone' ] ) ) : '';
 			if ( empty( $phone ) ) {
 				wc_add_notice( sprintf( __( '%s is required', 'multibanco-ifthen-software-gateway-for-woocommerce' ), '<strong>' . __( 'Phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . '</strong>' ), 'error' );
@@ -1212,13 +1243,19 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			$order->add_order_note( $note );
 			$order->payment_complete( $txn_id );
 		}
-		/* Reduce stock on 'wc_maybe_reduce_stock_levels'? */
-		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
+
+		/**
+		 * Reduce stock on 'wc_maybe_reduce_stock_levels'?
+		 *
+		 * @param bool    $reduce_order_stock Reduce stock?
+		 * @param integer $order_id           The order ID.
+		 */
+		public function woocommerce_payment_complete_reduce_order_stock( $reduce_order_stock, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() === $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $reduce_order_stock, $order->get_id(), $this->id, $this->stock_when ) );
 			} else {
-				return $bool;
+				return $reduce_order_stock;
 			}
 		}
 
@@ -1450,7 +1487,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			}
 		}
 
-		/* Do refunds */
+		/**
+		 * Do refunds
+		 */
 		public function process_refund( $order_id, $amount = null, $reason = '' ) {
 			return WC_IfthenPay_Webdados()->process_refund( $order_id, $amount, $reason, $this->id );
 		}

@@ -10,7 +10,7 @@
  * Requires at least:    5.8
  * Tested up to:         6.7
  * Requires PHP:         7.2
- * WC requires at least: 7.0
+ * WC requires at least: 7.1
  * WC tested up to:      9.5
  * Requires Plugins:     woocommerce
  * License:              GPLv3
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-define( 'WC_IFTHENPAY_WEBDADOS_REQUIRED_WC_VERSION', '7.0' );
+define( 'WC_IFTHENPAY_WEBDADOS_REQUIRED_WC_VERSION', '7.1' );
 define( 'WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE', __FILE__ );
 
 /**
@@ -106,10 +106,8 @@ function mbifthen_woocommerce_not_active_admin_notices() {
 add_action(
 	'before_woocommerce_init',
 	function () {
-		if ( version_compare( WC_VERSION, '7.1', '>=' ) && class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
-		}
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
 	}
 );
 

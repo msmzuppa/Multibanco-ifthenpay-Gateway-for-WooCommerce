@@ -1,6 +1,6 @@
 <?php
 /**
- * ifthenpay Gateway class
+ * The ifthenpay Gateway class
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -178,7 +178,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				}
 				// Upgrade
 				$this->debug_log( 'Upgrade to ' . $this->version . ' started' );
-				// Nothing so far
+				// Specific versions upgrades should be here
 				// ...
 				// Upgrade on the database - Risky?
 				$current_options['version'] = $this->version;
@@ -191,14 +191,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		 * WPML compatibility
 		 */
 		public function register_wpml_strings() {
-			// These are already registered by WooCommerce Multilingual
-			// phpcs:disable 
-			/*
-			$to_register=array(
-				'title',
-				'description',
-			);*/
-			// phpcs:enable
+			// Title and Descriptions are already registered by WooCommerce Multilingual
 			$to_register = array();
 			foreach ( $to_register as $string ) {
 				icl_register_string( $this->id, $this->id . '_' . $string, $this->settings[ $string ] );
@@ -955,12 +948,13 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		 * https://ifthenpay.com/docs/en/api/pbl/#tag/pay-by-link--pinpay/POST/{GATEWAY_KEY}
 		 *
 		 * @param int $order_id The order ID.
+		 * @return url or false
 		 */
 		private function api_init_payment( $order_id ) {
 			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$id                = $order_id;
 			$order             = wc_get_order( $order_id );
-			$valor             = round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
+			$valor             = WC_IfthenPay_Webdados()->get_order_total_to_pay_for_gateway( $order );
 			$gatewaykey        = apply_filters( 'multibanco_ifthen_base_gatewaykey', $this->gatewaykey, $order );
 			$wd_secret         = substr( strrev( md5( time() ) ), 0, 10 ); // Set a secret on our end for extra validation
 			$id_for_backoffice = (string) apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id();
@@ -981,17 +975,17 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			) {
 				$lang = 'en';
 			}
-			$url          = $this->api_url . $gatewaykey;
-			$return_url   = WC_IfthenPay_Webdados()->gateway_ifthen_return_url;
-			$return_url   = add_query_arg( 'id', $id_for_backoffice, $return_url );
-			$return_url   = add_query_arg( 'wd_secret', $wd_secret, $return_url );
-			$return_url   = add_query_arg( 'amount', $valor, $return_url );
-			$args         = array(
+			$url        = $this->api_url . $gatewaykey;
+			$return_url = WC_IfthenPay_Webdados()->gateway_ifthen_return_url;
+			$return_url = add_query_arg( 'id', $id_for_backoffice, $return_url );
+			$return_url = add_query_arg( 'wd_secret', $wd_secret, $return_url );
+			$return_url = add_query_arg( 'amount', $valor, $return_url );
+			$args       = array(
 				'method'   => 'POST',
 				'timeout'  => apply_filters( 'gateway_ifthen_api_timeout', 15 ),
 				'blocking' => true,
 				'body'     => array(
-					'id'            => $id_for_backoffice,
+					'id'            => (string) $id_for_backoffice,
 					'amount'        => (string) $valor,
 					'description'   => $desc,
 					'accounts'      => str_replace( ' ', '', implode( ';', $accounts ) ),

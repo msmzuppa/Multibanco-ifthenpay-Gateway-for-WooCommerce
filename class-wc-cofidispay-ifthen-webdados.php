@@ -167,7 +167,9 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/* Ensures only one instance of our plugin is loaded or can be loaded */
+		/**
+		 * Ensures only one instance of our plugin is loaded or can be loaded
+		 */
 		public static function instance() {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = new self();
@@ -186,7 +188,7 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 				}
 				// Upgrade
 				$this->debug_log( 'Upgrade to ' . $this->version . ' started' );
-				// Nothing so far
+				// Specific versions upgrades should be here
 				// ...
 				// Upgrade on the database - Risky?
 				$current_options['version'] = $this->version;
@@ -198,13 +200,8 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 		/**
 		 * WPML compatibility
 		 */
-		function register_wpml_strings() {
-			// These are already registered by WooCommerce Multilingual
-			/*
-			$to_register=array(
-				'title',
-				'description',
-			);*/
+		public function register_wpml_strings() {
+			// Title and Descriptions are already registered by WooCommerce Multilingual
 			$to_register = array();
 			foreach ( $to_register as $string ) {
 				icl_register_string( $this->id, $this->id . '_' . $string, $this->settings[ $string ] );
@@ -369,6 +366,10 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_cofidispay_settings_fields_all', $this->form_fields );
 		}
+
+		/**
+		 * Admin options screen
+		 */
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
 			?>
@@ -484,9 +485,9 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 							<p style="text-align: center; margin-bottom: 0px;">
 								<input type="hidden" id="wc_ifthen_callback_send" name="wc_ifthen_callback_send" value="0"/>
 								<input type="hidden" id="wc_ifthen_callback_bo_key" name="wc_ifthen_callback_bo_key" value=""/>
-								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
 								<br/><br/>
-								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
 								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php esc_html_e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
 								<input type="hidden" name="save" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"/> <!-- Force action woocommerce_update_options_payment_gateways_ to run, from WooCommerce 3.5.5 -->
 							</p>
@@ -545,7 +546,9 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 			<?php
 		}
 
-		/* Intercept process_admin_options and set min and max values for this gateway from the ifthenpay limits API endpoint */
+		/**
+		 * Intercept process_admin_options and set min and max values for this gateway from the ifthenpay limits API endpoint
+		 */
 		public function process_admin_options() {
 			if ( isset( $_POST[ 'woocommerce_' . $this->id . '_cofidispaykey' ] ) ) {
 				$new_key = trim( $_POST[ 'woocommerce_' . $this->id . '_cofidispaykey' ] );
@@ -828,7 +831,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				}
 			}
 		}
-		function email_instructions_table_html( $order_id, $order_total ) {
+
+		/**
+		 * The instructions table
+		 *
+		 * @param integer $order_id    The order ID.
+		 * @param float   $order_total The order total.
+		 */
+		private function email_instructions_table_html( $order_id, $order_total ) {
 			$alt = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			// We actually do not use $ent, $ref or $order_total - We'll just get the details
 			$cofidispay_order_details = WC_IfthenPay_Webdados()->get_cofidispay_order_details( $order_id );
@@ -885,11 +895,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * API Init Payment
+		 *
+		 * @param integer $order_id The Order ID.
+		 * @return url or false
 		 */
-		function api_init_payment( $order_id ) {
+		private function api_init_payment( $order_id ) {
 			$id                = $order_id;
 			$order             = wc_get_order( $order_id );
-			$valor             = (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 );
+			$valor             = WC_IfthenPay_Webdados()->get_order_total_to_pay_for_gateway( $order );
 			$cofidispaykey     = apply_filters( 'multibanco_ifthen_base_cofidispaykey', $this->cofidispaykey, $order );
 			$wd_secret         = substr( strrev( md5( time() ) ), 0, 10 ); // Set a secret on our end for extra validation
 			$id_for_backoffice = apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id();
@@ -907,7 +920,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				'blocking' => true,
 				'body'     => array(
 					'orderId'         => (string) $id_for_backoffice,
-					'amount'          => $valor,
+					'amount'          => (string) $valor,
 					'description'     => WC_IfthenPay_Webdados()->mb_webservice_filter_descricao( apply_filters( 'cofidispay_ifthen_webservice_desc', $desc, $order->get_id() ) ),
 					'returnUrl'       => $return_url,
 					'customerName'    => trim( $order->get_formatted_billing_full_name() ),

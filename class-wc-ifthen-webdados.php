@@ -152,10 +152,8 @@ final class WC_IfthenPay_Webdados {
 		$this->wc_subscriptions_active = function_exists( 'wcs_get_subscription' );
 		$this->wc_blocks_active        = class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' );
 		$this->out_link_utm            = '?utm_source=' . rawurlencode( esc_url( home_url( '/' ) ) ) . '&amp;utm_medium=link&amp;utm_campaign=mb_ifthen_plugin';
-		if ( version_compare( WC_VERSION, '7.1', '>=' ) ) {
-			if ( wc_get_container()->get( \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
-				$this->hpos_enabled = true;
-			}
+		if ( wc_get_container()->get( \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
+			$this->hpos_enabled = true;
 		}
 		// Multibanco
 		$this->multibanco_settings         = get_option( 'woocommerce_multibanco_ifthen_for_woocommerce_settings', '' );
@@ -1741,7 +1739,7 @@ final class WC_IfthenPay_Webdados {
 						'body'     => array(
 							'mbKey'       => $mbkey,
 							'orderId'     => (string) apply_filters( 'ifthen_webservice_send_order_number_instead_id', false ) ? $order->get_order_number() : $order->get_id(),
-							'amount'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
+							'amount'      => (string) WC_IfthenPay_Webdados()->get_order_total_to_pay_for_gateway( $order ),
 							'description' => $this->mb_webservice_filter_descricao( apply_filters( 'multibanco_ifthen_webservice_desc', $desc, $order->get_id() ) ),
 						),
 					);
@@ -2106,7 +2104,7 @@ final class WC_IfthenPay_Webdados {
 				'MbWayKey'   => $mbwaykey,
 				'canal'      => '03', // Online
 				'referencia' => (string) $id_for_backoffice,
-				'valor'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
+				'valor'      => (string) WC_IfthenPay_Webdados()->get_order_total_to_pay_for_gateway( $order ),
 				'nrtlm'      => $phone,
 				'email'      => '', // Não usamos
 				'descricao'  => $this->mb_webservice_filter_descricao( apply_filters( 'mbway_ifthen_webservice_desc', $desc, $order->get_id() ) ),
@@ -2228,6 +2226,23 @@ final class WC_IfthenPay_Webdados {
 			}
 		}
 		return $order_total_to_pay;
+	}
+
+	/**
+	 * Get total to pay for an order, formated for gateway
+	 *
+	 * @since 10.0.0
+	 * @param WC_Order $order The order.
+	 * @return float
+	 */
+	public function get_order_total_to_pay_for_gateway( $order ) {
+		$value = $this->get_order_total_to_pay( $order );
+		// Floatval and round
+		$value = round( floatval( $value ), 2 );
+		// Number format, just in case some very weird LOCALE is setting "," as decimal separator
+		$value = number_format(	$value, 2, '.', '' );
+		// Return
+		return $value;
 	}
 
 	/**
@@ -3170,7 +3185,7 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
-	 * ifthenpay Gateway Ajax order status, for the thank you page
+	 * The ifthenpay Gateway Ajax order status, for the thank you page
 	 */
 	public function gatewayifthenpay_ajax_order_status() {
 		$order_key = isset( $_POST['order_key'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['order_key'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -3404,7 +3419,7 @@ final class WC_IfthenPay_Webdados {
 				$backoffice_key = trim( $this->creditcard_settings['do_refunds_backoffice_key'] );
 				break;
 		}
-		$args         = array(
+		$args = array(
 			'method'   => 'POST',
 			'timeout'  => apply_filters( 'mbway_ifthen_webservice_timeout', 15 ),
 			'blocking' => true,

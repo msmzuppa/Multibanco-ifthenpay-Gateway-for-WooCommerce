@@ -262,8 +262,9 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 * [TWEAK] Resize the payment methods banner on the order admin page
 * [TWEAK] Replace “IfthenPay” with “ifthenpay” for branding coherence
 * [TWEAK] Several updates to the readme.txt
+* [FIX] Make sure all the values are sent to the ifthenpay API with “.” as a decimal separator, even in very weird PHP setups
 * [DEV] Apply additional WordPress Coding Standards
-* [DEV] Requires PHP 7.2, WordPress 5.8, and WooCommerce 7.0
+* [DEV] Requires PHP 7.2, WordPress 5.8, and WooCommerce 7.1
 * [DEV] Tested with WordPress 6.8-alpha-59485 and WooCommerce 9.5.0-rc.1
 
 = 9.7.1 - 2024-11-29 =

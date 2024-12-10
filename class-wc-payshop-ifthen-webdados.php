@@ -157,7 +157,9 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 			}
 		}
 
-		/* Ensures only one instance of our plugin is loaded or can be loaded */
+		/**
+		 * Ensures only one instance of our plugin is loaded or can be loaded
+		 */
 		public static function instance() {
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = new self();
@@ -176,12 +178,8 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 				}
 				// Upgrade
 				$this->debug_log( 'Upgrade to ' . $this->version . ' started' );
-				if ( $this->version >= '5.0.0' ) {
-					// Activate the resend new order option by default
-					if ( ! isset( $current_options['resend_new_order_when_paid'] ) ) {
-						$current_options['resend_new_order_when_paid'] = 'yes';
-					}
-				}
+				// Specific versions upgrades should be here
+				// ...
 				// Upgrade on the database - Risky?
 				$current_options['version'] = $this->version;
 				update_option( 'woocommerce_' . $this->id . '_settings', $current_options );
@@ -192,13 +190,8 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 		/**
 		 * WPML compatibility
 		 */
-		function register_wpml_strings() {
-			// These are already registered by WooCommerce Multilingual
-			/*
-			$to_register=array(
-				'title',
-				'description',
-			);*/
+		public function register_wpml_strings() {
+			// Title and Descriptions are already registered by WooCommerce Multilingual
 			$to_register = array(
 				'extra_instructions',
 			);
@@ -439,6 +432,10 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 			// And to manipulate them
 			$this->form_fields = apply_filters( 'multibanco_ifthen_payshop_settings_fields_all', $this->form_fields );
 		}
+
+		/**
+		 * Admin options screen
+		 */
 		public function admin_options() {
 			$title = esc_html( $this->get_method_title() );
 			?>
@@ -551,9 +548,9 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 							<p style="text-align: center; margin-bottom: 0px;">
 								<input type="hidden" id="wc_ifthen_callback_send" name="wc_ifthen_callback_send" value="0"/>
 								<input type="hidden" id="wc_ifthen_callback_bo_key" name="wc_ifthen_callback_bo_key" value=""/>
-								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
 								<br/><br/>
-								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', '' ); ?></button>
+								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
 								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php esc_html_e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
 								<input type="hidden" name="save" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"/> <!-- Force action woocommerce_update_options_payment_gateways_ to run, from WooCommerce 3.5.5 -->
 							</p>
@@ -799,7 +796,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<?php
 			return apply_filters( 'payshop_ifthen_thankyou_instructions_table_html', ob_get_clean(), round( $order_total, 2 ), $order_id );
 		}
-		function thankyou_instructions_table_html_expired( $order_id, $order_total ) {
+
+		/**
+		 * Thank you page instructions table HTML - Expired
+		 *
+		 * @param int   $order_id    The order ID.
+		 * @param float $order_total The order total.
+		 */
+		private function thankyou_instructions_table_html_expired( $order_id, $order_total ) {
 			$alt   = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			$order = wc_get_order( $order_id );
 			ob_start();
@@ -913,7 +917,14 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				}
 			}
 		}
-		function email_instructions_table_html( $order_id, $order_total ) {
+
+		/**
+		 * The instructions table
+		 *
+		 * @param integer $order_id    The order ID.
+		 * @param float   $order_total The order total.
+		 */
+		private function email_instructions_table_html( $order_id, $order_total ) {
 			$alt                = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_title', $this->title ) : $this->title );
 			$extra_instructions = ( WC_IfthenPay_Webdados()->wpml_active ? icl_t( $this->id, $this->id . '_extra_instructions', $this->extra_instructions ) : $this->extra_instructions );
 			// We actually do not use $ent, $ref or $order_total - We'll just get the details
@@ -977,9 +988,12 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		}
 
 		/**
-		 * Webservice SetPedido
+		 * Create Payshop payment on the ifthenpay API
+		 *
+		 * @param integer $order_id The Order ID.
+		 * @return bool
 		 */
-		function webservice_set_pedido( $order_id ) {
+		public function webservice_set_pedido( $order_id ) {
 
 			$date_exp = false;
 			if ( intval( $this->validity ) > 0 ) {
@@ -998,7 +1012,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				'body'     => array(
 					'payshopkey' => $payshopkey,
 					'id'         => (string) $id_for_backoffice,
-					'valor'      => (string) round( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $order ) ), 2 ),
+					'valor'      => (string) WC_IfthenPay_Webdados()->get_order_total_to_pay_for_gateway( $order ),
 				),
 			);
 			if ( $date_exp ) {
@@ -1052,15 +1066,24 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 
 		/**
 		 * SMS instructions for Twilio SMS Notifications
+		 *
+		 * @param string  $message The current message.
+		 * @param integer $order_id The order ID.
+		 * @return string
 		 */
-		function sms_instructions_twilio( $message, $order_id ) {
+		public function sms_instructions_twilio( $message, $order_id ) {
 			$replace = WC_IfthenPay_Webdados()->payshop_sms_instructions( $message, $order_id );
 			return trim( preg_replace( '/\s+/', ' ', str_replace( '%payshop_ifthen%', $replace, $message ) ) ); // Return message with %payshop_ifthen% replaced by the instructions
 		}
+
 		/**
-		 * SMS instructions for Twilio SMS Notifications
+		 * SMS instructions for Yith SMS Notifications
+		 *
+		 * @param array    $placeholders The current plaveholders.
+		 * @param WC_Order $order        The order.
+		 * @return array
 		 */
-		function sms_instructions_yith( $placeholders, $order ) {
+		public function sms_instructions_yith( $placeholders, $order ) {
 			if ( is_array( $placeholders ) ) {
 				$placeholders['{payshop_ifthen}'] = WC_IfthenPay_Webdados()->payshop_sms_instructions( '', $order->get_id() );
 			}
@@ -1169,8 +1192,13 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			$order->payment_complete( $txn_id );
 		}
 
-		/* Reduce stock on 'wc_maybe_reduce_stock_levels'? */
-		function woocommerce_payment_complete_reduce_order_stock( $bool, $order_id ) {
+		/**
+		 * Reduce stock on 'wc_maybe_reduce_stock_levels'?
+		 *
+		 * @param bool    $reduce_order_stock Reduce stock?
+		 * @param integer $order_id           The order ID.
+		 */
+		public function woocommerce_payment_complete_reduce_order_stock( $reduce_order_stock, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() === $this->id ) {
 				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
