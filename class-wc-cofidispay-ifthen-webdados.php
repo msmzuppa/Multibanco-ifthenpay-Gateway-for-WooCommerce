@@ -888,7 +888,6 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 			<p style="text-align: center; margin: auto; margin-top: 2em; margin-bottom: 2em;" id="ifthenpay_payment_received">
 				<img src="<?php echo esc_url( WC_IfthenPay_Webdados()->cofidispay_banner_email ); ?>" alt="<?php echo esc_attr( $alt ); ?>" title="<?php echo esc_attr( $alt ); ?>" style="margin: auto; margin-top: 10px; max-height: 48px;"/>
 				<br/>
-				<!--<strong><?php esc_html_e( 'Cofidis Pay payment approved.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>-->
 				<strong><?php esc_html_e( 'Cofidis Pay payment pre-approved.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong>
 				<br/>
 				<?php esc_html_e( 'We will process your order after submitting the payment request to Cofidis, and get it definitely approved.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
