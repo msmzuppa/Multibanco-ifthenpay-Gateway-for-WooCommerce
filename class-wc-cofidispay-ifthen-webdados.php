@@ -360,7 +360,7 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 		 * Admin options screen
 		 */
 		public function admin_options() {
-			$title = this->get_method_title();
+			$title = $this->get_method_title();
 			?>
 			<div id="wc_ifthen">
 				<?php
