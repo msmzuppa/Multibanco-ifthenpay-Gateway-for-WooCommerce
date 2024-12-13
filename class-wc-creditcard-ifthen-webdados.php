@@ -940,11 +940,12 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		/**
 		 * Helper to get pending order on calback
 		 *
-		 * @param mixed  $id        The unique ID, normally Order ID.
-		 * @param float  $val       The order value.
-		 * @param string $wd_secret The secret set to validate callbacks.
+		 * @param string $request_id The unique request ID.
+		 * @param mixed  $id         The unique ID, normally Order ID.
+		 * @param float  $val        The order value.
+		 * @param string $wd_secret  The secret set to validate callbacks.
 		 */
-		private function callback_helper_get_pending_order( $id, $val, $wd_secret = null ) {
+		private function callback_helper_get_pending_order( $request_id, $id, $val, $wd_secret = null ) {
 			$return         = array(
 				'success' => false,
 				'error'   => false,
