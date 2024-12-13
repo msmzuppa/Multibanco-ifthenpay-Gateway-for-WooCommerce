@@ -1362,9 +1362,9 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 		public function woocommerce_payment_complete_reduce_order_stock( $reduce_order_stock, $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order->get_payment_method() === $this->id ) {
-				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $bool, $order->get_id(), $this->id, $this->stock_when ) );
+				return ( WC_IfthenPay_Webdados()->woocommerce_payment_complete_reduce_order_stock( $reduce_order_stock, $order->get_id(), $this->id, $this->stock_when ) );
 			} else {
-				return $bool;
+				return $reduce_order_stock;
 			}
 		}
 

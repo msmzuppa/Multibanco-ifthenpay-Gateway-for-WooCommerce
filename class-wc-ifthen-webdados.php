@@ -3032,7 +3032,7 @@ final class WC_IfthenPay_Webdados {
 				$premium_plugins = array(
 					array(
 						'url'         => 'https://ptwooplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/',
-						'title'       => esc_html__( 'Multibanco, MBWAY, Credit card, Payshop and Cofidis Pay (ifthenpay) for WooCommerce - PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'title'       => esc_html__( 'Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, Cofidis Pay, and PIX (ifthenpay) for WooCommerce - PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'short_title' => esc_html__( 'PRO add-on', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'image'       => 'multibanco.png',
 					),
