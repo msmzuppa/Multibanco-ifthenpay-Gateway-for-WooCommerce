@@ -3418,6 +3418,11 @@ final class WC_IfthenPay_Webdados {
 				$request_id     = trim( $order_details['request_id'] );
 				$backoffice_key = trim( $this->creditcard_settings['do_refunds_backoffice_key'] );
 				break;
+			case $this->gateway_ifthen_id:
+				$order_details  = WC_IfthenPay_Webdados()->get_gatewayifthenpay_order_details( $order->get_id() );
+				$request_id     = trim( $order_details['request_id'] );
+				$backoffice_key = trim( $this->gateway_ifthen_settings['do_refunds_backoffice_key'] );
+				break;
 		}
 		$args = array(
 			'method'   => 'POST',

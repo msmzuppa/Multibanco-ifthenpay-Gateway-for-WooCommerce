@@ -37,6 +37,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		public $only_above;
 		public $only_below;
 		public $stock_when;
+		public $do_refunds;
+		public $do_refunds_backoffice_key;
 
 		/**
 		 * Constructor for your payment class
@@ -85,16 +87,21 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			$this->init_settings();
 
 			// User settings
-			$this->title          = trim( $this->get_option( 'title' ) );
-			$this->description    = trim( $this->get_option( 'description' ) );
-			$this->backoffice_key = trim( $this->get_option( 'backoffice_key' ) );
-			$this->gatewaykey     = trim( $this->get_option( 'gatewaykey' ) );
-			$this->settings_saved = $this->get_option( 'settings_saved' );
-			$this->send_to_admin  = ( $this->get_option( 'send_to_admin' ) === 'yes' ? true : false );
-			$this->only_portugal  = ( $this->get_option( 'only_portugal' ) === 'yes' ? true : false );
-			$this->only_above     = $this->get_option( 'only_above' );
-			$this->only_below     = $this->get_option( 'only_bellow' );
-			$this->methods_keys   = array();
+			$this->title                     = trim( $this->get_option( 'title' ) );
+			$this->description               = trim( $this->get_option( 'description' ) );
+			$this->backoffice_key            = trim( $this->get_option( 'backoffice_key' ) );
+			$this->gatewaykey                = trim( $this->get_option( 'gatewaykey' ) );
+			$this->settings_saved            = $this->get_option( 'settings_saved' );
+			$this->send_to_admin             = ( $this->get_option( 'send_to_admin' ) === 'yes' ? true : false );
+			$this->only_portugal             = ( $this->get_option( 'only_portugal' ) === 'yes' ? true : false );
+			$this->only_above                = $this->get_option( 'only_above' );
+			$this->only_below                = $this->get_option( 'only_bellow' );
+			$this->do_refunds                = ( $this->get_option( 'do_refunds' ) === 'yes' ? true : false );
+			$this->do_refunds_backoffice_key = $this->get_option( 'do_refunds_backoffice_key' );
+			if ( $this->do_refunds && trim( $this->do_refunds_backoffice_key ) !== '' ) {
+				$this->supports[] = 'refunds';
+			}
+			$this->methods_keys = array();
 			foreach ( $this->get_available_gateway_methods() as $method => $accounts ) {
 				if ( $this->get_option( 'method_' . $method ) !== '' ) {
 					$this->methods_keys[ $method ] = $this->get_option( 'method_' . $method );
@@ -399,6 +406,22 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			// if ( WC_IfthenPay_Webdados()->wc_subscriptions_active ) {
 			// }
 			// phpcs:enable
+			$this->form_fields = array_merge(
+				$this->form_fields,
+				array(
+					'do_refunds'                => array(
+						'title' => __( 'Process refunds?', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'type'  => 'checkbox',
+						'label' => __( 'Allow to refund via Apple Pay, Google Pay, or PIX when the order is completely or partially refunded in WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					),
+					'do_refunds_backoffice_key' => array(
+						'title'       => __( 'Backoffice key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+						'type'        => 'text',
+						'default'     => '',
+						'description' => __( 'The ifthenpay backoffice key you got after signing the contract is needed to process refunds', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+					),
+				)
+			);
 			$this->form_fields = array_merge(
 				$this->form_fields,
 				array(
@@ -1398,6 +1421,47 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 				wp_die( 'Error: Something is missing...', 'WC_Gateway_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 			}
 			// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		}
+
+		/**
+		 * Can the order be refunded via this gateway?
+		 *
+		 * Extended to do our own tests
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @return bool If false, the automatic refund button is hidden in the UI.
+		 */
+		public function can_refund_order( $order ) {
+			if ( $order && $this->supports( 'refunds' ) ) {
+				$order_details = WC_IfthenPay_Webdados()->get_gatewayifthenpay_order_details( $order->get_id() );
+				if (
+					// Apple, Google and PIX (And eventually MBWAY and CCARD if the gateway_ifthen_unavailable_methods filter was used)
+					in_array( $order_details['payment_method'], array( 'APPLE', 'GOOGLE', 'PIX', 'MBWAY', 'CCARD' ), true )
+					&&
+					// Has request ID = Already paid for
+					! empty( $order_details['request_id'] )
+				) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * Do refunds
+		 *
+		 * @param integer       $order_id The order ID.
+		 * @param float or null $amount   The amount to refund.
+		 * @param string        $reason   The reason for refund.
+		 */
+		public function process_refund( $order_id, $amount = null, $reason = '' ) {
+			$result = WC_IfthenPay_Webdados()->process_refund( $order_id, $amount, $reason, $this->id );
+			if ( $result === true ) {
+				// Add note because there will be no callback
+				$order = wc_get_order( $order_id );
+				$order->add_order_note( __( 'Apple Pay, Google Pay, or PIX refund successfully processed by ifthenpay.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+			}
+			return $result;
 		}
 
 		/**
