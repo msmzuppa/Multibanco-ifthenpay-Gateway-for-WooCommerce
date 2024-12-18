@@ -3421,12 +3421,12 @@ final class WC_IfthenPay_Webdados {
 			case $this->gateway_ifthen_id:
 				$order_details  = WC_IfthenPay_Webdados()->get_gatewayifthenpay_order_details( $order->get_id() );
 				$request_id     = trim( $order_details['request_id'] );
-				$backoffice_key = trim( $this->gateway_ifthen_settings['do_refunds_backoffice_key'] );
+				$backoffice_key = trim( $this->gateway_ifthen_settings['backoffice_key'] );
 				break;
 		}
 		$args = array(
 			'method'   => 'POST',
-			'timeout'  => apply_filters( 'mbway_ifthen_webservice_timeout', 15 ),
+			'timeout'  => apply_filters( 'refund_ifthen_api_timeout', 30 ),
 			'blocking' => true,
 			'headers'  => array( 'Content-Type' => 'application/json; charset=utf-8' ),
 			'body'     => array(

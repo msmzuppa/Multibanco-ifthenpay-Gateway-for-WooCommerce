@@ -38,7 +38,6 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		public $only_below;
 		public $stock_when;
 		public $do_refunds;
-		public $do_refunds_backoffice_key;
 
 		/**
 		 * Constructor for your payment class
@@ -87,18 +86,17 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			$this->init_settings();
 
 			// User settings
-			$this->title                     = trim( $this->get_option( 'title' ) );
-			$this->description               = trim( $this->get_option( 'description' ) );
-			$this->backoffice_key            = trim( $this->get_option( 'backoffice_key' ) );
-			$this->gatewaykey                = trim( $this->get_option( 'gatewaykey' ) );
-			$this->settings_saved            = $this->get_option( 'settings_saved' );
-			$this->send_to_admin             = ( $this->get_option( 'send_to_admin' ) === 'yes' ? true : false );
-			$this->only_portugal             = ( $this->get_option( 'only_portugal' ) === 'yes' ? true : false );
-			$this->only_above                = $this->get_option( 'only_above' );
-			$this->only_below                = $this->get_option( 'only_bellow' );
-			$this->do_refunds                = ( $this->get_option( 'do_refunds' ) === 'yes' ? true : false );
-			$this->do_refunds_backoffice_key = $this->get_option( 'do_refunds_backoffice_key' );
-			if ( $this->do_refunds && trim( $this->do_refunds_backoffice_key ) !== '' ) {
+			$this->title          = trim( $this->get_option( 'title' ) );
+			$this->description    = trim( $this->get_option( 'description' ) );
+			$this->backoffice_key = trim( $this->get_option( 'backoffice_key' ) );
+			$this->gatewaykey     = trim( $this->get_option( 'gatewaykey' ) );
+			$this->settings_saved = $this->get_option( 'settings_saved' );
+			$this->send_to_admin  = ( $this->get_option( 'send_to_admin' ) === 'yes' ? true : false );
+			$this->only_portugal  = ( $this->get_option( 'only_portugal' ) === 'yes' ? true : false );
+			$this->only_above     = $this->get_option( 'only_above' );
+			$this->only_below     = $this->get_option( 'only_bellow' );
+			$this->do_refunds     = ( $this->get_option( 'do_refunds' ) === 'yes' ? true : false );
+			if ( $this->do_refunds && trim( $this->backoffice_key ) !== '' ) {
 				$this->supports[] = 'refunds';
 			}
 			$this->methods_keys = array();
@@ -409,16 +407,10 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 			$this->form_fields = array_merge(
 				$this->form_fields,
 				array(
-					'do_refunds'                => array(
+					'do_refunds' => array(
 						'title' => __( 'Process refunds?', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 						'type'  => 'checkbox',
 						'label' => __( 'Allow to refund via Apple Pay, Google Pay, or PIX when the order is completely or partially refunded in WooCommerce', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-					),
-					'do_refunds_backoffice_key' => array(
-						'title'       => __( 'Backoffice key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
-						'type'        => 'text',
-						'default'     => '',
-						'description' => __( 'The ifthenpay backoffice key you got after signing the contract is needed to process refunds', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					),
 				)
 			);
