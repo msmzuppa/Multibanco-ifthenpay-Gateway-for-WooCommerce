@@ -257,10 +257,11 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 = 10.0.0 - Date to be announced =
 * [NEW] Apple Pay, Google Pay, and PIX payment methods (via ifthenpay Gateway)
 * [NEW] Plugin name: Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, Cofidis Pay, and PIX (ifthenpay) for WooCommerce
-* [TWEAK] Also reload the “Thank you” page when the payment has expired
+* [TWEAK] Also reload the “Thank you” page when the MB WAY payment has expired
 * [TWEAK] Better cache busting when reloading the “Thank you” page
 * [TWEAK] Resize the payment methods banner on the order admin page
 * [TWEAK] Replace “IfthenPay” with “ifthenpay” for branding coherence
+* [TWEAK] Better information for refunds not issued
 * [TWEAK] Several updates to the readme.txt
 * [FIX] Make sure all the values are sent to the ifthenpay API with “.” as a decimal separator, even in very weird PHP setups
 * [DEV] Apply additional WordPress Coding Standards
