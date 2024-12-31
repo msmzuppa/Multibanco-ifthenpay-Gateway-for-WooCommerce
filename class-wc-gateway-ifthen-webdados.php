@@ -1173,7 +1173,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		}
 
 		/**
-		 * Callback - Return from payment gateway
+		 * Return from the payment gateway
 		 */
 		public function return_payment_gateway() {
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -1268,16 +1268,12 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 		}
 
 		/**
-		 * Callback - Return from the payment gateway
+		 * Callback
 		 */
 		public function callback() {
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
-			$redirect_url = '';
-			$error        = false;
-			$order_id     = 0;
-			$orders_exist = false;
-
+			$orders_exist       = false;
 			$server_http_host   = WC_IfthenPay_Webdados()->get_http_host();
 			$server_request_uri = WC_IfthenPay_Webdados()->get_request_uri();
 			$server_remote_addr = WC_IfthenPay_Webdados()->get_remote_addr();
@@ -1331,9 +1327,6 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							foreach ( $orders as $order ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
 								// Just getting the last one
 							}
-						} else {
-							$err = 'Error: No orders found awaiting payment with these details';
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 						}
 						if ( $orders_exist ) {
 							if ( $orders_count === 1 ) {

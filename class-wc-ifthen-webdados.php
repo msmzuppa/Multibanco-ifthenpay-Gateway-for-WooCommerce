@@ -94,6 +94,7 @@ final class WC_IfthenPay_Webdados {
 	/* Internal variables - For Credit card */
 	public $creditcard_settings     = null;
 	public $creditcard_notify_url   = '';
+	public $creditcard_return_url   = '';
 	public $creditcard_min_value    = 0; /* No limit in theory */
 	public $creditcard_max_value    = 99999.99; /* No limit in theory */
 	public $creditcard_banner_email = ''; /* Needed ? */
@@ -188,12 +189,19 @@ final class WC_IfthenPay_Webdados {
 		);
 		// Credit card
 		$this->creditcard_settings   = get_option( 'woocommerce_creditcard_ifthen_for_woocommerce_settings', '' );
-		$this->creditcard_notify_url = (
+		$this->creditcard_notify_url = ( // Fallback callback - Just in case
 			get_option( 'permalink_structure' ) === ''
 			?
-			home_url( '/?wc-api=WC_CreditCard_IfThen_Webdados' )
+			home_url( '/?wc-api=WC_CreditCard_IfThen_Webdados&key=[ANTI_PHISHING_KEY]&id=[ID]&amount=[AMOUNT]&payment_datetime=[PAYMENT_DATETIME]&status=[STATUS]&request_id=[REQUEST_ID]' )
 			:
-			home_url( '/wc-api/WC_CreditCard_IfThen_Webdados/' )
+			home_url( '/wc-api/WC_CreditCard_IfThen_Webdados/?key=[ANTI_PHISHING_KEY]&id=[ID]&amount=[AMOUNT]&payment_datetime=[PAYMENT_DATETIME]&status=[STATUS]&request_id=[REQUEST_ID]' )
+		);
+		$this->creditcard_return_url = ( // Classic return URL - Should take care of everything
+			get_option( 'permalink_structure' ) === ''
+			?
+			home_url( '/?wc-api=WC_CreditCardReturn_IfThen_Webdados' )
+			:
+			home_url( '/wc-api/WC_CreditCardReturn_IfThen_Webdados/' )
 		);
 		// Cofidis Pay
 		$this->cofidispay_settings   = get_option( 'woocommerce_cofidispay_ifthen_for_woocommerce_settings', '' );
@@ -1169,12 +1177,13 @@ final class WC_IfthenPay_Webdados {
 						}
 						if ( $show_debug && WP_DEBUG ) {
 							$val          = number_format( $order_mb_details['val'], 2, '.', '' );
-							$callback_url = add_query_arg( 'status', 'success', $this->creditcard_notify_url );
-							$callback_url = add_query_arg( 'wd_secret', $order_mb_details['wd_secret'], $callback_url );
-							$callback_url = add_query_arg( 'id', $order_mb_details['id'], $callback_url );
-							$callback_url = add_query_arg( 'amount', $val, $callback_url );
-							$callback_url = add_query_arg( 'requestId', $order_mb_details['request_id'], $callback_url );
-							$callback_url = add_query_arg( 'sk', hash_hmac( 'sha256', $order_mb_details['id'] . $val . $order_mb_details['request_id'], $order_mb_details['creditcardkey'] ), $callback_url );
+							$callback_url = $this->creditcard_notify_url;
+							$callback_url = str_replace( '[ANTI_PHISHING_KEY]', $this->creditcard_settings['secret_key'], $callback_url );
+							$callback_url = str_replace( '[ID]', trim( $order_mb_details['id'] ), $callback_url );
+							$callback_url = str_replace( '[AMOUNT]', $val, $callback_url );
+							$callback_url = str_replace( '[PAYMENT_DATETIME]', rawurlencode( date_i18n( 'Y-m-d H:i:s' ) ), $callback_url );
+							$callback_url = str_replace( '[STATUS]', 'PAGO', $callback_url );
+							$callback_url = str_replace( '[REQUEST_ID]', $order_mb_details['request_id'], $callback_url );
 							?>
 							<hr/>
 							<p>
