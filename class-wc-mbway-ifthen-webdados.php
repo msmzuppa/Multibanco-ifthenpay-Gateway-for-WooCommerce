@@ -516,7 +516,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 						trim( $this->secret_key ) !== ''
 					) {
 						$callback_email_sent = get_option( $this->id . '_callback_email_sent' );
-						if ( $callback_email_sent === 'no' ) {
+						if ( $callback_email_sent === 'no' || $callback_email_sent === false ) {
 							if ( ! isset( $_GET['callback_warning'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								?>
 								<div id="message" class="error">
@@ -537,7 +537,9 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									</td>
 								</tr>
 								<tr valign="top">
-									<th scope="row" class="titledesc">MB WAY Key</th>
+									<th scope="row" class="titledesc">
+										<?php esc_html_e( 'MB WAY Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+									</th>
 									<td class="forminp">
 										<?php echo esc_html( $this->mbwaykey ); ?>
 									</td>
@@ -660,7 +662,7 @@ Chave anti-phishing (MB WAY):
 URL:
 ' . WC_IfthenPay_Webdados()->mbway_notify_url . '
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, and Cofidis Pay (ifthenpay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
+Email enviado automaticamente do plugin WordPress “ifthenpay for WooCommerce” ' . $to . ' com CC para ' . $cc;
 				$headers = array(
 					'From: ' . get_option( 'admin_email' ) . ' <' . get_option( 'admin_email' ) . '>',
 					'Cc: ' . $cc,
@@ -1558,7 +1560,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				trim( $this->secret_key ) !== ''
 			) {
 				$callback_email_sent = get_option( $this->id . '_callback_email_sent' );
-				if ( $callback_email_sent === 'no' ) {
+				if ( $callback_email_sent === 'no' || $callback_email_sent === false ) {
 					if ( ! isset( $_GET['callback_warning'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						if ( apply_filters( 'mbway_ifthen_show_callback_notice', true ) ) {
 							?>

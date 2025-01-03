@@ -50,6 +50,8 @@
 					$( '#woocommerce_mbway_ifthen_for_woocommerce_secret_key' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
+				} else {
+					var number_fields = 3;
 				}
 				ifthen_toogle_mbway_refunds();
 				$( '#woocommerce_mbway_ifthen_for_woocommerce_do_refunds' ).on(
@@ -66,6 +68,8 @@
 					$( '#woocommerce_creditcard_ifthen_for_woocommerce_creditcardkey' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
+				} else {
+					var number_fields = 3;
 				}
 				break;
 			case 'payshop':
@@ -75,6 +79,8 @@
 					$( '#woocommerce_payshop_ifthen_for_woocommerce_secret_key' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
+				} else {
+					var number_fields = 3;
 				}
 				break;
 			case 'cofidispay':
@@ -84,6 +90,8 @@
 					$( '#woocommerce_cofidispay_ifthen_for_woocommerce_cofidispaykey' ).val().trim() !== ''
 				) {
 					hide_extra_fields = false;
+				} else {
+					var number_fields = 3;
 				}
 				break;
 			case 'gateway_ifthen':
@@ -127,6 +135,7 @@
 		}
 
 		// Hide extra fields if there are errors on required fields
+		console.log( hide_extra_fields, number_fields );
 		if ( hide_extra_fields ) {
 			switch ( ifthenpay.gateway ) {
 				case 'multibanco':

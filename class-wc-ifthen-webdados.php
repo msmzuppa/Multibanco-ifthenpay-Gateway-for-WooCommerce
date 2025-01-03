@@ -3627,9 +3627,12 @@ final class WC_IfthenPay_Webdados {
 		// Javascript variables
 		$gateway             = str_replace( '_ifthen_for_woocommerce', '', $section );
 		$callback_email_sent = get_option( $gateway . '_ifthen_for_woocommerce_callback_email_sent' );
-		$callback_auto_open  = 0;
-		$callback_warning    = isset( $_GET['callback_warning'] ) ? intval( $_GET['callback_warning'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( $callback_email_sent === 'no' && $callback_warning === 1 ) {
+		if ( $callback_email_sent === false ) {
+			$callback_email_sent = 'no';
+		}
+		$callback_auto_open = 0;
+		$callback_warning   = isset( $_GET['callback_warning'] ) ? intval( $_GET['callback_warning'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ( $callback_email_sent === 'no' ) && $callback_warning === 1 ) {
 			$callback_auto_open = 1;
 		}
 		wp_localize_script(

@@ -507,7 +507,7 @@ if ( ! class_exists( 'WC_Payshop_IfThen_Webdados' ) ) {
 						trim( $this->secret_key ) !== ''
 					) {
 						$callback_email_sent = get_option( $this->id . '_callback_email_sent' );
-						if ( $callback_email_sent === 'no' ) {
+						if ( $callback_email_sent === 'no' || $callback_email_sent === false ) {
 							if ( ! isset( $_GET['callback_warning'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								?>
 								<div id="message" class="error">
@@ -651,7 +651,7 @@ Chave anti-phishing (Payshop):
 URL:
 ' . WC_IfthenPay_Webdados()->payshop_notify_url . '
 
-Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit card, Apple Pay, Google Pay, Payshop, and Cofidis Pay (ifthenpay) for WooCommerce” para ' . $to . ' com CC para ' . $cc;
+Email enviado automaticamente do plugin WordPress “ifthenpay for WooCommerce” ' . $to . ' com CC para ' . $cc;
 				$headers = array(
 					'From: ' . get_option( 'admin_email' ) . ' <' . get_option( 'admin_email' ) . '>',
 					'Cc: ' . $cc,
@@ -1396,7 +1396,7 @@ Email enviado automaticamente do plugin WordPress “Multibanco, MB WAY, Credit 
 				trim( $this->secret_key ) !== ''
 			) {
 				$callback_email_sent = get_option( $this->id . '_callback_email_sent' );
-				if ( $callback_email_sent === 'no' ) {
+				if ( $callback_email_sent === 'no' || $callback_email_sent === false ) {
 					if ( ! isset( $_GET['callback_warning'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						if ( apply_filters( 'payshop_ifthen_show_callback_notice', true ) ) {
 							?>

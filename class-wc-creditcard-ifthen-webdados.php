@@ -69,6 +69,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				// Save
 				$this->update_option( 'secret_key', $this->secret_key );
 				$this->update_option( 'debug', 'yes' );
+				// Let's set the callback activation email as NOT sent
+				update_option( $this->id . '_callback_email_sent', 'no' );
 			}
 
 			// Webservice
@@ -97,8 +99,8 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 			// Actions and filters
 			if ( self::$instances === 1 ) { // Avoid duplicate actions and filters if it's initiated more than once (if WooCommerce loads after us)
-
 				add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+				add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'send_callback_email' ) );
 				if ( WC_IfthenPay_Webdados()->wpml_active ) {
 					add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'register_wpml_strings' ) );
 				}
@@ -404,6 +406,19 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 							);
 							?>
 						</li>
+
+						<li class="mb_hide_extra_fields">
+							<?php
+							echo wp_kses_post(
+								sprintf(
+									/* translators: %1$s: Callback URL, %2$s: Anti-phishing key */
+									esc_html__( 'Ask ifthenpay to activate Credit card Callback” on your account using this exact URL: %1$s and this Anti-phishing key: %2$s', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+									'<br/><code><strong>' . WC_IfthenPay_Webdados()->creditcard_notify_url . '</strong></code><br/>',
+									'<br/><code><strong>' . $this->secret_key . '</strong></code>'
+								)
+							);
+							?>
+						</li>
 					</ul>
 					<h1>FALTA ACTIVAÇÃO DE CALLBACK</h1>
 					<h1>FALTA TRATAR REFUNDS COMO NO MBWAY</h1>
@@ -423,6 +438,67 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 							</div>
 							<?php
 						}
+					} elseif (
+						strlen( trim( $this->creditcardkey ) ) === 10
+						&&
+						trim( $this->secret_key ) !== ''
+					) {
+						$callback_email_sent = get_option( $this->id . '_callback_email_sent' );
+						if ( $callback_email_sent === 'no' || $callback_email_sent === false ) {
+							if ( ! isset( $_GET['callback_warning'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+								?>
+								<div id="message" class="error">
+									<p><strong><?php esc_html_e( 'You haven’t yet asked ifthenpay for the “Callback” activation. This is optional, to ensute the orders are set as paid even if the customer return from the payment gateway fails.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></strong></p>
+								</div>
+								<?php
+							}
+						}
+						?>
+						<p id="wc_ifthen_callback_open_p"><a href="#" id="wc_ifthen_callback_open" class="button button-small"><?php esc_html_e( 'Click here to ask ifthenpay to activate the “Callback”', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></a></p>
+						<div id="wc_ifthen_callback_div">
+							<p><?php esc_html_e( 'This will submit a request to ifthenpay, asking them to activate the “Callback” on your account. The following details will be sent to ifthenpay:', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></p>
+							<table class="form-table">
+								<tr valign="top">
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Email', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
+									<td class="forminp">
+										<?php echo esc_html( get_option( 'admin_email' ) ); ?>
+									</td>
+								</tr>
+								<tr valign="top">
+									<th scope="row" class="titledesc">
+										<?php esc_html_e( 'Credit card Key', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
+									</th>
+									<td class="forminp">
+										<?php echo esc_html( $this->creditcardkey ); ?>
+									</td>
+								</tr>
+								<tr valign="top">
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Anti-phishing key', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ' (MB WAY)'; ?></th>
+									<td class="forminp">
+										<?php echo esc_html( $this->secret_key ); ?>
+									</td>
+								</tr>
+								<tr valign="top">
+									<th scope="row" class="titledesc"><?php esc_html_e( 'Callback URL', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
+									<td class="forminp">
+										<?php echo esc_url( WC_IfthenPay_Webdados()->creditcard_notify_url ); ?>
+									</td>
+								</tr>
+							</table>
+							<p style="text-align: center;">
+								<strong><?php echo wp_kses_post( __( 'Attention: if you ever change from HTTP to HTTPS or vice versa, or the permalinks structure,<br/>you may have to ask ifthenpay to update the callback URL.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?></strong>
+							</p>
+							<p style="text-align: center; margin-bottom: 0px;">
+								<input type="hidden" id="wc_ifthen_callback_send" name="wc_ifthen_callback_send" value="0"/>
+								<input type="hidden" id="wc_ifthen_callback_bo_key" name="wc_ifthen_callback_bo_key" value=""/>
+								<button id="wc_ifthen_callback_submit_webservice" class="button-primary" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via API (recommended)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
+								<br/><br/>
+								<button id="wc_ifthen_callback_submit" class="button" type="button"><?php esc_html_e( 'Ask for Callback activation', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?> - <?php esc_html_e( 'Via email (old method)', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></button>
+								<input id="wc_ifthen_callback_cancel" class="button" type="button" value="<?php esc_html_e( 'Cancel', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>"/>
+								<input type="hidden" name="save" value="<?php esc_attr_e( 'Save changes', 'woocommerce' ); ?>"/> <!-- Force action woocommerce_update_options_payment_gateways_ to run, from WooCommerce 3.5.5 -->
+							</p>
+						</div>
+						<?php
 					}
 					?>
 					<hr/>
@@ -461,6 +537,58 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			</div>
 			<div class="clear"></div>
 			<?php
+		}
+
+		/**
+		 * Activate callback at ifthenpay
+		 */
+		public function send_callback_email() {
+			// WooCommerce took care of nonces
+			// phpcs:disable WordPress.Security.NonceVerification.Missing
+			$callback_send = isset( $_POST['wc_ifthen_callback_send'] ) ? intval( $_POST['wc_ifthen_callback_send'] ) : 0;
+			$bo_key        = isset( $_POST['wc_ifthen_callback_bo_key'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['wc_ifthen_callback_bo_key'] ) ) ) : '';
+			// phpcs:enable WordPress.Security.NonceVerification.Missing
+			if ( $callback_send === 2 && ! empty( $bo_key ) ) {
+				// Webservice
+				$result = WC_IfthenPay_Webdados()->callback_webservice( $bo_key, 'CCARD', $this->creditcardkey, $this->secret_key, WC_IfthenPay_Webdados()->creditcard_notify_url );
+				if ( $result['success'] ) {
+					update_option( $this->id . '_callback_email_sent', 'yes' );
+					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to ifthenpay via API and is now active.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				} else {
+					WC_Admin_Settings::add_error(
+						__( 'The “Callback” activation request via API has failed.', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+						. ' - ' .
+						$result['message']
+					);
+				}
+			} elseif ( $callback_send === 1 ) {
+				// Email
+				$to      = WC_IfthenPay_Webdados()->callback_email;
+				$cc      = get_option( 'admin_email' );
+				$subject = 'Activação de Callback Credit Card (Key: ' . $this->creditcardkey . ')';
+				$message = 'Por favor activar Callback Credit Card com os seguintes dados:
+
+Credit Card Key:
+' . $this->creditcardkey . '
+
+Chave anti-phishing (Credit Card):
+' . $this->secret_key . '
+
+URL:
+' . WC_IfthenPay_Webdados()->creditcard_notify_url . '
+
+Email enviado automaticamente do plugin WordPress “ifthenpay for WooCommerce” para ' . $to . ' com CC para ' . $cc;
+				$headers = array(
+					'From: ' . get_option( 'admin_email' ) . ' <' . get_option( 'admin_email' ) . '>',
+					'Cc: ' . $cc,
+				);
+				if ( wp_mail( $to, $subject, $message, $headers ) ) {
+					update_option( $this->id . '_callback_email_sent', 'yes' );
+					WC_Admin_Settings::add_message( __( 'The “Callback” activation request has been submited to ifthenpay. Wait for their feedback.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				} else {
+					WC_Admin_Settings::add_error( __( 'The “Callback” activation request could not be sent. Check if your WordPress install can send emails.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
+				}
+			}
 		}
 
 		/**
