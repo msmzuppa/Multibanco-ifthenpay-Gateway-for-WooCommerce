@@ -1011,7 +1011,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 							if ( count( $orders ) === 1 ) {
 								$order = $orders[0];
 								// Log and exit silently
-								$this->debug_log( '-- Order found and already set as paid, probably by callback URL', 'debug', false, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
+								$this->debug_log( '-- Order found and already set as paid, probably by callback URL', 'debug', false );
 								$url = $this->get_return_url( $order );
 								wp_safe_redirect( $url );
 								exit;
@@ -1164,7 +1164,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 						} else {
 							$err = $get_order['error'] . ' - Search for paid orders now';
 							// Do not send this debug message to email
-							$this->debug_log( '-- ' . $err, 'debug', false, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
+							$this->debug_log( '-- ' . $err, 'debug', false );
 							// Now let's check for already paid for orders, because the return URL probably set it as paid
 							$paid_status = apply_filters( 'creditcard_ifthen_valid_callback_paid_status', array( 'processing', 'completed' ) );
 							$args        = array(
@@ -1176,12 +1176,12 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 							$orders      = WC_IfthenPay_Webdados()->wc_get_orders( $args, $this->id );
 							if ( count( $orders ) === 1 ) {
 								// Log and exit silently
-								$this->debug_log( '-- Order found and already set as paid, probably by return URL', 'debug', false, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
+								$this->debug_log( '-- Order found and already set as paid, probably by return URL', 'debug', false );
 								exit;
 							} else {
 								header( 'HTTP/1.1 200 OK' );
 								$err = $get_order['error'];
-								$this->debug_log( '-- Paid order not found', 'debug', false, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
+								$this->debug_log( '-- Paid order not found', 'debug', false );
 								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - No orders found awaiting payment with these details' );
 								echo esc_html( $err );
 								do_action( 'creditcard_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
