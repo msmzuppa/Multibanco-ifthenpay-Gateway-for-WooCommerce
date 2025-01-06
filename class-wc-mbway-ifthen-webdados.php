@@ -1518,7 +1518,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 		public function process_refund( $order_id, $amount = null, $reason = '' ) {
 			$result = WC_IfthenPay_Webdados()->process_refund( $order_id, $amount, $reason, $this->id );
 			if ( $result === true ) {
-				// Add note because there will be no callback
+				// Add note because there will be no callback - Actually there will be
 				$order = wc_get_order( $order_id );
 				$order->add_order_note( __( 'MB WAY refund successfully processed by ifthenpay.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) );
 			}
