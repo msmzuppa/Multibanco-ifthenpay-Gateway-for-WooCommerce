@@ -9,10 +9,11 @@ PRO ADD-ON PAGO:
 
 
 FREE:
+- PIX:
+	- Passar PIX para método isolado e migrar configurações
 - MB WAY:
 	- Aceitar nºs estrangeiros
 - Gateway:
-	- Passar PIX para método isolado e migrar configurações
 	- Opção de icones de cada método em vez do Ifthenpay, e o mesmo no banner (ou no PRO?)
 	- Definir validade do pagamento
 - Passar strings repetidas a únicas com placeholders:

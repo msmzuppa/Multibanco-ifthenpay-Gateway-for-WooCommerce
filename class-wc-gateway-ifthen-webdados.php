@@ -264,7 +264,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 					'title'             => __( 'Backoffice key', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					'type'              => 'text',
 					'default'           => '',
-					'description'       => __( 'The ifthenpay backoffice key you got after signing the contract', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
+					'description'       => __( 'The ifthenpay backoffice key you got after signing the contract.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) . ( apply_filters( 'gateway_ifthen_sandbox', false ) ? '<br><span style="color: red;">Sandbox</span>' : '' ),
 					'placeholder'       => '0000-0000-0000-0000',
 					'custom_attributes' => array(
 						'maxlength' => 19,
