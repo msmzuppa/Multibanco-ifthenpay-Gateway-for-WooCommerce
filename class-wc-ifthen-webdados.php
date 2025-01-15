@@ -1545,11 +1545,11 @@ final class WC_IfthenPay_Webdados {
 	 * @return string
 	 */
 	public function payshop_format_expiration( $exp, $order_id ) {
-		if ( $exp < date_i18n( 'Y-m-d' ) ) {
-			$exp_formated = $exp; // Only date
+		if ( $exp < date_i18n( 'Y-m-d H:i:s' ) ) {
+			$exp_formated = $exp; // Date + Time
 			$exp_formated = '<s>' . $exp_formated . '</s> ' . esc_html__( '(expired)', 'multibanco-ifthen-software-gateway-for-woocommerce' );
 		} else {
-			$exp_formated = $exp; // Only date
+			$exp_formated = substr( $exp, 0, 10 ); // Only date
 		}
 		return apply_filters( 'payshop_ifthen_format_expiration', $exp_formated, $exp, $order_id );
 	}
