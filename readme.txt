@@ -4,7 +4,7 @@ Tags: multibanco, mbway, payshop, card, cofidis
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 10.1.0
+Stable tag: 10.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -255,7 +255,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 10.2.0 - 2025-03-17 =
+= 10.2.1 - 2025-03-17 =
 * [DEV] Stop trying to fix the email locale with WPML active because it was causing the language to be incorrect (can be reactivated by returning `true` to `multibanco_ifthen_maybe_change_email_locale` filter)
 * [TWEAK] Reuse several i18n strings on all the payment methods with placeholders
 * [DEV] Tested with WordPress 6.8-beta2-59993 and WooCommerce 9.8.0-beta.1

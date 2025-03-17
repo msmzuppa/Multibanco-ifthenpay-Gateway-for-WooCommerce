@@ -18,7 +18,6 @@ FREE:
 	- Definir validade do pagamento
 - Passar strings repetidas a únicas com placeholders:
 	- Awaiting Cofidis Pay payment.
-	- Enable “Cofidis Pay” (using ifthenpay)
 	- 
 
 - Quando uma encomenda não é encontrada pelo callback, por não estar no estado correcto, mas é encontrada num outro estado (cancelada, em processamento, concluída...) devemos deixar uma nota na encomenda.
