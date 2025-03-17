@@ -595,7 +595,17 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 							);
 							?>
 						</li>
-						<li><?php echo wp_kses_post( __( 'Fill out all the details (MB Key or Entity and Subentity) provided by <strong>ifthenpay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?> <?php esc_html_e( 'We recommend you specifically request for a MB Key, and mention you’re using WooCommerce, as it allows for reference expiration and will allow for further developments in the future.', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></li>
+						<li>
+							<?php
+								echo esc_html(
+									sprintf(
+										/* translators: %s: Gateway key name */
+										__( 'Fill out all the details (%s) provided by ifthenpay in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										__( 'MB Key or Entity and Subentity', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+									)
+								);
+							?>
+						</li>
 						<li>
 							<?php
 							echo wp_kses_post(

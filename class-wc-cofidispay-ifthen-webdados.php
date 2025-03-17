@@ -417,8 +417,17 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 							);
 							?>
 						</li>
-						<li><?php echo wp_kses_post( __( 'Fill out all the details (Cofidis Pay Key) provided by <strong>ifthenpay</strong> in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ) ); ?>
 						<li>
+							<?php
+								echo esc_html(
+									sprintf(
+										/* translators: %s: Gateway key name */
+										__( 'Fill out all the details (%s) provided by ifthenpay in the fields below.', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
+										__( 'Cofidis Pay Key', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+									)
+								);
+							?>
+						</li>
 						<?php
 						echo wp_kses_post(
 							sprintf(
