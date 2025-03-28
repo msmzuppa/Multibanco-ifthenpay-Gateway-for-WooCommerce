@@ -70,8 +70,8 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 			}
 
 			// Webservice
-			$this->api_url        = 'https://ifthenpay.com/api/cofidis/init/'; // production and test mode, depends on Cofidis Pay Key
-			$this->limits_api_url = 'https://ifthenpay.com/api/cofidis/limits/';
+			$this->api_url        = 'https://api.ifthenpay.com/cofidis/init/'; // production and test mode, depends on Cofidis Pay Key
+			$this->limits_api_url = 'https://api.ifthenpay.com/cofidis/limits/';
 
 			// Plugin options and settings
 			$this->init_form_fields();

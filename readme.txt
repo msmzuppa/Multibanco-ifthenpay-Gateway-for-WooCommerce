@@ -255,6 +255,10 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= ? =
+* [DEV] Change Cofidis API URL
+* [DEV] New `mbway_ifthen_after_process_payment` hook (action)
+
 = 10.2.1 - 2025-03-17 =
 * [DEV] Stop trying to fix the email locale with WPML active because it was causing the language to be incorrect (can be reactivated by returning `true` to `multibanco_ifthen_maybe_change_email_locale` filter)
 * [TWEAK] Reuse several i18n strings on all the payment methods with placeholders

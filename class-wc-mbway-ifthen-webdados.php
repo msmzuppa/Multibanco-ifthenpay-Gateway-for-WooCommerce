@@ -1174,6 +1174,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 			}
 			// Empty awaiting payment session
 			unset( WC()->session->order_awaiting_payment );
+			do_action( 'mbway_ifthen_after_process_payment', $order, $phone );
 			// Return thankyou redirect
 			return array(
 				'result'   => 'success',
