@@ -1275,7 +1275,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 
 				}
 			} else {
-				$error = 'Return from payment gateway (' . $server_request_uri . ') with missing arguments';
+				$error  = 'Return from payment gateway (' . $server_request_uri . ') with missing arguments';
 				$error .= ' - ' . wp_json_encode( $_GET );
 			}
 

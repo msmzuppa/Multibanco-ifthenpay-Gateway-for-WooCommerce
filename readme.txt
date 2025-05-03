@@ -255,7 +255,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 10.4.0 - TBA =
+= 10.4.0 - 2025-05-03 =
 * [TWEAK] New payment method notices are now only shown every 90 days for each admin or shop manager user (they can also be dismissed by returning `true` to the `multibanco_ifthen_hide_newmethod_notifications` filter)
 
 = 10.3.0 - 2025-04-12 =

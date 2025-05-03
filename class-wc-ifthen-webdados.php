@@ -3745,16 +3745,16 @@ final class WC_IfthenPay_Webdados {
 	 * This method renders inline JavaScript that attaches a click handler to the dismiss
 	 * button of notification banners for new payment methods. When a user clicks the dismiss
 	 * button, it:
-	 * 
+	 *
 	 * 1. Sends an AJAX request to the server to store the dismissal state
 	 * 2. Passes the payment method ID to identify which notice was dismissed
 	 * 3. Uses a security nonce to validate the request
-	 * 
+	 *
 	 * The AJAX call triggers the dismiss_newmethod_notice_handler() method, which saves
 	 * a user-specific transient that prevents the notice from showing again for 90 days.
 	 *
 	 * @since 10.4.0
-	 * @param string $id The payment gateway ID used to identify which notice was dismissed
+	 * @param string $id The payment gateway ID used to identify which notice was dismissed.
 	 * @return void Outputs inline JavaScript
 	 */
 	public function dismiss_newmethod_notice_javascript( $id ) {
