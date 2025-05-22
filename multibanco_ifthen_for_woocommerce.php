@@ -106,8 +106,10 @@ function mbifthen_woocommerce_not_active_admin_notices() {
 add_action(
 	'before_woocommerce_init',
 	function () {
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
+		if ( version_compare( WC_VERSION, WC_IFTHENPAY_WEBDADOS_REQUIRED_WC_VERSION, '>=' ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', WC_IFTHENPAY_WEBDADOS_PLUGIN_FILE, true );
+		}
 	}
 );
 
