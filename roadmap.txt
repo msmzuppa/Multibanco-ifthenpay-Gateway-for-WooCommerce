@@ -10,6 +10,8 @@ PRO ADD-ON PAGO:
 
 FREE:
 
+- Improve accessibility on icons - Check on classic and blocks checkout (blocks seem to be the problem)
+
 - PIX:
 	- Passar PIX para método isolado e migrar configurações
 - MB WAY:

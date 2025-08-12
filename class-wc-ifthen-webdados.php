@@ -1761,8 +1761,9 @@ final class WC_IfthenPay_Webdados {
 						// Temos de calcular a data e guardar mais lá à frente
 					}
 					$this->debug_log_extra( $this->multibanco_id, '- Request payment with args: ' . wp_json_encode( $args ) );
-					$args['body'] = wp_json_encode( $args['body'] );
-					$response     = wp_remote_post( $url, $args );
+					$debug_start_time = microtime( true );
+					$args['body']     = wp_json_encode( $args['body'] );
+					$response         = wp_remote_post( $url, $args );
 					if ( is_wp_error( $response ) ) {
 						$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
 						$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
@@ -1803,6 +1804,8 @@ final class WC_IfthenPay_Webdados {
 									$this->debug_log( $this->multibanco_id, 'Because of WooCommerce Deposits a new reference will be generated for Order ' . $order->get_id() );
 									$this->multibanco_action_deposits_set = true;
 								}
+								$debug_elapsed_time = microtime( true ) - $debug_start_time;
+								$this->debug_log_extra( $this->multibanco_id, 'wp_remote_post + response handling took: ' . $debug_elapsed_time . ' seconds.' );
 								return $details;
 							} else {
 								$debug_msg       = '- Error: ' . trim( $body->Message ) . ' - Order ' . $order->get_id();
@@ -2123,7 +2126,8 @@ final class WC_IfthenPay_Webdados {
 			),
 		);
 		$this->debug_log_extra( $this->mbway_id, '- Request payment with args: ' . wp_json_encode( $args ) );
-		$response = wp_remote_post( $url, $args );
+		$debug_start_time = microtime( true );
+		$response         = wp_remote_post( $url, $args );
 		if ( is_wp_error( $response ) ) {
 			$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - ' . $response->get_error_message();
 			$debug_msg_email = $debug_msg . ' - Args: ' . wp_json_encode( $args ) . ' - Response: ' . wp_json_encode( $response );
@@ -2152,6 +2156,8 @@ final class WC_IfthenPay_Webdados {
 								$this->debug_log( $this->mbway_id, '- MB WAY payment request created on ifthenpay servers - Order ' . $order->get_id() . ' - id_pedido: ' . $id_pedido );
 							}
 							do_action( 'mbway_ifthen_created_reference', $id_pedido, $order->get_id(), $phone );
+							$debug_elapsed_time = microtime( true ) - $debug_start_time;
+							$this->debug_log_extra( $this->mbway_id, 'wp_remote_post + response handling took: ' . $debug_elapsed_time . ' seconds.' );
 							return true;
 						} else {
 							$debug_msg       = '- Error contacting the ifthenpay servers - Order ' . $order->get_id() . ' - Incorrect "Valor"';
