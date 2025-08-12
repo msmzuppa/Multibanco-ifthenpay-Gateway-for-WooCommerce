@@ -1474,6 +1474,7 @@ final class WC_IfthenPay_Webdados {
 			$order->update_meta_data( '_' . $this->multibanco_id . '_exp', $order_mb_details['exp'] );
 		}
 		if ( isset( $order_mb_details['RequestId'] ) ) {
+			$order->update_meta_data( '_' . $this->multibanco_id . '_mbkey', apply_filters( 'multibanco_ifthen_base_mbkey', $this->multibanco_settings['mbkey'], $order ) );
 			$order->update_meta_data( '_' . $this->multibanco_id . '_RequestId', $order_mb_details['RequestId'] );
 		}
 		$order->save();
@@ -1487,11 +1488,12 @@ final class WC_IfthenPay_Webdados {
 	 */
 	public function multibanco_clear_order_mb_details( $order_id ) {
 		$order = wc_get_order( $order_id );
+		$order->delete_meta_data( '_' . $this->multibanco_id . '_mbkey' );
+		$order->delete_meta_data( '_' . $this->multibanco_id . '_RequestId' );
 		$order->delete_meta_data( '_' . $this->multibanco_id . '_ent' );
 		$order->delete_meta_data( '_' . $this->multibanco_id . '_ref' );
 		$order->delete_meta_data( '_' . $this->multibanco_id . '_val' );
 		$order->delete_meta_data( '_' . $this->multibanco_id . '_exp' );
-		$order->delete_meta_data( '_' . $this->multibanco_id . '_RequestId' );
 		$order->save();
 	}
 
