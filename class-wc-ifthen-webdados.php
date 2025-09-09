@@ -2201,6 +2201,14 @@ final class WC_IfthenPay_Webdados {
 								esc_html__( 'An error occurred processing the %s Payment request - please try again', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 								'MB WAY'
 							)
+							.
+							(
+								trim( $body->Status ) === '999'
+								?
+								' - ' . esc_html__( 'The provided phone number is probably not a MB WAY subscriber', 'multibanco-ifthen-software-gateway-for-woocommerce' )
+								:
+								''
+							)
 						);
 					}
 					return false;
