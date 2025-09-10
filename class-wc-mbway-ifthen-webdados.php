@@ -1262,7 +1262,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 				<?php if ( $this->allow_international ) { ?>
 					<div id="<?php echo esc_attr( $this->id ); ?>_phone_field_container">
 						<span id="<?php echo esc_attr( $this->id ); ?>_phone_field_container_country_code">
-							<select name="<?php echo esc_attr( $this->id ); ?>_country_code" id="<?php echo esc_attr( $this->id ); ?>_country_code" class="select2">
+							<select name="<?php echo esc_attr( $this->id ); ?>_country_code" id="<?php echo esc_attr( $this->id ); ?>_country_code">
 								<?php
 								$countries    = WC_IfthenPay_Webdados::get_countries_with_phone_prefixes();
 								$default_code = apply_filters( 'mbway_ifthen_checkout_default_country_code', WC()->countries->get_base_country() ); // From user profile if set

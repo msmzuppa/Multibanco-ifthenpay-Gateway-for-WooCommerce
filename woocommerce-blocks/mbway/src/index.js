@@ -72,7 +72,8 @@ const Content = ( props ) => {
 		emitResponse.responseTypes.ERROR,
 		emitResponse.responseTypes.SUCCESS,
 		onPaymentProcessing,
-		mbwayPhoneNumber
+		mbwayPhoneNumber,
+		mbwayCountryCode
 	] );
 	/* Select value */
 	const HandleMBWayCountryChange = ( event ) => {
@@ -115,8 +116,8 @@ const Content = ( props ) => {
 				className: 'wc-blocks-components-select__select',
 				options:   countryOptions,
 				required:  true,
-				//value:    'PT' // Get from settings
-				onChange: HandleMBWayCountryChange
+				value:     mbwayCountryCode,
+				onChange:  HandleMBWayCountryChange
 			},
 			// Map the transformed array to option elements
 			countryOptions.map( country => 
