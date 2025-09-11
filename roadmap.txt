@@ -10,14 +10,11 @@ PRO ADD-ON PAGO:
 
 FREE:
 
-- Accept international MB WAY numbers
-
 - Improve accessibility on icons - Check on classic and blocks checkout (blocks seem to be the problem)
 
 - PIX:
 	- Passar PIX para método isolado e migrar configurações
 - MB WAY:
-	- Aceitar nºs estrangeiros
 - Gateway:
 	- Opção de icones de cada método em vez do Ifthenpay, e o mesmo no banner (ou no PRO?)
 	- Definir validade do pagamento

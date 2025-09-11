@@ -1253,7 +1253,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 		public function payment_fields() {
 			echo wp_kses_post( wpautop( $this->description ) );
 			?>
-			<p class="form-row form-row-wide" id="<?php echo esc_attr( $this->id ); ?>_phone_field" style="display: block !important; margin-top: 1em;">
+			<div id="<?php echo esc_attr( $this->id ); ?>_phone_field">
 				<label for="<?php echo esc_attr( $this->id ); ?>_phone" style="display: block !important;">
 					<?php esc_html_e( 'Your phone number linked to MB WAY', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>
 					<abbr class="required" title="<?php esc_html_e( 'required', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?>">*</abbr>
@@ -1282,7 +1282,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 					<input type="tel" autocomplete="off" class="input-text" name="<?php echo esc_attr( $this->id ); ?>_phone" id="<?php echo esc_attr( $this->id ); ?>_phone" placeholder="9xxxxxxxx" maxlength="9" value="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_default_phone_number', '' ) ); ?>"/>
 				<?php } ?>
 				<?php do_action( 'mbway_ifthen_checkout_after_phone_number' ); ?>
-			</p>
+			</div>
 			<script type="text/javascript">
 				jQuery( document ).ready( function( $ ) {
 					if ( typeof $.fn.selectWoo === 'function' ) {
@@ -1291,23 +1291,41 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 				} );
 			</script>
 			<style type="text/css">
+				#<?php echo esc_attr( $this->id ); ?>_phone_field {
+					container-type: inline-size;
+					container-name: phone-field;
+					display: block !important;
+					margin-top: 1em;
+				}
+				#<?php echo esc_html( $this->id ); ?>_phone {
+					display: inline-block !important;
+					width: 100%;
+				}
 				#<?php echo esc_html( $this->id ); ?>_phone_field_container {
 					display: flex;
 					flex-wrap: nowrap;
-					gap: 0.5em;
+					gap: 0.75em;
 					align-items: center;
 					margin-top: 0.5em;
 				}
 				#<?php echo esc_html( $this->id ); ?>_phone_field_container_country_code {
 					display: inline-block;
-					max-width: 175px;
+					width: 50%;
 				}
 				#<?php echo esc_html( $this->id ); ?>_phone_field_container_country_code .select2-container {
-					max-width: 100%;
+					width: 100% !important;
 				}
-				#<?php echo esc_html( $this->id ); ?>_phone {
-					display: inline-block !important;
-					width: 100%;
+				#<?php echo esc_html( $this->id ); ?>_phone_field_container #<?php echo esc_html( $this->id ); ?>_phone {
+					width: 50%;
+				}
+				@container phone-field ( max-width: 400px ) {
+					#<?php echo esc_html( $this->id ); ?>_phone_field_container {
+						flex-direction: column;
+					}
+					#<?php echo esc_html( $this->id ); ?>_phone_field_container #<?php echo esc_html( $this->id ); ?>_phone_field_container_country_code,
+					#<?php echo esc_html( $this->id ); ?>_phone_field_container #<?php echo esc_html( $this->id ); ?>_phone {
+						width: 100%;
+					}
 				}
 			</style>
 			<?php

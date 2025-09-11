@@ -3711,6 +3711,7 @@ final class WC_IfthenPay_Webdados {
 	/**
 	 * Util - Get internacional calling codes
 	 *
+	 * @since 11.0.0
 	 * @return array
 	 */
 	public static function get_all_international_calling_codes() {
@@ -3985,6 +3986,7 @@ final class WC_IfthenPay_Webdados {
 	 * Merges WooCommerce's allowed countries with international calling codes
 	 * and sorts them alphabetically with the store's base country first.
 	 *
+	 * @since 11.0.0
 	 * @return array Array of countries with their phone prefixes
 	 */
 	public static function get_countries_with_phone_prefixes() {
