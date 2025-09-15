@@ -1276,10 +1276,10 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 								?>
 							</select>
 						</span>
-						<input type="tel" autocomplete="off" class="input-text" name="<?php echo esc_attr( $this->id ); ?>_phone" id="<?php echo esc_attr( $this->id ); ?>_phone" value="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_default_phone_number', '' ) ); ?>"/>
+						<input type="tel" autocomplete="off" class="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_phone_input_class', 'input-text' ) ); ?>" name="<?php echo esc_attr( $this->id ); ?>_phone" id="<?php echo esc_attr( $this->id ); ?>_phone" value="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_default_phone_number', '' ) ); ?>"/>
 					</div>
 				<?php } else { ?>
-					<input type="tel" autocomplete="off" class="input-text" name="<?php echo esc_attr( $this->id ); ?>_phone" id="<?php echo esc_attr( $this->id ); ?>_phone" placeholder="9xxxxxxxx" maxlength="9" value="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_default_phone_number', '' ) ); ?>"/>
+					<input type="tel" autocomplete="off" class="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_phone_input_class', 'input-text' ) ); ?>" name="<?php echo esc_attr( $this->id ); ?>_phone" id="<?php echo esc_attr( $this->id ); ?>_phone" placeholder="9xxxxxxxx" maxlength="9" value="<?php echo esc_attr( apply_filters( 'mbway_ifthen_checkout_default_phone_number', '' ) ); ?>"/>
 				<?php } ?>
 				<?php do_action( 'mbway_ifthen_checkout_after_phone_number' ); ?>
 			</div>
