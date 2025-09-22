@@ -255,8 +255,8 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 11.1.0 - ? =
-* [DEV] Change some old `wc_get_orders` calls to our internal wrapper
+= 11.1.0 - 2025-09-22 =
+* [DEV] Change some remaining `wc_get_orders` calls to our internal wrapper
 * [DEV] Use WooCommerce internal method to get international calling codes for MB WAY numbers
 * [DEV] Fix version upgrade routine
 * [DEV] Remove autoload from some options
