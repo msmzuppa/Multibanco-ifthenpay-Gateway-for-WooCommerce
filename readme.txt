@@ -235,7 +235,7 @@ Yes. This plugin is fully compatible with HPOS since December 2022.
 
 = Is this plugin compatible with the WooCommerce Cart and Checkout Blocks? =
 
-Yes. This plugin is compatible with HPOS since August 2020.
+Yes. This plugin is compatible with the Block-Based Checkout since August 2020.
 
 = I need technical support. Who should I contact, ifthenpay or Webdados? =
 
