@@ -4,7 +4,7 @@ Tags: multibanco, mbway, payshop, card, cofidis
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 11.0.0
+Stable tag: 11.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -258,6 +258,9 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 = 11.1.0 - ? =
 * [DEV] Change some old `wc_get_orders` calls to our internal wrapper
 * [DEV] Use WooCommerce internal method to get international calling codes for MB WAY numbers
+* [DEV] Fix version upgrade routine
+* [DEV] Remove autoload from some options
+* [DEV] Tested with WordPress 6.9-alpha-60789 and WooCommerce 10.2.1
 
 = 11.0.0 - 2025-09-11 =
 * [NEW] It’s now possible to use international phone numbers for MB WAY (can be disabled on the payment method options)

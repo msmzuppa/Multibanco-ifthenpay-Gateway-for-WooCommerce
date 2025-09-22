@@ -1710,7 +1710,7 @@ final class WC_IfthenPay_Webdados {
 			if (
 				! $force_change
 				&&
-				$order_mb_details = $this->get_multibanco_order_details( $order->get_id() ) // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+				$order_mb_details = $this->get_multibanco_order_details( $order->get_id() ) // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure, Generic.CodeAnalysis.AssignmentInCondition.Found
 			) {
 				$this->debug_log_extra( $this->multibanco_id, 'multibanco_get_ref - Got reference from database ' . wp_json_encode( $order_mb_details ) . ' - Order ' . $order->get_id() );
 				// Already created, return it!
@@ -2060,7 +2060,7 @@ final class WC_IfthenPay_Webdados {
 			if (
 				! $force_change
 				&&
-				$order_mb_details = $this->get_payshop_order_details( $order->get_id() ) // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+				$order_mb_details = $this->get_payshop_order_details( $order->get_id() ) // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure, Generic.CodeAnalysis.AssignmentInCondition.Found
 			) {
 				// Already created, return it!
 				return $order_mb_details;
@@ -2687,7 +2687,7 @@ final class WC_IfthenPay_Webdados {
 				if ( $unpaid_orders ) {
 					foreach ( $unpaid_orders as $unpaid_order ) {
 						if ( apply_filters( 'woocommerce_cancel_unpaid_order', 'checkout' === $unpaid_order->get_created_via(), $unpaid_order ) ) {
-							$unpaid_order->update_status( 'cancelled', esc_html__( 'Unpaid order cancelled - time limit exceeded.', 'woocommerce' ) );
+							$unpaid_order->update_status( 'cancelled', esc_html__( 'Unpaid order cancelled - time limit exceeded.', 'woocommerce' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							// Restore stock levels
 							switch ( $method_id ) {
 								case $this->multibanco_id:
@@ -3302,7 +3302,7 @@ final class WC_IfthenPay_Webdados {
 				echo wp_json_encode(
 					array(
 						'status' => 0,
-						'error'  => esc_html__( 'Invalid parameters', 'mbway_ifthen_request_payment_again' ),
+						'error'  => esc_html__( 'Invalid parameters', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 					)
 				);
 			}
@@ -3310,7 +3310,7 @@ final class WC_IfthenPay_Webdados {
 			echo wp_json_encode(
 				array(
 					'status' => 0,
-					'error'  => esc_html__( 'Error', 'mbway_ifthen_request_payment_again' ),
+					'error'  => esc_html__( 'Error', 'multibanco-ifthen-software-gateway-for-woocommerce' ),
 				)
 			);
 		}
