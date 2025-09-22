@@ -23,7 +23,7 @@ Holders of a Brazilian bank account can conveniently pay for WooCommerce orders 
 
 This is the official [ifthenpay](https://ifthenpay.com) plugin, and a contract with this company is required. Technical support is provided by [Naked Cat Plugins](https://nakedcatplugins.com) (by [Webdados](https://www.webdados.pt)) on the [WordPress.org support forums](https://wordpress.org/support/plugin/multibanco-ifthen-software-gateway-for-woocommerce/).
 
-**Fully compatible with the new [High-Performance Order Storage](https://woocommerce.com/posts/platform-update-high-performance-order-storage-for-woocommerce/) and [WooCommerce Checkout Blocks](https://woocommerce.com/checkout-blocks/).**
+**Fully compatible with the new [High-Performance Order Storage](https://woocommerce.com/posts/platform-update-high-performance-order-storage-for-woocommerce/) (HPOS) and the [WooCommerce block-based checkout](https://woocommerce.com/checkout-blocks/).**
 
 = Features: =
 
@@ -40,7 +40,7 @@ This is the official [ifthenpay](https://ifthenpay.com) plugin, and a contract w
 * Shop owner can set minimum and maximum order totals for each payment gateway to be available;
 * Ability to reduce stock when the order is created or paid;
 * Allows searching orders (in the admin area) by Multibanco or Payshop reference;
-* High-Performance Order Storage compatible;
+* High-Performance Order Storage (HPOS) compatible;
 * Block-Based Checkout compatible;
 * WPML compatible (for multilingual shops);
 * Polylang tested;
@@ -231,11 +231,11 @@ ifthenpay’s privacy policy can be found at [https://ifthenpay.com/termosCondic
 
 = Is this plugin compatible with the new WooCommerce High-Performance Order Storage? =
 
-Yes.
+Yes. This plugin is fully compatible with HPOS since December 2022.
 
-= Is this plugin compatible with the new WooCommerce block-based Cart and Checkout? =
+= Is this plugin compatible with the WooCommerce Cart and Checkout Blocks? =
 
-Yes.
+Yes. This plugin is compatible with HPOS since August 2020.
 
 = I need technical support. Who should I contact, ifthenpay or Webdados? =
 

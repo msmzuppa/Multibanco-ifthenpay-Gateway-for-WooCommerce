@@ -1263,7 +1263,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 						'_' . $this->id . '_request_id' => $request_id,
 						'_' . $this->id . '_id'         => $id,
 					);
-					$orders         = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
+					$orders = WC_IfthenPay_Webdados()->wc_get_orders( $args, $this->id );
 					if ( count( $orders ) > 0 ) {
 						$orders_exist = true;
 						$orders_count = count( $orders );

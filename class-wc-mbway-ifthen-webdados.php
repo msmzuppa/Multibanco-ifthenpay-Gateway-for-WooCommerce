@@ -1484,7 +1484,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 							'limit'                        => -1,
 							'_' . $this->id . '_id_pedido' => $id_pedido,
 						);
-						$orders         = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
+						$orders = WC_IfthenPay_Webdados()->wc_get_orders( $args, $this->id );
 						if ( count( $orders ) > 0 ) {
 							$orders_exist = true;
 							$orders_count = count( $orders );
@@ -1582,7 +1582,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 							'limit'                        => -1,
 							'_' . $this->id . '_id_pedido' => $id_pedido,
 						);
-						$orders = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
+						$orders = WC_IfthenPay_Webdados()->wc_get_orders( $args, $this->id );
 						if ( ! empty( $orders ) ) {
 							if ( count( $orders ) === 1 ) {
 								$order       = $orders[0];
@@ -1602,7 +1602,7 @@ Email enviado automaticamente do plugin WordPress â€œifthenpay for WooCommerceâ€
 								'orderby' => 'modified',
 								'order'   => 'ASC',                        // Oldest recent refunds first, so we process them in order if there are several
 							);
-							$refunds = wc_get_orders( WC_IfthenPay_Webdados()->maybe_translate_order_query_args( $args ) );
+							$refunds = WC_IfthenPay_Webdados()->wc_get_orders( $args, $this->id );
 							foreach ( $refunds as $refund ) {
 								if ( $refund->get_meta( '_' . WC_IfthenPay_Webdados()->mbway_id . '_callback_received' ) === '' ) {
 									if ( abs( floatval( $val ) ) === abs( floatval( WC_IfthenPay_Webdados()->get_order_total_to_pay( $refund ) ) ) ) {
