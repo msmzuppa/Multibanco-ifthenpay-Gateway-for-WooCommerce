@@ -73,7 +73,7 @@ final class GatewayIfthenPay extends AbstractPaymentMethodType {
 	 * @return array
 	 */
 	public function get_payment_method_data() {
-		$title = WC_IfthenPay_Webdados()->get_gateway_title_or_description_for_blocks( $this->name, $this->settings, 'title' );
+		$title  = WC_IfthenPay_Webdados()->get_gateway_title_or_description_for_blocks( $this->name, $this->settings, 'title' );
 		$title .= ( apply_filters( 'gateway_ifthen_add_frontend_title', true ) ? ( ! empty( $title ) ? ' - ' : '' ) . __( 'ifthenpay Gateway', 'multibanco-ifthen-software-gateway-for-woocommerce' ) : '' );
 		return apply_filters(
 			'gateway_ifthen_blocks_payment_method_data',
