@@ -3650,6 +3650,30 @@ final class WC_IfthenPay_Webdados {
 	}
 
 	/**
+	 * Get gateway title or description for blocks checkout
+	 *
+	 * Retrieves the payment gateway title or description that is properly translated
+	 * when WPML is active. This helps ensure consistent payment method display
+	 * across different languages in WooCommerce Blocks checkout.
+	 *
+	 * @param string $gateway_id       The payment gateway ID.
+	 * @param array  $gateway_settings The gateway settings array containing titles and descriptions.
+	 * @param string $field           The gateway field to get: 'title' or 'description'.
+	 * @return string The translated title or description, or original if WPML is not active.
+	 */
+	public function get_gateway_title_or_description_for_blocks( $gateway_id, $gateway_settings, $field ) {
+		if ( $this->wpml_active ) {
+			$gateway_title_or_description = apply_filters(
+				'wpml_translate_single_string',
+				$gateway_settings[ $field ],
+				'admin_texts_woocommerce_gateways',
+				$gateway_id . '_gateway_' . $field
+			);
+		}
+		return trim( $gateway_title_or_description );
+	}
+
+	/**
 	 * Filter notify URLs
 	 */
 	public function filter_notify_urls() {
