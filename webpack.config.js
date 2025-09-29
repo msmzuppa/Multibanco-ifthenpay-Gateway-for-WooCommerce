@@ -21,5 +21,7 @@ module.exports = {
 		filename: '[name].js'
 	},
 	// …snip
-	plugins: [ new WooCommerceDependencyExtractionWebpackPlugin() ],
+	plugins: [
+		new WooCommerceDependencyExtractionWebpackPlugin()
+	],
 };
