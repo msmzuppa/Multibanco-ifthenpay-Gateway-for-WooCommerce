@@ -3669,8 +3669,9 @@ final class WC_IfthenPay_Webdados {
 				'admin_texts_woocommerce_gateways',
 				$gateway_id . '_gateway_' . $field
 			);
+			return trim( $gateway_title_or_description );
 		}
-		return trim( $gateway_title_or_description );
+		return $gateway_settings[ $field ];
 	}
 
 	/**
