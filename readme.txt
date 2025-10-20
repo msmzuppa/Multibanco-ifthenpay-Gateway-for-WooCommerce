@@ -4,7 +4,7 @@ Tags: multibanco, mbway, payshop, card, cofidis
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 11.1.0
+Stable tag: 11.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -255,10 +255,12 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 11.2.0 - 2025-09-29 =
+= 11.2.0 - 2025-10-20 =
 * [TWEAK] Display payment method icons on the backend
 * [TWEAK] Better UX on the country code and phone number fields on the blocks checkout
+* [TWEAK] Remove old method of callback activation via email
 * [FIX] Display correct translated payment gateway title and description on the blocks checkout if WPML is active
+* [DEV] Tested with WordPress 6.9-alpha-60939 and WooCommerce 10.3.0-rc.1
 
 = 11.1.0 - 2025-09-22 =
 * [DEV] Change some remaining `wc_get_orders` calls to our internal wrapper
