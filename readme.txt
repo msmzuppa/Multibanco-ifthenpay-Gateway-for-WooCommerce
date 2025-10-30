@@ -4,7 +4,7 @@ Tags: ifthenpay, ecommerce, portugal, atm, homebanking
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 11.2.0
+Stable tag: 11.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -255,9 +255,11 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= ? =
+= 11.2.1 - 2025-10-30 =
+* [FIX] Debug errors to email when requesting Multibanco or MB Way payments to ifthenpay
 * [TWEAK] Small readme.txt adjustments
-* [TWEAK] Replace “homebanking” with “home banking” 
+* [TWEAK] Replace “homebanking” with “home banking”
+* [DEV] Tested with WordPress 6.9-beta2-61087 and WooCommerce 10.3.3
 
 = 11.2.0 - 2025-10-20 =
 * [TWEAK] Display payment method icons on the backend
