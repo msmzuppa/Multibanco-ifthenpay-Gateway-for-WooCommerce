@@ -10,6 +10,8 @@ PRO ADD-ON PAGO:
 
 FREE:
 
+- O URL de callback está a aparecer no site com as html entities (em que site foi visto isto?)
+
 - Improve accessibility on icons - Check on classic and blocks checkout (blocks seem to be the problem)
 
 - PIX:
