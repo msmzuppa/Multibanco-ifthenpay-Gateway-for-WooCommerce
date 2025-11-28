@@ -1,3 +1,13 @@
+FREE:
+
+- Mais informação no debug log e email quando a encomenda é encontrada mas não no estado correcto:
+	- https://nakedcatplugins.com/technical-support/?support_page=open_ticket&ticket_id=39652024&auth_code=IHpzstdW93
+
+- Quando se faz um refund e retorna erro, por exemplo de fundos insuficientes, devemos - NÃO É POSSÍVEL REPLICAR. FOI UM PROBLEMA ENTRE O TECLADO E A CADEIRA
+	- Tentar parar o processo de refund do WooCommerce para a encomenda não mudar de estado
+		- Exemplo: https://www.vinha.co.uk/wp-admin/post.php?post=170360&action=edit&classic-editor
+	- Deixar uma nota na encomenda
+
 PRO ADD-ON PAGO:
 - gateway & credit card: PRO fake fields on free plugin
 - gateway: mostrar os 1, 2 ou 3 icons conforme os métodos activos (clássico e blocos (como??))

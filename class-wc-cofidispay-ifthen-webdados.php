@@ -511,7 +511,7 @@ if ( ! class_exists( 'WC_CofidisPay_IfThen_Webdados' ) ) {
 								<tr valign="top">
 									<th scope="row" class="titledesc"><?php esc_html_e( 'Callback URL', 'multibanco-ifthen-software-gateway-for-woocommerce' ); ?></th>
 									<td class="forminp callbackurl">
-										<?php echo esc_url( WC_IfthenPay_Webdados()->cofidispay_notify_url ); ?>
+										<?php echo esc_html( WC_IfthenPay_Webdados()->cofidispay_notify_url ); ?>
 									</td>
 								</tr>
 							</table>
