@@ -77,7 +77,6 @@ final class WC_IfthenPay_Webdados {
 	public $mbway_banner_email           = '';
 	public $mbway_banner                 = '';
 	public $mbway_icon                   = '';
-	public $mbway_webservice_url         = 'https://mbway.ifthenpay.com/IfthenPayMBW.asmx';
 	public $mbway_api_url                = 'https://api.ifthenpay.com/spg/payment/mbway';
 
 

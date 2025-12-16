@@ -1287,6 +1287,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 					gap: 0.75em;
 					align-items: center;
 					margin-top: 0.5em;
+					clear: both;
 				}
 				#<?php echo esc_html( $this->id ); ?>_phone_field_container_country_code {
 					display: inline-block;
@@ -1420,12 +1421,20 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 			) {
 				// Let's process it
 				$this->debug_log( '- Callback (' . WC_IfthenPay_Webdados()->get_request_uri() . ') with all arguments from ' . WC_IfthenPay_Webdados()->get_remote_addr() );
-				$referencia      = trim( sanitize_text_field( wp_unslash( $_GET['referencia'] ) ) );
-				$id_pedido       = str_replace( ' ', '+', trim( sanitize_text_field( wp_unslash( $_GET['idpedido'] ) ) ) ); // If there's a plus sign on the URL We'll get it as a space, so we need to get it back
-				$val             = floatval( $_GET['valor'] );
-				$estado          = trim( sanitize_text_field( wp_unslash( $_GET['estado'] ) ) );
-				$chave           = trim( sanitize_text_field( wp_unslash( $_GET['chave'] ) ) );
-				$datahorapag     = isset( $_GET['datahorapag'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['datahorapag'] ) ) ) : '';
+				$referencia  = trim( sanitize_text_field( wp_unslash( $_GET['referencia'] ) ) );
+				$id_pedido   = str_replace( ' ', '+', trim( sanitize_text_field( wp_unslash( $_GET['idpedido'] ) ) ) ); // If there's a plus sign on the URL We'll get it as a space, so we need to get it back
+				$val         = floatval( $_GET['valor'] );
+				$estado      = trim( sanitize_text_field( wp_unslash( $_GET['estado'] ) ) );
+				$chave       = trim( sanitize_text_field( wp_unslash( $_GET['chave'] ) ) );
+				$datahorapag = isset( $_GET['datahorapag'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['datahorapag'] ) ) ) : '';
+				// Fix datahorapag from dd-mm-yyyyhh:ii:ss to yyyy-mm-dd hh:ii:ss
+				$datahorapag = str_replace( ' ', '', $datahorapag );
+				$datahorapag = str_replace( '%20', '', $datahorapag );
+				if ( strlen( $datahorapag ) === 18 ) {
+					$data_temp   = implode( '-', array_reverse( explode( '-', substr( $datahorapag, 0, 10 ) ) ) );
+					$hora_tempo  = substr( $datahorapag, 10 );
+					$datahorapag = $data_temp . ' ' . $hora_tempo;
+				}
 				$arguments_ok    = true;
 				$arguments_error = '';
 				if ( $chave !== trim( $this->secret_key ) ) {
