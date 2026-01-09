@@ -257,6 +257,8 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 = ? =
 * [DEV] New `mbway_ifthen_checkout_phone_field_max_width_break_fields` filter to override the container maximum width after which the MB WAY fileds country code and phone number show up in separate lines, instead of side by side. Default: `400px`
+* [TWEAK] Normalize MB WAY payment date/time received on the callback to ISO format
+* [FIX] Callback URL output on the callback activation section on each payment method
 
 = 11.2.1 - 2025-10-30 =
 * [FIX] Debug errors to email when requesting Multibanco or MB Way payments to ifthenpay
