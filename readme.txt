@@ -256,7 +256,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 == Changelog ==
 
 = ? =
-* [DEV] New `mbway_ifthen_checkout_phone_field_max_width_break_fields` filter to override the container maximum width after which the MB WAY fileds country code and phone number show up in separate lines, instead of side by side. Default: `400px`
+* [DEV] New `mbway_ifthen_checkout_phone_field_max_width_break_fields` filter to override the container maximum width after which the MB WAY classic checkout fields country code and phone number show up in separate lines, instead of side by side. Default: `400px`
 * [TWEAK] Normalize MB WAY payment date/time received on the callback to ISO format
 * [FIX] Callback URL output on the callback activation section on each payment method
 
