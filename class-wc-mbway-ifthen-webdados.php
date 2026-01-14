@@ -1299,7 +1299,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 				#<?php echo esc_html( $this->id ); ?>_phone_field_container #<?php echo esc_html( $this->id ); ?>_phone {
 					width: 50%;
 				}
-				@container phone-field ( max-width: <?php echo apply_filters( 'mbway_ifthen_checkout_phone_field_max_width_break_fields', '400px' ); ?> ) {
+				@container phone-field ( max-width: <?php echo esc_html( apply_filters( 'mbway_ifthen_checkout_phone_field_max_width_break_fields', '400px' ) ); ?> ) {
 					#<?php echo esc_html( $this->id ); ?>_phone_field_container {
 						flex-direction: column;
 					}

@@ -185,6 +185,10 @@ if ( ! class_exists( 'WC_Multibanco_IfThen_Webdados' ) ) {
 					delete_option( $this->id . '_callback_email_sent' );
 					update_option( $this->id . '_callback_email_sent', $value, false );
 				}
+				// Update routines when upgrading to 11.3 or above - Remove old cron - This is global to the but we do it here
+				if ( version_compare( $this->get_option( 'version' ), '11.3', '<' ) ) {
+					wp_clear_scheduled_hook( 'wc_ifthen_hourly_cron' );
+				}
 				// Upgrade on the database - Risky?
 				$current_options['version'] = $this->version;
 				update_option( 'woocommerce_' . $this->id . '_settings', $current_options );

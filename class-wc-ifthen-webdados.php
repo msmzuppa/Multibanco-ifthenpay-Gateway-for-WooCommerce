@@ -297,10 +297,15 @@ final class WC_IfthenPay_Webdados {
 			}
 		);
 		add_filter( 'woocommerce_valid_order_statuses_for_payment', array( $this, 'woocommerce_valid_order_statuses_for_payment' ), PHP_INT_MAX, 2 );
-		// Create cron
-		if ( ! wp_next_scheduled( 'wc_ifthen_hourly_cron' ) ) {
-			wp_schedule_event( time(), 'hourly', 'wc_ifthen_hourly_cron' );
-		}
+		// Create Action Scheduler recurring action instead of WP Cron
+		add_action(
+			'init',
+			function () {
+				if ( ! as_next_scheduled_action( 'wc_ifthen_hourly_cron' ) ) {
+					as_schedule_recurring_action( time(), HOUR_IN_SECONDS, 'wc_ifthen_hourly_cron', array(), 'wc-ifthen' );
+				}
+			}
+		);
 		// Cancel orders with expired references - Multibanco (after_setup_theme so it runs after theme's functions.php file)
 		add_action(
 			'after_setup_theme',
