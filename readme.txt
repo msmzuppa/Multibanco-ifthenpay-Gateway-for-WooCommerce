@@ -4,7 +4,7 @@ Tags: ifthenpay, ecommerce, portugal, atm, homebanking
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 11.2.1
+Stable tag: 11.3.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -255,10 +255,12 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= ? =
+= 11.3.0 - 2026-01-14 =
 * [DEV] New `mbway_ifthen_checkout_phone_field_max_width_break_fields` filter to override the container maximum width after which the MB WAY classic checkout fields country code and phone number show up in separate lines, instead of side by side. Default: `400px`
+* [DEV] Replace hourly WP cron with Action Scheduler
 * [TWEAK] Normalize MB WAY payment date/time received on the callback to ISO format
 * [FIX] Callback URL output on the callback activation section on each payment method
+* [DEV] Tested with 7.0-alpha-61480 and WooCommerce 10.4.3
 
 = 11.2.1 - 2025-10-30 =
 * [FIX] Debug errors to email when requesting Multibanco or MB Way payments to ifthenpay
