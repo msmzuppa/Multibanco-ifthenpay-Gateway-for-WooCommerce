@@ -1437,8 +1437,8 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );
-							$err = 'Error: No orders found awaiting payment with these details';
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - No orders found awaiting payment with these details' );
+							$err = WC_IfthenPay_Webdados()->callback_helper_order_not_found_error( $this->id, $args, 'ifthenpay Gateway' );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 							echo esc_html( $err );
 							do_action( 'gateway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}

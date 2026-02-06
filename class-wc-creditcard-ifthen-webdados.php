@@ -950,9 +950,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 		 */
 		public function return_payment_gateway() {
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
-			$redirect_url = '';
-			$error        = false;
-			$order_id     = 0;
+			$redirect_url       = '';
+			$error              = false;
+			$order_id           = 0;
 			$server_http_host   = WC_IfthenPay_Webdados()->get_http_host();
 			$server_request_uri = WC_IfthenPay_Webdados()->get_request_uri();
 			$server_remote_addr = WC_IfthenPay_Webdados()->get_remote_addr();

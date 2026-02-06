@@ -255,6 +255,12 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= 11.4.0 - 2026-01-21 =
+* [TWEAK] Order note and debug when order is found by callback, but not in pending statuses (for example, already paid or cancelled)
+* [TWEAK] Add “ifthenpay” to all the “payment received” order notes
+* [DEV] Better debug when arguments are missing on the callback requested URL
+* [DEV] Tested with...
+
 = 11.3.2 - 2026-01-21 =
 * [FIX] Add an empty function to the `wc_ifthen_hourly_cron` scheduled action to avoid loop issues on Action Scheduler, introduced on 11.3.0, and clear its failed logs (Thanks BestSites.pt for reporting)
 * [DEV] Move global upgrade routines from the Multibanco to the main plugin class
