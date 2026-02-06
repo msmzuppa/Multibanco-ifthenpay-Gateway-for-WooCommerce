@@ -1502,7 +1502,7 @@ if ( ! class_exists( 'WC_Gateway_IfThen_Webdados' ) ) {
 							if ( ! isset( $err ) ) {
 								$err = 'Error: No unprocessed refunds found with these details';
 							}
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - No refunds found with these details' );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - No refunds found with these details' );
 							echo esc_html( $err );
 							do_action( 'gateway_ifthen_callback_refund_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}

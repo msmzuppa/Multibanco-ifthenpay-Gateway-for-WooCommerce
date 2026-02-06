@@ -1407,6 +1407,10 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 		 */
 		public function callback() {
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
+			$server_http_host   = WC_IfthenPay_Webdados()->get_http_host();
+			$server_request_uri = WC_IfthenPay_Webdados()->get_request_uri();
+			$server_remote_addr = WC_IfthenPay_Webdados()->get_remote_addr();
+
 			@ob_clean(); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 			// We must 1st check the situation and then process it and send email to the store owner in case of error.
 			if (
@@ -1421,7 +1425,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 				isset( $_GET['estado'] )
 			) {
 				// Let's process it
-				$this->debug_log( '- Callback (' . WC_IfthenPay_Webdados()->get_request_uri() . ') with all arguments from ' . WC_IfthenPay_Webdados()->get_remote_addr() );
+				$this->debug_log( '- Callback (' . $server_request_uri . ') with all arguments from ' . $server_remote_addr );
 				$referencia  = trim( sanitize_text_field( wp_unslash( $_GET['referencia'] ) ) );
 				$id_pedido   = str_replace( ' ', '+', trim( sanitize_text_field( wp_unslash( $_GET['idpedido'] ) ) ) ); // If there's a plus sign on the URL We'll get it as a space, so we need to get it back
 				$val         = floatval( $_GET['valor'] );
@@ -1478,7 +1482,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 							}
 						} else {
 							$err = 'Error: No orders found awaiting payment with these details - We are going to try by reference (order id) only';
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - We are going to try by reference (order id) only (if, immediately after, you get the “MB WAY payment received” log entry, you can ignore this error)' );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - We are going to try by reference (order id) only (if, immediately after, you get the “MB WAY payment received” log entry, you can ignore this error)' );
 							// Maybe the webservice timed-out and we are getting the payment anyway?
 							// We only used this when the ifthenpay / SIBS webservice was timming out, but now that we have the ifthen_webservice_send_order_number_instead_id filter
 							$order = wc_get_order( intval( $referencia ) );
@@ -1489,11 +1493,11 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									$orders_count = 1;
 								} else {
 									$err = '-- MB WAY payment received but it does not need payment - Order callbak reference ' . $referencia;
-									$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() );
+									$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 								}
 							} else {
 								$err = 'Error: No orders found awaiting payment with these details - Order callback reference ' . $referencia;
-								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() );
+								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 							}
 						}
 						if ( $orders_exist ) {
@@ -1531,28 +1535,28 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 									} else {
 										header( 'HTTP/1.1 200 OK' );
 										$err = 'Error: The value does not match';
-										$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - The value does not match' );
+										$this->debug_log( '-- ' . $err . ' - Order ' . $order->get_id(), 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - The value does not match' );
 										echo esc_html( $err );
 										do_action( 'mbway_ifthen_callback_payment_failed', $order->get_id(), $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 									}
 								} else {
 									header( 'HTTP/1.1 200 OK' );
 									$err = 'Error: MB WAY payment received but order id or number does not match reference - Order callbak reference ' . $referencia . ' - Order id ' . $order->get_id() . ' - Order number ' . $order->get_order_number();
-									$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() );
+									$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 									echo esc_html( $err );
 									do_action( 'mbway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								}
 							} else {
 								header( 'HTTP/1.1 200 OK' );
 								$err = 'Error: More than 1 order found awaiting payment with these details';
-								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - More than 1 order found awaiting payment with these details' );
+								$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - More than 1 order found awaiting payment with these details' );
 								echo esc_html( $err );
 								do_action( 'mbway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							}
 						} else {
 							header( 'HTTP/1.1 200 OK' );
 							$err = 'Error: No orders found awaiting payment with these details';
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - No orders found awaiting payment with these details' );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - No orders found awaiting payment with these details' );
 							echo esc_html( $err );
 							do_action( 'mbway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
@@ -1616,7 +1620,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 							if ( ! isset( $err ) ) {
 								$err = 'Error: No unprocessed refunds found with these details';
 							}
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - No refunds found with these details' );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - No refunds found with these details' );
 							echo esc_html( $err );
 							do_action( 'mbway_ifthen_callback_refund_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
@@ -1624,7 +1628,7 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 					} else {
 						header( 'HTTP/1.1 200 OK' );
 						$err = 'Error: Cannot process ' . trim( $estado ) . ' status';
-						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - Cannot process ' . trim( $estado ) . ' status' );
+						$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - Cannot process ' . trim( $estado ) . ' status' );
 						echo esc_html( $err );
 						do_action( 'mbway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					}
@@ -1634,13 +1638,13 @@ if ( ! class_exists( 'WC_MBWAY_IfThen_Webdados' ) ) {
 						'-- ' . $err . $arguments_error,
 						'warning',
 						true,
-						'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') with argument errors from ' . WC_IfthenPay_Webdados()->get_remote_addr() . $arguments_error . ' - GET: ' . wp_json_encode( $_GET )
+						'Callback (' . $server_http_host . ' ' . $server_request_uri . ') with argument errors from ' . $server_remote_addr . $arguments_error . ' - GET: ' . wp_json_encode( $_GET )
 					);
 					do_action( 'mbway_ifthen_callback_payment_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					wp_die( esc_html( $err ), 'WC_MBWAY_IfThen_Webdados', array( 'response' => 500 ) ); // Sends 500
 				}
 			} else {
-				$err = 'Callback (' . WC_IfthenPay_Webdados()->get_request_uri() . ') with missing arguments from ' . WC_IfthenPay_Webdados()->get_remote_addr();
+				$err = 'Callback (' . $server_request_uri . ') with missing arguments from ' . $server_remote_addr;
 				$this->debug_log(
 					'- ' . $err,
 					'warning',

@@ -953,6 +953,9 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 			$redirect_url = '';
 			$error        = false;
 			$order_id     = 0;
+			$server_http_host   = WC_IfthenPay_Webdados()->get_http_host();
+			$server_request_uri = WC_IfthenPay_Webdados()->get_request_uri();
+			$server_remote_addr = WC_IfthenPay_Webdados()->get_remote_addr();
 
 			if (
 				isset( $_GET['status'] )
@@ -963,7 +966,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 				&&
 				isset( $_GET['requestId'] )
 			) {
-				$this->debug_log( '- Return from gateway (' . WC_IfthenPay_Webdados()->get_request_uri() . ') with all arguments' );
+				$this->debug_log( '- Return from gateway (' . $server_request_uri . ') with all arguments' );
 				$request_id = trim( sanitize_text_field( wp_unslash( $_GET['requestId'] ) ) );
 				$id         = trim( sanitize_text_field( wp_unslash( $_GET['id'] ) ) );
 				$val        = trim( sanitize_text_field( wp_unslash( $_GET['amount'] ) ) ); // Não fazemos float porque 7.40 passaria a 7.4 e depois não validava a hash
@@ -1002,7 +1005,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 								$this->payment_complete( $order, '', $note );
 								do_action( 'creditcard_ifthen_callback_payment_complete', $order->get_id(), $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 								$debug_order = wc_get_order( $order->get_id() );
-								$this->debug_log( '-- Credit card payment received - Order ' . $order->get_id(), 'notice' );
+								$this->debug_log( '-- Credit card payment received - Order ' . $order->get_id(), 'notice', false, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr );
 								$this->debug_log_extra( 'payment_complete - Redirect to thank you page: ' . $url . ' - Order ' . $order->get_id() . ' - Status: ' . $debug_order->get_status() );
 								wp_safe_redirect( $url );
 								exit;
@@ -1081,7 +1084,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 
 				}
 			} else {
-				$error = 'Return from gateway (' . WC_IfthenPay_Webdados()->get_request_uri() . ') with missing arguments';
+				$error = 'Return from gateway (' . $server_request_uri . ') with missing arguments';
 			}
 
 			// Error and redirect
@@ -1258,7 +1261,7 @@ if ( ! class_exists( 'WC_CreditCard_IfThen_Webdados' ) ) {
 							if ( ! isset( $err ) ) {
 								$err = 'Error: No unprocessed refunds found with these details';
 							}
-							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . WC_IfthenPay_Webdados()->get_http_host() . ' ' . WC_IfthenPay_Webdados()->get_request_uri() . ') from ' . WC_IfthenPay_Webdados()->get_remote_addr() . ' - No refunds found with these details' );
+							$this->debug_log( '-- ' . $err, 'warning', true, 'Callback (' . $server_http_host . ' ' . $server_request_uri . ') from ' . $server_remote_addr . ' - No refunds found with these details' );
 							echo esc_html( $err );
 							do_action( 'creditcard_ifthen_callback_refund_failed', 0, $err, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						}
