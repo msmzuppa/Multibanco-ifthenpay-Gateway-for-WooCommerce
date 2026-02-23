@@ -4,7 +4,7 @@ Tags: ifthenpay, ecommerce, portugal, atm, homebanking
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 11.4.1
+Stable tag: 11.5.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -255,7 +255,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
-= 11.4.2 - 2026-02-23 =
+= 11.5.0 - 2026-02-23 =
 * [TWEAK] Expose icons paths to [PRO add-on 6.0](https://nakedcatplugins.com/product/multibanco-mbway-credit-card-payshop-ifthenpay-woocommerce-pro-add-on/) so it can render the new “ifthenpay Payment Logos” block and shortcode
 * [FIX] Polylang home url for callbacks and return URLs for Credit card, ifthenpay gateway and Cofidispay (can be disabled by passing `false` to the `ifthen_fix_polylang_home_url` filter)
 * [DEV] Tested with WordPress 7.0-beta1-61715 and WooCommerce 10.5.2
