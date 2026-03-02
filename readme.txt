@@ -4,7 +4,7 @@ Tags: ifthenpay, ecommerce, portugal, atm, homebanking
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 11.5.1
+Stable tag: 11.5.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -257,6 +257,7 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 = 11.5.2 - 2026-03-02 =
 * [TWEAK] Unify some strings
+* [DEV] New `cofidispay_ifthen_order_initial_status_pending` hook to which returning false will set Cofidis Pay orders On hold instead of Pending
 * [DEV] Tested with WordPress 7.0-beta2-61777 and WooCommerce 10.6.0-beta.1
 
 = 11.5.1 - 2026-02-24 =
