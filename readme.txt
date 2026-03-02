@@ -255,6 +255,10 @@ Sure. Go to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/mult
 
 == Changelog ==
 
+= 11.5.2 - 2026-03-02 =
+* [TWEAK] Unify some strings
+* [DEV] Tested with WordPress 7.0-beta2-61777 and WooCommerce 10.6.0-beta.1
+
 = 11.5.1 - 2026-02-24 =
 * [TWEAK] Retouch some SVG icons
 * [FIX] “Deprecated: Creation of dynamic property notices” for the new “icon path” properties introduced in 11.5.0
