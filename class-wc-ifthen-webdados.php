@@ -34,6 +34,7 @@ final class WC_IfthenPay_Webdados {
 	public $polylang_active           = false;
 	public $polylang_current_language = false;
 	public $wc_deposits_active        = false;
+	public $awcdp_deposits_active     = false;
 	public $wc_subscriptions_active   = false;
 	public $wc_blocks_active          = false;
 	public $mb_ifthen_locale          = null;
@@ -169,6 +170,7 @@ final class WC_IfthenPay_Webdados {
 			}
 		}
 		$this->wc_deposits_active      = function_exists( 'wc_deposits_woocommerce_is_active' ) || function_exists( '\Webtomizer\WCDP\wc_deposits_woocommerce_is_active' );
+		$this->awcdp_deposits_active   = defined( 'AWCDP_TOKEN' );
 		$this->wc_subscriptions_active = function_exists( 'wcs_get_subscription' );
 		$this->wc_blocks_active        = class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' );
 		$this->out_link_utm            = '?utm_source=' . rawurlencode( esc_url( home_url( '/' ) ) ) . '&amp;utm_medium=link&amp;utm_campaign=mb_ifthen_plugin';
@@ -629,12 +631,7 @@ final class WC_IfthenPay_Webdados {
 	 */
 	public function debug_log_extra( $gateway_id, $message, $level = 'debug', $debug_email = '', $email_message = '' ) {
 		if ( apply_filters( 'ifthen_debug_log_extra', false ) ) {
-			// Get URL if possible
 			$url = WC_IfthenPay_Webdados()->get_request_uri() ? WC_IfthenPay_Webdados()->get_request_uri() : 'Unknown request URI';
-			// Remove anti-phishing key from URL for security reasons
-			$url = preg_replace( '/([&?]chave=)[^&]+/', '$1[REDACTED]', $url );
-			$url = preg_replace( '/([&?]key=)[^&]+/', '$1[REDACTED]', $url );
-			// Log
 			$this->debug_log( $gateway_id, 'EXTRA (' . $url . ') - ' . $message, $level, $debug_email, $email_message );
 		}
 	}
@@ -2402,18 +2399,37 @@ final class WC_IfthenPay_Webdados {
 	 */
 	public function get_order_total_to_pay( $order ) {
 		$order_total_to_pay = $order->get_total();
-		if ( $this->wc_deposits_active ) {
-			// Has deposit
-			if ( $order->get_meta( '_wc_deposits_order_has_deposit' ) === 'yes' ) {
-				// First payment?
-				if ( $order->get_meta( '_wc_deposits_deposit_paid' ) !== 'yes' && $order->get_status() !== 'partially-paid' ) {
-					$order_total_to_pay = floatval( $order->get_meta( '_wc_deposits_deposit_amount' ) );
+
+		$deposit_plugins = array(
+			// WC Deposits by Webtomizer
+			array(
+				'active'       => $this->wc_deposits_active,
+				'has_deposit'  => '_wc_deposits_order_has_deposit',
+				'deposit_paid' => '_wc_deposits_deposit_paid',
+				'deposit_amt'  => '_wc_deposits_deposit_amount',
+				'second_pay'   => '_wc_deposits_second_payment',
+			),
+			// AWCDP - Deposits & Partial Payments for WooCommerce (Acowebs)
+			array(
+				'active'       => $this->awcdp_deposits_active,
+				'has_deposit'  => '_awcdp_deposits_order_has_deposit',
+				'deposit_paid' => '_awcdp_deposits_deposit_paid',
+				'deposit_amt'  => '_awcdp_deposits_deposit_amount',
+				'second_pay'   => '_awcdp_deposits_second_payment',
+			),
+		);
+
+		foreach ( $deposit_plugins as $plugin ) {
+			if ( $plugin['active'] && $order->get_meta( $plugin['has_deposit'] ) === 'yes' ) {
+				if ( $order->get_meta( $plugin['deposit_paid'] ) !== 'yes' && $order->get_status() !== 'partially-paid' ) {
+					$order_total_to_pay = floatval( $order->get_meta( $plugin['deposit_amt'] ) ); // First payment
 				} else {
-					// Second payment
-					$order_total_to_pay = floatval( $order->get_meta( '_wc_deposits_second_payment' ) );
+					$order_total_to_pay = floatval( $order->get_meta( $plugin['second_pay'] ) ); // Second payment
 				}
+				break;
 			}
 		}
+
 		return round( $order_total_to_pay, 2 );
 	}
 
